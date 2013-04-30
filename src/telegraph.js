@@ -85,4 +85,31 @@ Telegraph.prototype.getTree = function(tree, name) {
     tree._values.push(subtree);
   }
   return subtree;
-}
+};
+
+Telegraph.prototype.addQuery = function(opts) {
+    var $submit = $("#query-submit");
+    $submit.attr("disabled", true);
+    var postData = {
+        type:   opts.type,
+        name:   opts.name,
+        query:  opts.query,
+        format: "json"
+    };
+    if (opts.replaySince) {
+        postData["replay-since"] = opts.replaySince;
+    }
+
+    // console.log(postData);
+    $.ajax({
+        url: opts.url,
+        type: "POST",
+        data: postData,
+        async: true,
+        success: function(d){
+            console.log(d);
+            $submit.attr("disabled", false);
+        },
+        dataType: "text"
+    });
+};
