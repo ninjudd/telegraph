@@ -18,7 +18,7 @@
     window.Telegraph = new Telegraph();
     nv.addGraph(function() {
       var chart = Telegraph.queryList();
-      var data = Telegraph.getQueries({url: "http://telemetry-001.geni.com:1847/listeners"});
+      var data = Telegraph.getQueries({url: "http://telemetry-001.geni.com:1847/listeners", actions: "foo"});
 
       d3.select('.queries')
         .datum(data)

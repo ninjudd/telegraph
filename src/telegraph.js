@@ -36,6 +36,7 @@ Telegraph.prototype.getQueries = function(opts) {
             subtree = self.getTree(subtree, subname);
           });
           subtree.query = query;
+          subtree.actions = opts.actions;
         });
       });
     }
@@ -49,17 +50,17 @@ Telegraph.prototype.queryList = function() {
   list.columns([
     { key: 'name',
       label: 'Name',
-      showCount: true,
-      width: '50%',
       type: 'text',
-      classes: function(d) { return d.url ? 'clickable name' : 'name' },
-      click: function(d) {
-        if (d.url) window.location.href = d.url;
-      }},
+      showCount: true,
+      width: '40%' },
     { key: 'query',
       label: 'Query',
-      width: '50%',
-      type: 'text' }
+      type: 'text',
+      width: '50%' },
+    { key: 'actions',
+      label: 'Actions',
+      type: 'text',
+      width: '10%' }
   ])
   return list;
 };
