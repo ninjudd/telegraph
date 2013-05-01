@@ -61,6 +61,33 @@ Telegraph.prototype.queryList = function() {
   return list;
 };
 
+Telegraph.prototype.addQuery = function(opts) {
+    var $submit = $("#query-submit");
+    $submit.attr("disabled", true);
+    var postData = {
+        type:   opts.type,
+        name:   opts.name,
+        query:  opts.query,
+        format: "json"
+    };
+    if (opts.replaySince) {
+        postData["replay-since"] = opts.replaySince;
+    }
+
+    // console.log(postData);
+    $.ajax({
+        url: opts.url,
+        type: "POST",
+        data: postData,
+        async: true,
+        success: function(d){
+            console.log(d);
+            $submit.attr("disabled", false);
+        },
+        dataType: "text"
+    });
+};
+
 // Helper functions //
 // Munge our data to be d3 friendly.
 Telegraph.prototype.toD3Friendly = function(targets, rawData) {
@@ -104,31 +131,4 @@ Telegraph.prototype.assocInTree = function(tree, name, attrs) {
   });
 
   return subtree;
-};
-
-Telegraph.prototype.addQuery = function(opts) {
-    var $submit = $("#query-submit");
-    $submit.attr("disabled", true);
-    var postData = {
-        type:   opts.type,
-        name:   opts.name,
-        query:  opts.query,
-        format: "json"
-    };
-    if (opts.replaySince) {
-        postData["replay-since"] = opts.replaySince;
-    }
-
-    // console.log(postData);
-    $.ajax({
-        url: opts.url,
-        type: "POST",
-        data: postData,
-        async: true,
-        success: function(d){
-            console.log(d);
-            $submit.attr("disabled", false);
-        },
-        dataType: "text"
-    });
 };
