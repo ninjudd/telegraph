@@ -30,13 +30,9 @@ Telegraph.prototype.getQueries = function(opts) {
     async: false,
     success: function(queries) {
       _.each(queries, function(queryGroup, groupName) {
+        var subTree = self.getTree(tree, groupName);
         _.each(queryGroup, function(query, name) {
-          subtree = self.getTree(tree, groupName);
-          _.each(name.split(/[\.:]/), function(subname) {
-            subtree = self.getTree(subtree, subname);
-          });
-          subtree.query = query;
-          subtree.actions = opts.actions;
+          this.assocInTree(subTree, name, {query: query, actions: opts.actions});
         });
       });
     }
@@ -78,12 +74,35 @@ Telegraph.prototype.toD3Friendly = function(targets, rawData) {
 };
 
 Telegraph.prototype.getTree = function(tree, name) {
-  tree._values = tree._values || [];
-  var subtree = _.find(tree._values, function(v) { return v.name == name });
+  var values = tree._values || tree.values;
+  if (!values) {
+    tree._values = values = [];
+  }
+
+  var subtree = _.find(values, function(v) { return v.name == name });
   if (!subtree) {
     subtree = {name: name};
-    tree._values.push(subtree);
+    values.push(subtree);
   }
+  return subtree;
+};
+
+Telegraph.prototype.getInTree = function(tree, name) {
+  var segments = name.split(/[\.:]/);
+  var subtree = tree;
+  _.each(segments, function(subname) {
+    subtree = self.getTree(subtree, subname);
+  });
+
+  return subtree;
+};
+
+Telegraph.prototype.assocInTree = function(tree, name, attrs) {
+  var subtree = this.getInTree(tree, name);
+  _.each(attrs, function(v, k) {
+    subtree[k] = v;
+  });
+
   return subtree;
 };
 
