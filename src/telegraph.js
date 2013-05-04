@@ -122,7 +122,7 @@ Telegraph.prototype.getTree = function(tree, name) {
     tree._values = values = [];
   }
 
-  var subtree = _.find(values, function(v) { return v.name == name });
+  var subtree = _.findWhere(values, {name: name});
   if (!subtree) {
     subtree = {name: name};
     values.push(subtree);
