@@ -46,12 +46,15 @@ Telegraph.prototype.getQueries = function() {
     }
   });
 
-  return [tree];
+  return tree;
 };
 
-Telegraph.prototype.queryList = function() {
-  var list = nv.models.indentedTree().tableClass('table table-striped') //for bootstrap styling
-  list.columns([
+Telegraph.prototype.listQueries = function(selector) {
+  var self = this;
+
+  this.queryData = this.getQueries();
+  this.queryList = nv.models.indentedTree().tableClass('table table-striped') //for bootstrap styling
+  this.queryList.columns([
     { key: 'name',
       label: 'Name',
       type: 'text',
@@ -66,7 +69,13 @@ Telegraph.prototype.queryList = function() {
       type: 'text',
       width: '10%' }
   ])
-  return list;
+
+  nv.addGraph(function() {
+    d3.select(selector)
+      .datum([self.queryData])
+      .call(self.queryList);
+    return self.queryList;
+  });
 };
 
 Telegraph.prototype.addQuery = function(opts) {
