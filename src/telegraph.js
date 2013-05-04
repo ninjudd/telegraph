@@ -32,7 +32,7 @@ Telegraph.prototype.getQueries = function(opts) {
       _.each(queries, function(queryGroup, groupName) {
         var subTree = self.getTree(tree, groupName);
         _.each(queryGroup, function(query, name) {
-          this.assocInTree(subTree, name, {query: query, actions: opts.actions});
+          self.assocInTree(subTree, name, {query: query, actions: opts.actions});
         });
       });
     }
@@ -115,6 +115,7 @@ Telegraph.prototype.getTree = function(tree, name) {
 };
 
 Telegraph.prototype.getInTree = function(tree, name) {
+  var self = this;
   var segments = name.split(/[\.:]/);
   var subtree = tree;
   _.each(segments, function(subname) {
