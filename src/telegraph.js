@@ -40,7 +40,7 @@ Telegraph.prototype.getQueries = function() {
       _.each(queries, function(queryGroup, groupName) {
         var subTree = self.getTree(tree, groupName);
         _.each(queryGroup, function(query, name) {
-          self.assocInTree(subTree, name, {query: query, actions: ""});
+          self.assocInTree(subTree, name, self.queryNode(query));
         });
       });
     }
@@ -79,29 +79,31 @@ Telegraph.prototype.listQueries = function(selector) {
 };
 
 Telegraph.prototype.addQuery = function(opts) {
-    var $submit = $("#query-submit");
-    $submit.attr("disabled", true);
-    var postData = {
-      type:   opts.type,
-      name:   opts.name,
-      query:  opts.query,
-      format: "json"
-    };
-    if (opts.replaySince) {
-      postData["replay-since"] = opts.replaySince;
-    }
+  var self = this;
 
-    $.ajax({
-      url: "http://" + this.server + "/" + this.addPath,
-      type: "POST",
-      data: postData,
-      async: true,
-      success: function(d){
-        console.log(d);
-        $submit.attr("disabled", false);
-      },
-      dataType: "text"
-    });
+  var postData = {
+    type:   opts.type,
+    name:   opts.name,
+    query:  opts.query,
+    format: "json"
+  };
+  if (opts.replaySince) {
+    postData["replay-since"] = opts.replaySince;
+  }
+
+  $.ajax({
+    url: "http://" + this.server + "/" + this.addPath,
+    type: "POST",
+    data: postData,
+    async: true,
+    success: function(d){
+      var subtree = self.getInTree(self.queryData, opts.type);
+      self.assocInTree(subtree, opts.name, self.queryNode(opts.query));
+      self.queryList.update();
+      opts.success(d);
+    },
+    dataType: "text"
+  });
 };
 
 // Helper functions //
@@ -128,6 +130,13 @@ Telegraph.prototype.getTree = function(tree, name) {
     values.push(subtree);
   }
   return subtree;
+};
+
+Telegraph.prototype.queryNode = function(query) {
+  return {
+    query: query,
+    actions: ''
+  };
 };
 
 Telegraph.prototype.getInTree = function(tree, name) {
