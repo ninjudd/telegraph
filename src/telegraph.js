@@ -202,8 +202,6 @@ Telegraph.prototype.deleteFirst = function(array, pred) {
 Telegraph.prototype.dissocTree = function(tree, name) {
   var values  = this.childValues(tree);
   this.deleteFirst(values, function(v) { return v.name == name});
-  console.log(values);
-  console.log(tree);
   return tree;
 };
 
@@ -233,7 +231,14 @@ Telegraph.prototype.assocInTree = function(tree, path, attrs) {
 };
 
 Telegraph.prototype.dissocInTree = function(tree, path) {
-  var subtree = this.getInTree(tree, _.initial(path));
-  this.dissocTree(subtree, _.last(path));
-  return subtree;
+  if (path.length == 0) {
+    return {};
+  } else {
+    var key = _.first(path);
+    var subtree = this.dissocInTree(this.getTree(tree, key), _.rest(path));
+    if (this.childValues(subtree).length == 0) {
+      this.dissocTree(tree, key)
+    }
+    return tree;
+  }
 };
