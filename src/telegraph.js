@@ -1,14 +1,22 @@
-var Telegraph = function () {};
+var Telegraph = function (opts) {
+  this.initialize = function(opts) {
+    this.server      = opts.server;
+    this.queriesPath = opts.queriesPath || 'queries'
+    this.renderPath  = opts.renderPath  || 'render'
+    this.addPath     = opts.addPath     || 'add'
+  }
+  this.initialize(opts);
+};
 
 Telegraph.prototype.getData = function(targets, opts) {
-  var t = _.map(targets, function(t) {
+  var targetParams = _.map(targets, function(t) {
     return "target=" + t.query
   }).join('&');
 
   var self = this;
   var data;
   $.ajax({
-    url: opts.url + "?" + t,
+    url: "http://" + this.server + "/" + this.renderPath + "?" + targetParams,
     data: {
       from:   opts.from,
       until:  opts.until,
@@ -22,17 +30,17 @@ Telegraph.prototype.getData = function(targets, opts) {
   return data;
 };
 
-Telegraph.prototype.getQueries = function(opts) {
+Telegraph.prototype.getQueries = function() {
   var self = this;
   var tree = {name: 'Queries'};
   $.ajax({
-    url: opts.url,
+    url: "http://" + this.server + "/" + this.queriesPath,
     async: false,
     success: function(queries) {
       _.each(queries, function(queryGroup, groupName) {
         var subTree = self.getTree(tree, groupName);
         _.each(queryGroup, function(query, name) {
-          self.assocInTree(subTree, name, {query: query, actions: opts.actions});
+          self.assocInTree(subTree, name, {query: query, actions: ""});
         });
       });
     }
@@ -65,26 +73,25 @@ Telegraph.prototype.addQuery = function(opts) {
     var $submit = $("#query-submit");
     $submit.attr("disabled", true);
     var postData = {
-        type:   opts.type,
-        name:   opts.name,
-        query:  opts.query,
-        format: "json"
+      type:   opts.type,
+      name:   opts.name,
+      query:  opts.query,
+      format: "json"
     };
     if (opts.replaySince) {
-        postData["replay-since"] = opts.replaySince;
+      postData["replay-since"] = opts.replaySince;
     }
 
-    // console.log(postData);
     $.ajax({
-        url: opts.url,
-        type: "POST",
-        data: postData,
-        async: true,
-        success: function(d){
-            console.log(d);
-            $submit.attr("disabled", false);
-        },
-        dataType: "text"
+      url: "http://" + this.server + "/" + this.addPath,
+      type: "POST",
+      data: postData,
+      async: true,
+      success: function(d){
+        console.log(d);
+        $submit.attr("disabled", false);
+      },
+      dataType: "text"
     });
 };
 
