@@ -40,7 +40,7 @@ Telegraph.prototype.getQueries = function() {
     success: function(queries) {
       _.each(queries, function(queryGroup, group) {
         _.each(queryGroup, function(query, name) {
-          var path = [type].concat(self.splitPath(name));
+          var path = [group].concat(self.splitPath(name));
           var opts = {query: query, name: name, group: group};
           tree = self.updateIn(tree, path, _.partial(self.setQuery, opts));
         });
@@ -50,6 +50,10 @@ Telegraph.prototype.getQueries = function() {
 
   return tree;
 };
+
+Telegraph.prototype.getGroups = function() {
+  return _.pluck(this.values(this.queries), 'name');
+}
 
 Telegraph.prototype.listQueries = function(selector) {
   var self = this;
