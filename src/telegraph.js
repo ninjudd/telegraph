@@ -134,7 +134,7 @@ Telegraph.prototype.deleteQuery = function(opts) {
     success: function(d){
       var node = self.getInTree(subtree, path);
 
-      if (self.isLeafNode(node)) {
+      if (self.isLeaf(node)) {
         self.dissocInTree(subtree, path);
       } else {
         node.query   = null;
@@ -166,7 +166,7 @@ Telegraph.prototype.splitPath = function(pathString) {
   return pathString.split(/[\.:]/);
 };
 
-Telegraph.prototype.isLeafNode = function(node) {
+Telegraph.prototype.isLeaf = function(node) {
   return !(node._values || node.values);
 };
 
