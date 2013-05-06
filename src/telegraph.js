@@ -38,10 +38,10 @@ Telegraph.prototype.getQueries = function() {
     url: "http://" + this.server + "/" + this.queriesPath,
     async: false,
     success: function(queries) {
-      _.each(queries, function(queryGroup, type) {
+      _.each(queries, function(queryGroup, group) {
         _.each(queryGroup, function(query, name) {
           var path = [type].concat(self.splitPath(name));
-          var opts = {query: query, name: name, type: type};
+          var opts = {query: query, name: name, group: group};
           tree = self.updateIn(tree, path, _.partial(self.setQuery, opts));
         });
       });
@@ -88,7 +88,7 @@ Telegraph.prototype.addQuery = function(opts) {
   var self = this;
 
   var postData = {
-    type:   opts.type,
+    group:  opts.group,
     name:   opts.name,
     query:  opts.query,
     format: "json"
@@ -97,7 +97,7 @@ Telegraph.prototype.addQuery = function(opts) {
     postData["replay-since"] = opts.replaySince;
   }
 
-  var path = [opts.type].concat(this.splitPath(opts.name));
+  var path = [opts.group].concat(this.splitPath(opts.name));
 
   $.ajax({
     url: "http://" + this.server + "/" + this.addPath,
@@ -118,13 +118,13 @@ Telegraph.prototype.addQuery = function(opts) {
 Telegraph.prototype.deleteQuery = function(opts) {
   var self = this;
 
-  var path = [opts.type].concat(self.splitPath(opts.name));
+  var path = [opts.group].concat(self.splitPath(opts.name));
 
   $.ajax({
     url: "http://" + this.server + "/" + this.deletePath,
     type: "POST",
     data: {
-      type:   opts.type,
+      group:  opts.group,
       name:   opts.name,
       format: "json"
     },
@@ -197,7 +197,7 @@ Telegraph.prototype.dissoc = function(tree, name) {
 
 Telegraph.prototype.setQuery = function(opts, obj) {
   return _.extend(obj || {}, {
-    opts:    {name: opts.name, type: opts.type},
+    opts:    {name: opts.name, group: opts.group},
     query:   opts.query,
     deleter: opts.query ? 'delete' : null
   });
