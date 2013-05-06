@@ -39,10 +39,10 @@ Telegraph.prototype.getQueries = function() {
     async: false,
     success: function(queries) {
       _.each(queries, function(queryGroup, type) {
-        var subTree = self.getTree(tree, type);
         _.each(queryGroup, function(query, name) {
-          var path = self.splitPath(name);
-          self.assocInTree(subTree, path, self.queryNode({query: query, name: name, type: type}));
+          var path = [type].concat(self.splitPath(name));
+          var opts = {query: query, name: name, type: type};
+          tree = self.updateIn(tree, path, _.partial(self.setQuery, opts));
         });
       });
     }
@@ -54,9 +54,9 @@ Telegraph.prototype.getQueries = function() {
 Telegraph.prototype.listQueries = function(selector) {
   var self = this;
 
-  this.queryData = this.getQueries();
-  this.queryList = nv.models.indentedTree().tableClass('table table-striped') //for bootstrap styling
-  this.queryList.columns([
+  this.queries = this.getQueries();
+  this.queryTree = nv.models.indentedTree().tableClass('table table-striped') //for bootstrap styling
+  this.queryTree.columns([
     { key: 'name',
       label: 'Name',
       type: 'text',
@@ -78,9 +78,9 @@ Telegraph.prototype.listQueries = function(selector) {
 
   nv.addGraph(function() {
     d3.select(selector)
-      .datum([self.queryData])
-      .call(self.queryList);
-    return self.queryList;
+      .datum([self.queries])
+      .call(self.queryTree);
+    return self.queryTree;
   });
 };
 
@@ -97,8 +97,7 @@ Telegraph.prototype.addQuery = function(opts) {
     postData["replay-since"] = opts.replaySince;
   }
 
-  var subtree = self.getTree(self.queryData, opts.type);
-  var path    = self.splitPath(opts.name);
+  var path = [opts.type].concat(this.splitPath(opts.name));
 
   $.ajax({
     url: "http://" + this.server + "/" + this.addPath,
@@ -106,8 +105,8 @@ Telegraph.prototype.addQuery = function(opts) {
     data: postData,
     async: true,
     success: function(d) {
-      self.assocInTree(subtree, path, self.queryNode(opts));
-      self.queryList.update();
+      self.queries = self.updateIn(self.queries, path, _.partial(self.setQuery, opts));
+      self.queryTree.update();
       if (opts.success) {
         opts.success(d);
       }
@@ -119,8 +118,7 @@ Telegraph.prototype.addQuery = function(opts) {
 Telegraph.prototype.deleteQuery = function(opts) {
   var self = this;
 
-  var subtree = self.getTree(self.queryData, opts.type);
-  var path    = self.splitPath(opts.name);
+  var path = [opts.type].concat(self.splitPath(opts.name));
 
   $.ajax({
     url: "http://" + this.server + "/" + this.deletePath,
@@ -132,15 +130,14 @@ Telegraph.prototype.deleteQuery = function(opts) {
     },
     async: true,
     success: function(d){
-      var node = self.getInTree(subtree, path);
+      var node = self.getIn(self.queries, path);
 
       if (self.isLeaf(node)) {
-        self.dissocInTree(subtree, path);
+        self.queries = self.dissocIn(self.queries, path);
       } else {
-        node.query   = null;
-        node.deleter = null;
+        self.queries = self.updateIn(self.queries, path, _.partial(self.setQuery, {}));
       }
-      self.queryList.update();
+      self.queryTree.update();
 
       if (opts.success) {
         opts.success(d);
@@ -166,79 +163,78 @@ Telegraph.prototype.splitPath = function(pathString) {
   return pathString.split(/[\.:]/);
 };
 
+Telegraph.prototype.values = function(node) {
+  if (node) {
+    return node.values || node._values || [];
+  } else {
+    return [];
+  }
+};
+
 Telegraph.prototype.isLeaf = function(node) {
-  return !(node._values || node.values);
+  return this.values(node).length == 0;
 };
 
-Telegraph.prototype.childValues = function(node) {
-  var values = node._values || node.values;
-  if (!values) {
-    node._values = values = [];
-  }
-  return values;
+Telegraph.prototype.assocValues = function(node, values) {
+  var valuesKey = (node && node.values) ? 'values' : '_values'
+  return _.extend(node || {}, _.object([[valuesKey, values]]));
 };
 
-Telegraph.prototype.getTree = function(tree, name) {
-  var values  = this.childValues(tree);
-  var subtree = _.find(values, function(v) { return v.name == name});
-  if (!subtree) {
-    subtree = {name: name};
-    values.push(subtree);
-  }
-  return subtree;
+Telegraph.prototype.get = function(tree, name) {
+  return _.find(this.values(tree), function(v) { return v.name == name});
 };
 
-Telegraph.prototype.deleteFirst = function(array, pred) {
-  var i = 0, l = array.length;
-  for (; i < l; i++) {
-    if (pred(array[i])) break;
-  }
-  var rest = array.slice(i + 1);
-  array.length = i;
-
-  return array.push.apply(array, rest);
+Telegraph.prototype.assoc = function(tree, name, obj) {
+  var values = _.reject(this.values(tree), function(v) { return v.name == name});
+  values = values.concat([_.extend(obj || {}, {name: name})]);
+  return this.assocValues(tree, values);
 };
 
-Telegraph.prototype.dissocTree = function(tree, name) {
-  var values  = this.childValues(tree);
-  this.deleteFirst(values, function(v) { return v.name == name});
-  return tree;
+Telegraph.prototype.dissoc = function(tree, name) {
+  var values = _.reject(this.values(tree), function(v) { return v.name == name});
+  return this.assocValues(tree, values);
 };
 
-Telegraph.prototype.queryNode = function(opts) {
-  return {
+Telegraph.prototype.setQuery = function(opts, obj) {
+  return _.extend(obj || {}, {
     opts:    {name: opts.name, type: opts.type},
     query:   opts.query,
-    deleter: 'delete'
-  };
-};
-
-Telegraph.prototype.getInTree = function(tree, path) {
-  var self = this;
-  var subtree = tree;
-  _.each(path, function(subname) {
-    subtree = self.getTree(subtree, subname);
+    deleter: opts.query ? 'delete' : null
   });
-  return subtree;
 };
 
-Telegraph.prototype.assocInTree = function(tree, path, attrs) {
-  var subtree = this.getInTree(tree, path);
-  _.each(attrs, function(v, k) {
-    subtree[k] = v;
-  });
-  return subtree;
+Telegraph.prototype.getIn = function(tree, path) {
+  if (path.length == 0) {
+    return tree;
+  } else {
+    return this.getIn(this.get(tree, _.first(path)), _.rest(path));
+  }
+}
+
+Telegraph.prototype.assocIn = function(tree, path, obj) {
+  if (path.length == 0) {
+    return obj;
+  } else {
+    var key = _.first(path);
+    var subtree = this.assocIn(this.get(tree, key), _.rest(path), obj);
+    return this.assoc(tree, key, subtree);
+  }
 };
 
-Telegraph.prototype.dissocInTree = function(tree, path) {
+Telegraph.prototype.dissocIn = function(tree, path) {
   if (path.length == 0) {
     return {};
   } else {
     var key = _.first(path);
-    var subtree = this.dissocInTree(this.getTree(tree, key), _.rest(path));
-    if (this.childValues(subtree).length == 0) {
-      this.dissocTree(tree, key)
+    var subtree = this.dissocIn(this.get(tree, key), _.rest(path));
+    if (this.isLeaf(subtree) && !subtree.query) {
+      return this.dissoc(tree, key);
+    } else {
+      return this.assoc(tree, key, subtree);
     }
-    return tree;
   }
+};
+
+Telegraph.prototype.updateIn = function(tree, path, f) {
+  return this.assocIn(tree, path, f(this.getIn(tree, path) || null));
 };
