@@ -7,6 +7,7 @@ var Telegraph = function (opts) {
     this.testPath    = opts.testPath    || 'test-query';
     this.removePath  = opts.removePath  || 'remove-query';
     this.groupKey    = opts.groupKey    || 'type';
+    this.queryKey    = opts.queryKey    || 'query';
   }
   this.initialize(opts);
 };
@@ -101,7 +102,7 @@ Telegraph.prototype.listQueries = function(selector) {
 Telegraph.prototype.addQuery = function(opts, success) {
   var self  = this;
   var group = opts[this.groupKey];
-  var query = opts.query;
+  var query = opts[this.queryKey];
   var name  = opts.name;
   var path  = [group].concat(this.splitPath(name));
 
