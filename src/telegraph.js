@@ -118,15 +118,21 @@ Telegraph.prototype.addQuery = function(opts, success) {
   });
 };
 
-Telegraph.prototype.testQuery = function(opts, success) {
-  $.ajax({
-    url: "http://" + this.server + "/" + this.testPath,
-    type: 'post',
-    data: opts,
-    success: function(d) {
-      if (success) success(d);
-    }
-  });
+Telegraph.prototype.testQuery = function(opts, progress, done) {
+  var xhr = new XMLHttpRequest();
+  var params = _.map(opts, function(v,k) {return k + "=" + v}).join("&");
+  var url = "http://" + this.server + "/" + this.testPath + "?" + params;
+
+  xhr.open('GET', url, true);
+  xhr.send(null);
+
+  var timer;
+  timer = window.setInterval(function() {
+    progress(xhr.responseText);
+    if (xhr.readyState == XMLHttpRequest.DONE) done();
+    if (xhr.readyState != XMLHttpRequest.OPENED) window.clearTimeout(timer);
+  }, 1000);
+  return xhr;
 };
 
 Telegraph.prototype.removeQuery = function(opts, success) {
