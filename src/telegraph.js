@@ -9,6 +9,7 @@ var Telegraph = function (opts) {
     this.groupsPath  = opts.groupsPath  || 'types';
     this.groupKey    = opts.groupKey    || 'type';
     this.queryKey    = opts.queryKey    || 'query';
+    this.schemaPath  = opts.schemaPath  || 'schema';
   }
   this.initialize(opts);
 };
@@ -58,23 +59,23 @@ Telegraph.prototype.getQueries = function() {
   return tree;
 };
 
-Telegraph.prototype.getGroups = function() {
-  var groups = [];
+Telegraph.prototype.getSchema = function() {
+  var schema;
   $.ajax({
-    url: "http://" + this.server + "/" + this.groupsPath,
+    url: "http://" + this.server + "/" + this.schemaPath,
     async: false,
     success: function(data) {
-      groups = data;
+      schema = data;
     }
   });
-  return groups;
+  return schema;
 }
 
-Telegraph.prototype.addGroupOpts = function(selector) {
-  var self = this;
+Telegraph.prototype.addOpts = function(field, selector) {
+  var schema = this.getSchema();
   var select = $(selector);
-  _.each(self.getGroups(), function(group, index) {
-    select.append('<option value=' + group + '>' + group + '</option>');
+  _.each(schema[field], function(opt, index) {
+    select.append('<option value=' + opt + '>' + opt + '</option>');
   });
 };
 
