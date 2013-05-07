@@ -130,7 +130,7 @@ Telegraph.prototype.testQuery = function(opts, progress, done) {
     };
   }
 
-  xhr.open('GET', url, true);
+  xhr.open('GET', encodeURI(url), true);
   xhr.send(null);
 
   return xhr;
