@@ -6,6 +6,7 @@ var Telegraph = function (opts) {
     this.addPath     = opts.addPath     || 'add-query';
     this.testPath    = opts.testPath    || 'test-query';
     this.removePath  = opts.removePath  || 'remove-query';
+    this.groupsPath  = opts.groupsPath  || 'types';
     this.groupKey    = opts.groupKey    || 'type';
     this.queryKey    = opts.queryKey    || 'query';
   }
@@ -37,29 +38,41 @@ Telegraph.prototype.getData = function(targets, opts) {
 Telegraph.prototype.getQueries = function() {
   var self = this;
   var tree = {name: 'Queries'};
-  var groups = [];
+
   $.ajax({
     url: "http://" + this.server + "/" + this.queriesPath,
     async: false,
     success: function(queries) {
-      _.each(queries, function(queryGroup, group) {
-        groups.push(group);
-        _.each(queryGroup, function(query, name) {
-          var path = [group].concat(self.splitPath(name));
-          tree = self.updateIn(tree, path, self.nodeWriter(query, name, group));
-        });
+      _.each(queries, function(q) {
+        var group = q[self.groupKey];
+        var query = q[self.queryKey];
+        var name  = q.name;
+        var path  = [group].concat(self.splitPath(name));
+        tree = self.updateIn(tree, path, self.nodeWriter(query, name, group));
       });
     }
   });
-  tree.groups = groups;
 
   return tree;
 };
 
+Telegraph.prototype.getGroups = function() {
+  var groups = [];
+  console.log("http://" + this.server + "/" + this.groupsPath)
+  $.ajax({
+    url: "http://" + this.server + "/" + this.groupsPath,
+    async: false,
+    success: function(data) {
+      groups = data;
+    }
+  });
+  return groups;
+}
+
 Telegraph.prototype.addGroupOpts = function(selector) {
   var self = this;
   var select = $(selector);
-  _.each(self.queries.groups, function(group, index) {
+  _.each(self.getGroups(), function(group, index) {
     select.append('<option value=' + group + '>' + group + '</option>');
   });
 };
