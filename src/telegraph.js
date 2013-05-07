@@ -58,7 +58,6 @@ Telegraph.prototype.getQueries = function() {
 
 Telegraph.prototype.getGroups = function() {
   var groups = [];
-  console.log("http://" + this.server + "/" + this.groupsPath)
   $.ajax({
     url: "http://" + this.server + "/" + this.groupsPath,
     async: false,
