@@ -97,7 +97,7 @@ Telegraph.prototype.listQueries = function(selector) {
   });
 };
 
-Telegraph.prototype.addQuery = function(opts) {
+Telegraph.prototype.addQuery = function(opts, success) {
   var self  = this;
   var group = opts[this.groupKey];
   var query = opts.query;
@@ -112,15 +112,13 @@ Telegraph.prototype.addQuery = function(opts) {
     success: function(d) {
       self.queries = self.updateIn(self.queries, path, self.nodeWriter(query, name, group));
       self.queryTree.update();
-      if (opts.success) {
-        opts.success(d);
-      }
+      if (success) success(d);
     },
     dataType: "text"
   });
 };
 
-Telegraph.prototype.removeQuery = function(opts) {
+Telegraph.prototype.removeQuery = function(opts, success) {
   var self  = this;
   var group = opts[this.groupKey];
   var path  = [group].concat(self.splitPath(opts.name));
@@ -140,9 +138,7 @@ Telegraph.prototype.removeQuery = function(opts) {
       }
       self.queryTree.update();
 
-      if (opts.success) {
-        opts.success(d);
-      }
+      if (success) opts.success(d);
     },
     dataType: "text"
   });
