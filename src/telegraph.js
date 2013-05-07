@@ -58,11 +58,9 @@ Telegraph.prototype.getQueries = function() {
 
 Telegraph.prototype.addGroupOpts = function(selector) {
   var self = this;
-  $(document).ready(function() {
-    var select = $(selector);
-    _.each(self.queries.groups, function(group, index) {
-      select.append('<option value=' + group + '>' + group + '</option>');
-    });
+  var select = $(selector);
+  _.each(self.queries.groups, function(group, index) {
+    select.append('<option value=' + group + '>' + group + '</option>');
   });
 };
 
