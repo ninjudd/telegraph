@@ -13,22 +13,24 @@ var Telegraph = function (opts) {
   this.initialize(opts);
 };
 
-Telegraph.prototype.getData = function(targets, opts) {
+Telegraph.prototype.renderUrl = function(targets) {
   var targetParams = _.map(targets, function(t) {
     return "target=" + t.query
   }).join('&');
+  return "http://" + this.server + "/" + this.renderPath + "?" + targetParams;
+};
 
+Telegraph.prototype.getData = function(targets, opts) {
   var self = this;
   var data;
   $.ajax({
-    url: "http://" + this.server + "/" + this.renderPath + "?" + targetParams,
+    url: this.renderUrl(targets),
     data: {
-      from:   opts.from,
-      until:  opts.until,
-      format: "json"
+      from:  opts.from,
+      until: opts.until
     },
     async: false,
-    success: function(d){
+    success: function(d) {
       data = self.toD3Friendly(targets, d);
     }
   });
