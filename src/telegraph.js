@@ -123,15 +123,16 @@ Telegraph.prototype.testQuery = function(opts, progress, done) {
   var params = _.map(opts, function(v,k) {return k + "=" + v}).join("&");
   var url = "http://" + this.server + "/" + this.testPath + "?" + params;
 
+  xhr.onreadystatechange = function() {
+    if (xhr.responseText.length > 0) progress(xhr.responseText);
+    if (xhr.readyState == XMLHttpRequest.DONE && done) {
+      done();
+    };
+  }
+
   xhr.open('GET', url, true);
   xhr.send(null);
 
-  var timer;
-  timer = window.setInterval(function() {
-    progress(xhr.responseText);
-    if (xhr.readyState == XMLHttpRequest.DONE) done();
-    if (xhr.readyState != XMLHttpRequest.OPENED) window.clearTimeout(timer);
-  }, 1000);
   return xhr;
 };
 
