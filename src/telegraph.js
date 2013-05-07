@@ -35,11 +35,13 @@ Telegraph.prototype.getData = function(targets, opts) {
 Telegraph.prototype.getQueries = function() {
   var self = this;
   var tree = {name: 'Queries'};
+  var groups = [];
   $.ajax({
     url: "http://" + this.server + "/" + this.queriesPath,
     async: false,
     success: function(queries) {
       _.each(queries, function(queryGroup, group) {
+        groups.push(group);
         _.each(queryGroup, function(query, name) {
           var path = [group].concat(self.splitPath(name));
           tree = self.updateIn(tree, path, self.nodeWriter(query, name, group));
@@ -47,13 +49,17 @@ Telegraph.prototype.getQueries = function() {
       });
     }
   });
+  tree.groups = groups;
 
   return tree;
 };
 
-Telegraph.prototype.getGroups = function() {
-  return _.pluck(this.values(this.queries), 'name');
-}
+Telegraph.prototype.addGroupOpts = function(selector) {
+  var select = $(selector);
+  _.each(this.queries.groups, function(group, index) {
+    select.append('<option value=' + group + '>' + group + '</option>');
+  });
+};
 
 Telegraph.prototype.listQueries = function(selector) {
   var self = this;
