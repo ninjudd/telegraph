@@ -4,6 +4,7 @@ var Telegraph = function (opts) {
     this.queriesPath = opts.queriesPath || 'queries';
     this.renderPath  = opts.renderPath  || 'render';
     this.addPath     = opts.addPath     || 'add-query';
+    this.testPath    = opts.testPath    || 'test-query';
     this.removePath  = opts.removePath  || 'remove-query';
     this.groupKey    = opts.groupKey    || 'type';
   }
@@ -115,6 +116,17 @@ Telegraph.prototype.addQuery = function(opts, success) {
       if (success) success(d);
     },
     dataType: "text"
+  });
+};
+
+Telegraph.prototype.testQuery = function(opts, success) {
+  $.ajax({
+    url: "http://" + this.server + "/" + this.testPath,
+    type: 'post',
+    data: opts,
+    success: function(d) {
+      if (success) success(d);
+    }
   });
 };
 
