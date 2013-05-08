@@ -6,9 +6,6 @@ var Telegraph = function (opts) {
     this.addPath     = opts.addPath     || 'add-query';
     this.testPath    = opts.testPath    || 'test-query';
     this.removePath  = opts.removePath  || 'remove-query';
-    this.groupsPath  = opts.groupsPath  || 'types';
-    this.groupKey    = opts.groupKey    || 'type';
-    this.queryKey    = opts.queryKey    || 'query';
     this.schemaPath  = opts.schemaPath  || 'schema';
   }
   this.initialize(opts);
@@ -40,18 +37,15 @@ Telegraph.prototype.getData = function(targets, opts) {
 
 Telegraph.prototype.getQueries = function() {
   var self = this;
-  var tree = {name: 'Queries'};
+  var tree = {name: 'Queries', values: []};
 
   $.ajax({
     url: "http://" + this.server + "/" + this.queriesPath,
     async: false,
     success: function(queries) {
-      _.each(queries, function(q) {
-        var group = q[self.groupKey];
-        var query = q[self.queryKey];
-        var name  = q.name;
-        var path  = [group].concat(self.splitPath(name));
-        tree = self.updateIn(tree, path, self.nodeWriter(query, name, group));
+      _.each(queries, function(opts) {
+        var path = self.path(opts);
+        tree = self.updateIn(tree, path, self.nodeWriter(opts));
       });
     }
   });
@@ -79,9 +73,10 @@ Telegraph.prototype.addOpts = function(field, selector) {
   });
 };
 
-Telegraph.prototype.listQueries = function(selector) {
+Telegraph.prototype.addTree = function(selector) {
   var self = this;
 
+  this.treeSelector = selector;
   this.queries = this.getQueries();
   this.queryTree = nv.models.indentedTree().tableClass('table table-striped') //for bootstrap styling
   this.queryTree.columns([
@@ -89,19 +84,30 @@ Telegraph.prototype.listQueries = function(selector) {
       label: 'Name',
       type: 'text',
       showCount: true,
+      classes: function(d) {
+        console.log(d);
+      },
       width: '40%' },
     { key: 'query',
       label: 'Query',
       type: 'text',
       width: '50%' },
-    { key: 'remover',
+    { key: 'view',
+      label: '',
+      classes: 'clickable',
+      click: function(d) {
+        self.viewQuery(d.opts);
+      },
+      type: 'text',
+      width: '5%' },
+    { key: 'remove',
       label: '',
       classes: 'clickable',
       click: function (d) {
         self.removeQuery(d.opts);
       },
       type: 'text',
-      width: '10%' }
+      width: '5%' }
   ])
 
   nv.addGraph(function() {
@@ -114,10 +120,9 @@ Telegraph.prototype.listQueries = function(selector) {
 
 Telegraph.prototype.addQuery = function(opts, success) {
   var self  = this;
-  var group = opts[this.groupKey];
-  var query = opts[this.queryKey];
+  var query = opts.query;
   var name  = opts.name;
-  var path  = [group].concat(this.splitPath(name));
+  var path  = this.path(opts);
 
   $.ajax({
     url: "http://" + this.server + "/" + this.addPath,
@@ -125,8 +130,8 @@ Telegraph.prototype.addQuery = function(opts, success) {
     data: opts,
     async: true,
     success: function(d) {
-      self.queries = self.updateIn(self.queries, path, self.nodeWriter(query, name, group));
-      self.queryTree.update();
+      self.queries = self.updateIn(self.queries, path, self.nodeWriter(opts));
+      this.queryTree.update();
       if (success) success(d);
     },
     dataType: "text"
@@ -152,9 +157,8 @@ Telegraph.prototype.testQuery = function(opts, progress, done) {
 };
 
 Telegraph.prototype.removeQuery = function(opts, success) {
-  var self  = this;
-  var group = opts[this.groupKey];
-  var path  = [group].concat(self.splitPath(opts.name));
+  var self = this;
+  var path = self.path(opts);
 
   $.ajax({
     url: "http://" + this.server + "/" + this.removePath,
@@ -169,9 +173,8 @@ Telegraph.prototype.removeQuery = function(opts, success) {
       } else {
         self.queries = self.updateIn(self.queries, path, self.nodeWriter());
       }
-      self.queryTree.update();
-
-      if (success) opts.success(d);
+      this.queryTree.update();
+      if (success) success(d);
     },
     dataType: "text"
   });
@@ -189,8 +192,10 @@ Telegraph.prototype.toD3Friendly = function(targets, rawData) {
   return data;
 };
 
-Telegraph.prototype.splitPath = function(pathString) {
-  return pathString.split(/[\.:]/);
+Telegraph.prototype.path = function(opts) {
+  var path = opts.name.split(/[\.:]/);
+  if (opts.type) path.unshift(opts.type);
+  return path;
 };
 
 Telegraph.prototype.values = function(node) {
@@ -225,15 +230,15 @@ Telegraph.prototype.dissoc = function(tree, name) {
   return this.assocValues(tree, values);
 };
 
-Telegraph.prototype.nodeWriter = function(query, name, group) {
-  var opts = {name: name};
-  opts[this.groupKey] = group;
-
+Telegraph.prototype.nodeWriter = function(opts) {
+  opts = opts || {};
+  var query = opts.query;
   return function(obj) {
     return _.extend(obj || {}, {
-      opts:    opts,
-      query:   query,
-      remover: query ? 'remove' : null
+      opts:   opts,
+      query:  query,
+      view:   query ? 'view'   : null,
+      remove: query ? 'remove' : null
     });
   };
 };
