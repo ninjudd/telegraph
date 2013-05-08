@@ -131,7 +131,7 @@ Telegraph.prototype.addQuery = function(opts, success) {
     async: true,
     success: function(d) {
       self.queries = self.updateIn(self.queries, path, self.nodeWriter(opts));
-      this.queryTree.update();
+      self.queryTree.update();
       if (success) success(d);
     },
     dataType: "text"
@@ -173,7 +173,7 @@ Telegraph.prototype.removeQuery = function(opts, success) {
       } else {
         self.queries = self.updateIn(self.queries, path, self.nodeWriter());
       }
-      this.queryTree.update();
+      self.queryTree.update();
       if (success) success(d);
     },
     dataType: "text"
