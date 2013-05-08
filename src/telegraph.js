@@ -91,21 +91,19 @@ Telegraph.prototype.addTree = function(selector) {
     { key: 'query',
       label: 'Query',
       type: 'text',
+      classes: function(d) { return d.query ? 'clickable' : 'hide' },
+      click:   function(d) { if (self.clickQuery) self.clickQuery(d) },
       width: '50%' },
     { key: 'view',
       label: '',
-      classes: 'clickable',
-      click: function(d) {
-        self.viewQuery(d.opts);
-      },
+      classes: function(d) { return d.view ? 'clickable' : 'hide' },
+      click:   function(d) { self.viewQuery(d.opts) },
       type: 'text',
       width: '5%' },
     { key: 'remove',
       label: '',
-      classes: 'clickable',
-      click: function (d) {
-        self.removeQuery(d.opts);
-      },
+      classes: function(d) { return d.remove ? 'clickable' : 'hide' },
+      click:   function(d) { self.removeQuery(d.opts) },
       type: 'text',
       width: '5%' }
   ])
