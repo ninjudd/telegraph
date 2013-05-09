@@ -83,9 +83,6 @@ Telegraph.prototype.addTree = function(selector, type) {
       label: 'Name',
       type: 'text',
       showCount: true,
-      classes: function(d) {
-        console.log(d);
-      },
       width: '40%' },
     { key: 'query',
       label: 'Query',
