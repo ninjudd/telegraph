@@ -114,7 +114,7 @@ Telegraph.prototype.addTree = function(selector, type) {
 
 Telegraph.prototype.selectTree = function(type) {
   this.queryData[0] = this.queries[type];
-  this.queryTree.update();
+  if (this.queryTree.update) this.queryTree.update();
 }
 
 Telegraph.prototype.addQuery = function(opts, success) {
