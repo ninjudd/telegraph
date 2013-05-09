@@ -12,18 +12,20 @@ var Telegraph = function (opts) {
   this.fetchQueries();
 };
 
-Telegraph.prototype.renderUrl = function(targets) {
+Telegraph.prototype.renderUrl = function(targets, type) {
   var targetParams = _.map(targets, function(t) {
     return "target=" + t.query
   }).join('&');
-  return "http://" + this.server + "/" + this.renderPath + "?" + targetParams;
+  var url = "http://" + this.server;
+  if (type) url = url + '/' + type;
+  return url + '/' + this.renderPath + "?" + targetParams;
 };
 
 Telegraph.prototype.getData = function(targets, opts) {
   var self = this;
   var data;
   $.ajax({
-    url: this.renderUrl(targets),
+    url: this.renderUrl(targets, opts.type),
     data: {
       from:  opts.from,
       until: opts.until
