@@ -14,7 +14,7 @@ var Telegraph = function (opts) {
 
 Telegraph.prototype.renderUrl = function(targets, type) {
   var targetParams = _.map(targets, function(t) {
-    return "target=" + t.query
+    return "target=" + encodeURIComponent(t.query)
   }).join('&');
   var url = "http://" + this.server;
   if (type) url = url + '/' + type;
@@ -138,7 +138,9 @@ Telegraph.prototype.addQuery = function(opts, success) {
 
 Telegraph.prototype.testQuery = function(opts, progress, done) {
   var xhr = new XMLHttpRequest();
-  var params = _.map(opts, function(v,k) {return k + "=" + v}).join("&");
+  var params = _.map(opts, function(v,k) {
+    return k + "=" + encodeURIComponent(v)
+  }).join("&");
   var url = "http://" + this.server + "/" + this.testPath + "?" + params;
 
   xhr.onreadystatechange = function() {
@@ -148,7 +150,7 @@ Telegraph.prototype.testQuery = function(opts, progress, done) {
     };
   }
 
-  xhr.open('GET', encodeURI(url), true);
+  xhr.open('GET', url, true);
   xhr.send(null);
 
   return xhr;
