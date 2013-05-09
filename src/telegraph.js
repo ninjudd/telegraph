@@ -24,6 +24,9 @@ Telegraph.prototype.renderUrl = function(targets, type) {
 Telegraph.prototype.getData = function(targets, opts) {
   var self = this;
   var data;
+
+  if (targets.length == 0) return [];
+
   $.ajax({
     url: this.renderUrl(targets, opts.type),
     data: {
