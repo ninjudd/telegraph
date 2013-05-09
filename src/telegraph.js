@@ -63,12 +63,11 @@ Telegraph.prototype.getSchema = function() {
   return schema;
 }
 
-Telegraph.prototype.addOpts = function(field, selector, defaultField) {
+Telegraph.prototype.addOpts = function(field, selector) {
   var schema = this.getSchema();
   var select = $(selector);
   _.each(schema[field], function(opt, index) {
-    var selected = (opt == defaultField) ? ' selected' : '';
-    select.append('<option value=' + opt + selected + '>' + opt + '</option>');
+    select.append('<option value=' + opt + '>' + opt + '</option>');
   });
 };
 
