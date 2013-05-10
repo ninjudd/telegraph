@@ -213,9 +213,34 @@ Telegraph.prototype.get = function(tree, name) {
   return _.find(this.values(tree), function(v) { return v.name == name});
 };
 
+Telegraph.prototype.findIndex = function(values, pred) {
+  var i = 0;
+  values.every(function(val) {
+    if (pred(val)) {
+      return false;
+    } else {
+      i = i + 1;
+      return true;
+    }
+  });
+  return i;
+};
+
+Telegraph.prototype.assocArray = function(values, idx, val) {
+  var left  = values.slice(0, idx);
+  var right = values.slice(idx + 1);
+  right.unshift(val);
+
+  return left.concat(right);
+};
+
 Telegraph.prototype.assoc = function(tree, name, obj) {
-  var values = _.reject(this.values(tree), function(v) { return v.name == name});
-  values = values.concat([_.extend(obj || {}, {name: name})]);
+  var values = this.values(tree);
+  var i = this.findIndex(values, function(v) { return v.name == name});
+
+  obj    = _.extend(obj || {}, {name: name});
+  values = this.assocArray(values, i, obj);
+
   return this.assocValues(tree, values);
 };
 
