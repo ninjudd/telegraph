@@ -55,24 +55,23 @@ Teleturn.prototype.addTree = function(selector, type) {
   this.queryTree = nv.models.indentedTree().tableClass('table table-striped') //for bootstrap styling
   this.queryTree.columns([
     { key: 'name',
-      label: 'Name',
       type: 'text',
       showCount: true,
-      width: '40%' },
+      width: '20%' },
+    { key: 'target',
+      type: 'text',
+      classes: function(d) { return d.target ? 'target' : 'hide' }},
     { key: 'query',
-      label: 'Query',
       type: 'text',
       classes: function(d) { return d.query ? 'clickable' : 'hide' },
       click:   function(d) { if (self.clickQuery) self.clickQuery(d) },
-      width: '50%' },
+      width: '60%' },
     { key: 'view',
-      label: '',
       classes: function(d) { return d.view ? 'clickable' : 'hide' },
       click:   function(d) { self.viewQuery(d.opts) },
       type: 'text',
       width: '5%' },
     { key: 'remove',
-      label: '',
       classes: function(d) { return d.remove ? 'clickable' : 'hide' },
       click:   function(d) { self.removeQuery(d.opts) },
       type: 'text',
@@ -211,11 +210,14 @@ Teleturn.prototype.dissoc = function(tree, name) {
 
 Teleturn.prototype.nodeWriter = function(opts) {
   opts = opts || {};
-  var query = opts.query;
+
+  var query  = opts.query;
+  var target = opts.target;
   return function(obj) {
     return _.extend(obj || {}, {
       opts:   opts,
       query:  query,
+      target: target,
       view:   query ? 'view'   : null,
       remove: query ? 'remove' : null
     });
