@@ -66,6 +66,9 @@ Teleturn.prototype.addTree = function(selector, type) {
       classes: function(d) { return d.query ? 'clickable' : 'hide' },
       click:   function(d) { if (self.clickQuery) self.clickQuery(d) },
       width: '60%' },
+    { key: 'period',
+      type: 'text',
+      classes: function(d) { return d.period ? 'period' : 'hide' }},
     { key: 'view',
       classes: function(d) { return d.view ? 'clickable' : 'hide' },
       click:   function(d) { self.viewQuery(d.opts) },
@@ -213,11 +216,14 @@ Teleturn.prototype.nodeWriter = function(opts) {
 
   var query  = opts.query;
   var target = opts.target;
+  var period = opts.period;
+
   return function(obj) {
     return _.extend(obj || {}, {
       opts:   opts,
       query:  query,
       target: target,
+      period: period,
       view:   query ? 'view'   : null,
       remove: query ? 'remove' : null
     });
