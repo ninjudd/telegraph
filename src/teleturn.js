@@ -9,6 +9,19 @@ var Teleturn = function (opts) {
   }
   this.initialize(opts);
   this.fetchQueries();
+
+  var resizeTimeout;
+  var resizeQueryTree = function() {
+    $("#query-tree").css({height: $("body").innerHeight() - $("#add-container").outerHeight()})
+  };
+
+  $(document).ready(function() {
+    resizeQueryTree();
+    $(window).resize(function() {
+      if (resizeTimeout) clearTimeout(resizeTimout);
+      resizeTimout = setTimeout(resizeQueryTree, 50);
+    });
+  });
 };
 
 Teleturn.prototype.fetchQueries = function() {
