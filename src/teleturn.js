@@ -60,7 +60,7 @@ Teleturn.prototype.addTree = function(selector, type) {
       width: '300px' },
     { key: 'query',
       type: 'text',
-      classes: function(d) { return d.query ? 'query clickable' : 'hide' },
+      classes: function(d) { return (d.query && self.clickQuery) ? 'query clickable' : 'hide' },
       click:   function(d) { if (self.clickQuery) self.clickQuery(d) },
       width: 'auto' },
     { key: 'period',
