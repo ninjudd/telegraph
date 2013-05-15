@@ -43,6 +43,7 @@ body * {
   height: 20px;
   min-width: 20px;
   margin-top: -5px;
+  margin-bottom: 3px;
   color: gray;
   font-family: monospace;
 }
