@@ -29,12 +29,6 @@ body * {
   width: 49%;
 }
 
-#inspect-progress {
-  float: right;
-  margin: 5px;
-  -webkit-transition: all 200ms;
-}
-
 .ellipsis {
   white-space: nowrap;
   overflow: hidden;
@@ -43,8 +37,12 @@ body * {
 
 #inspect-query {
   float: left;
+}
+
+.inspect-header {
   height: 20px;
-  margin: 0px 5px 5px;
+  min-width: 20px;
+  margin-top: -5px;
   color: gray;
   font-family: monospace;
 }
@@ -59,40 +57,10 @@ body * {
   float: right;
 }
 
-#type {
-  font-family: monospace;
-  width: 23%;
-  height: auto;
-  float: left;
-}
-
-#replay-since {
-  width: 30%;
-  margin-left: 10px;
-  font-family: monospace;
-}
-
 #name {
   width: 75%;
   float: right;
   font-family: monospace;
-}
-
-#target {
-  width: 30%;
-  margin-left: 10px;
-  font-family: monospace;
-}
-
-.target:before {
-  content: "\2192";
-  margin-right: 5px;
-}
-
-#advanced {
-  font-size: 12px;
-  display: inline-block;
-  vertical-align: top;
 }
 
 #query-tree {
