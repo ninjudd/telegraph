@@ -69,9 +69,9 @@ Teleturn.prototype.addTree = function(selector, type) {
     { key: 'target',
       type: 'text',
       classes: function(d) { return d.target ? 'target' : 'hide' }},
-    { key: 'view',
-      classes: function(d) { return d.view ? 'action clickable' : 'hide' },
-      click:   function(d) { self.viewQuery(d.opts) },
+    { key: 'test',
+      classes: function(d) { return (d.test && self.testQuery) ? 'action clickable' : 'hide' },
+      click:   function(d) { if (self.testQuery) self.testQuery(d.opts) },
       type: 'text',
       width: '5%' },
     { key: 'remove',
@@ -224,7 +224,7 @@ Teleturn.prototype.nodeWriter = function(opts) {
       query:  query,
       target: target,
       period: period,
-      view:   query ? 'view'   : null,
+      test:   query ? 'test'   : null,
       remove: query ? 'remove' : null
     });
   };
