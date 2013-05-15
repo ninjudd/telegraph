@@ -70,15 +70,15 @@ Teleturn.prototype.addTree = function(selector, type) {
       type: 'text',
       classes: function(d) { return d.target ? 'target' : 'hide' }},
     { key: 'test',
-      classes: function(d) { return (d.test && self.testQuery) ? 'action clickable' : 'hide' },
+      classes: function(d) { return (d.test && self.testQuery) ? 'btn action' : 'hide' },
       click:   function(d) { if (self.testQuery) self.testQuery(d.opts) },
       type: 'text',
-      width: '5%' },
+      width: '5px' },
     { key: 'remove',
-      classes: function(d) { return d.remove ? 'action clickable' : 'hide' },
+      classes: function(d) { return d.remove ? 'btn action' : 'hide' },
       click:   function(d) { self.removeQuery(d.opts) },
       type: 'text',
-      width: '5%' }
+      width: '5px' }
   ])
 
   nv.addGraph(function() {
@@ -224,8 +224,8 @@ Teleturn.prototype.nodeWriter = function(opts) {
       query:  query,
       target: target,
       period: period,
-      test:   query ? 'test'   : null,
-      remove: query ? 'remove' : null
+      test:   query ? 'Test'   : null,
+      remove: query ? 'Remove' : null
     });
   };
 };
