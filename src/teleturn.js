@@ -3,7 +3,7 @@ var Teleturn = function (opts) {
     this.server      = opts.server;
     this.queriesPath = opts.queriesPath || 'queries';
     this.addPath     = opts.addPath     || 'add-query';
-    this.testPath    = opts.testPath    || 'test-query';
+    this.runPath     = opts.runPath     || 'run-query';
     this.removePath  = opts.removePath  || 'remove-query';
     this.schemaPath  = opts.schemaPath  || 'schema';
   }
@@ -111,12 +111,12 @@ Teleturn.prototype.addQuery = function(opts, success) {
   });
 };
 
-Teleturn.prototype.testQuery = function(opts, progress, done) {
+Teleturn.prototype.runQuery = function(opts, progress, done) {
   var xhr = new XMLHttpRequest();
   var params = _.map(opts, function(v,k) {
     return k + "=" + encodeURIComponent(v)
   }).join("&");
-  var url = "http://" + this.server + "/" + this.testPath + "?" + params;
+  var url = "http://" + this.server + "/" + this.runPath + "?" + params;
 
   xhr.onreadystatechange = function() {
     if (xhr.responseText.length > 0) progress(xhr.responseText);
