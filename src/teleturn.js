@@ -66,6 +66,8 @@ Teleturn.prototype.addTree = function(selector, type) {
   this.queryData = [queries];
   this.treeSelector = selector;
   this.queryTree = nv.models.indentedTree().tableClass('table table-striped') //for bootstrap styling
+  this.queryTree.iconOpen('/teleturn/images/grey-plus.png')
+  this.queryTree.iconClose('/teleturn/images/grey-minus.png')
   this.queryTree.columns([
     { key: 'name',
       type: 'text',
