@@ -1,6 +1,6 @@
 var Teleturn = function (opts) {
   this.initialize = function(opts) {
-    this.server      = opts.server;
+    this.baseUrl     = opts.baseUrl;
     this.queriesPath = opts.queriesPath || 'queries';
     this.addPath     = opts.addPath     || 'add-query';
     this.runPath     = opts.runPath     || 'run-query';
@@ -29,7 +29,7 @@ Teleturn.prototype.fetchQueries = function() {
   this.queries = {}
 
   $.ajax({
-    url: "http://" + this.server + "/" + this.queriesPath,
+    url: this.baseUrl + "/" + this.queriesPath,
     async: false,
     success: function(queries) {
       _.each(queries, function(opts) {
@@ -42,7 +42,7 @@ Teleturn.prototype.fetchQueries = function() {
 Teleturn.prototype.getSchema = function() {
   var schema;
   $.ajax({
-    url: "http://" + this.server + "/" + this.schemaPath,
+    url: this.baseUrl + "/" + this.schemaPath,
     async: false,
     success: function(data) {
       schema = data;
@@ -111,7 +111,7 @@ Teleturn.prototype.addQuery = function(opts, success) {
   var self = this;
 
   $.ajax({
-    url: "http://" + this.server + "/" + this.addPath,
+    url: this.baseUrl + "/" + this.addPath,
     type: "POST",
     data: opts,
     async: true,
@@ -129,7 +129,7 @@ Teleturn.prototype.runQuery = function(opts, progress, done) {
   var params = _.map(opts, function(v,k) {
     return k + "=" + encodeURIComponent(v)
   }).join("&");
-  var url = "http://" + this.server + "/" + this.runPath + "?" + params;
+  var url = this.baseUrl + "/" + this.runPath + "?" + params;
 
   xhr.onreadystatechange = function() {
     if (xhr.responseText.length > 0) progress(xhr.responseText);
@@ -148,7 +148,7 @@ Teleturn.prototype.removeQuery = function(opts, success) {
   var self = this;
 
   $.ajax({
-    url: "http://" + this.server + "/" + this.removePath,
+    url: this.baseUrl + "/" + this.removePath,
     type: "POST",
     data: opts,
     async: true,
