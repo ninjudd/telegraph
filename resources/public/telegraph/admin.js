@@ -1,4 +1,4 @@
-var Teleturn = function (opts) {
+var Admin = function (opts) {
   this.initialize = function(opts) {
     this.baseUrl     = opts.baseUrl;
     this.queriesPath = opts.queriesPath || 'queries';
@@ -24,7 +24,7 @@ var Teleturn = function (opts) {
   });
 };
 
-Teleturn.prototype.fetchQueries = function() {
+Admin.prototype.fetchQueries = function() {
   var self = this;
   this.queries = {}
 
@@ -39,7 +39,7 @@ Teleturn.prototype.fetchQueries = function() {
   });
 };
 
-Teleturn.prototype.getSchema = function() {
+Admin.prototype.getSchema = function() {
   var schema;
   $.ajax({
     url: this.baseUrl + "/" + this.schemaPath,
@@ -51,7 +51,7 @@ Teleturn.prototype.getSchema = function() {
   return schema;
 }
 
-Teleturn.prototype.addOpts = function(field, selector) {
+Admin.prototype.addOpts = function(field, selector) {
   var schema = this.getSchema();
   var select = $(selector);
   _.each(schema[field], function(opt, index) {
@@ -59,15 +59,15 @@ Teleturn.prototype.addOpts = function(field, selector) {
   });
 };
 
-Teleturn.prototype.addTree = function(selector, type) {
+Admin.prototype.addTree = function(selector, type) {
   var self = this;
   var queries = this.queries[type];
 
   this.queryData = [queries];
   this.treeSelector = selector;
   this.queryTree = nv.models.indentedTree().tableClass('table table-striped') //for bootstrap styling
-  this.queryTree.iconOpen('/teleturn/images/grey-plus.png')
-  this.queryTree.iconClose('/teleturn/images/grey-minus.png')
+  this.queryTree.iconOpen('/telegraph/images/grey-plus.png')
+  this.queryTree.iconClose('/telegraph/images/grey-minus.png')
   this.queryTree.columns([
     { key: 'name',
       type: 'text',
@@ -104,12 +104,12 @@ Teleturn.prototype.addTree = function(selector, type) {
   });
 };
 
-Teleturn.prototype.selectTree = function(type) {
+Admin.prototype.selectTree = function(type) {
   this.queryData[0] = this.queries[type];
   if (this.queryTree.update) this.queryTree.update();
 }
 
-Teleturn.prototype.addQuery = function(opts, success) {
+Admin.prototype.addQuery = function(opts, success) {
   var self = this;
 
   $.ajax({
@@ -126,7 +126,7 @@ Teleturn.prototype.addQuery = function(opts, success) {
   });
 };
 
-Teleturn.prototype.runQuery = function(opts, progress, done) {
+Admin.prototype.runQuery = function(opts, progress, done) {
   var xhr = new XMLHttpRequest();
   var params = _.map(opts, function(v,k) {
     return k + "=" + encodeURIComponent(v)
@@ -146,7 +146,7 @@ Teleturn.prototype.runQuery = function(opts, progress, done) {
   return xhr;
 };
 
-Teleturn.prototype.removeQuery = function(opts, success) {
+Admin.prototype.removeQuery = function(opts, success) {
   var self = this;
 
   $.ajax({
@@ -165,11 +165,11 @@ Teleturn.prototype.removeQuery = function(opts, success) {
 
 // Helper functions //
 
-Teleturn.prototype.path = function(opts) {
+Admin.prototype.path = function(opts) {
   return opts.name.split(/[\.:]/);
 };
 
-Teleturn.prototype.values = function(node) {
+Admin.prototype.values = function(node) {
   if (node) {
     return node.values || node._values || [];
   } else {
@@ -177,20 +177,20 @@ Teleturn.prototype.values = function(node) {
   }
 };
 
-Teleturn.prototype.isLeaf = function(node) {
+Admin.prototype.isLeaf = function(node) {
   return this.values(node).length == 0;
 };
 
-Teleturn.prototype.assocValues = function(node, values) {
+Admin.prototype.assocValues = function(node, values) {
   var valuesKey = (node && node.values) ? 'values' : '_values'
   return _.extend(node || {}, _.object([[valuesKey, values]]));
 };
 
-Teleturn.prototype.get = function(tree, name) {
+Admin.prototype.get = function(tree, name) {
   return _.find(this.values(tree), function(v) { return v.name == name});
 };
 
-Teleturn.prototype.findIndex = function(values, pred) {
+Admin.prototype.findIndex = function(values, pred) {
   var i = 0;
   values.every(function(val) {
     if (pred(val)) {
@@ -203,7 +203,7 @@ Teleturn.prototype.findIndex = function(values, pred) {
   return i;
 };
 
-Teleturn.prototype.assocArray = function(values, idx, val) {
+Admin.prototype.assocArray = function(values, idx, val) {
   var left  = values.slice(0, idx);
   var right = values.slice(idx + 1);
   right.unshift(val);
@@ -211,7 +211,7 @@ Teleturn.prototype.assocArray = function(values, idx, val) {
   return left.concat(right);
 };
 
-Teleturn.prototype.assoc = function(tree, name, obj) {
+Admin.prototype.assoc = function(tree, name, obj) {
   var values = this.values(tree);
   var i = this.findIndex(values, function(v) { return v.name == name});
 
@@ -221,12 +221,12 @@ Teleturn.prototype.assoc = function(tree, name, obj) {
   return this.assocValues(tree, values);
 };
 
-Teleturn.prototype.dissoc = function(tree, name) {
+Admin.prototype.dissoc = function(tree, name) {
   var values = _.reject(this.values(tree), function(v) { return v.name == name});
   return this.assocValues(tree, values);
 };
 
-Teleturn.prototype.nodeWriter = function(opts) {
+Admin.prototype.nodeWriter = function(opts) {
   opts = opts || {};
 
   var query  = opts.query;
@@ -245,7 +245,7 @@ Teleturn.prototype.nodeWriter = function(opts) {
   };
 };
 
-Teleturn.prototype.getIn = function(tree, path) {
+Admin.prototype.getIn = function(tree, path) {
   if (path.length == 0) {
     return tree;
   } else {
@@ -253,7 +253,7 @@ Teleturn.prototype.getIn = function(tree, path) {
   }
 }
 
-Teleturn.prototype.assocIn = function(tree, path, obj) {
+Admin.prototype.assocIn = function(tree, path, obj) {
   if (path.length == 0) {
     return obj;
   } else {
@@ -263,7 +263,7 @@ Teleturn.prototype.assocIn = function(tree, path, obj) {
   }
 };
 
-Teleturn.prototype.dissocIn = function(tree, path) {
+Admin.prototype.dissocIn = function(tree, path) {
   if (path.length == 0) {
     return {};
   } else {
@@ -277,18 +277,18 @@ Teleturn.prototype.dissocIn = function(tree, path) {
   }
 };
 
-Teleturn.prototype.updateIn = function(tree, path, f) {
+Admin.prototype.updateIn = function(tree, path, f) {
   return this.assocIn(tree, path, f(this.getIn(tree, path) || null));
 };
 
-Teleturn.prototype.assocQuery = function(opts) {
+Admin.prototype.assocQuery = function(opts) {
   var type = opts.type;
   var tree = this.queries[type] || {values: []};
   var path = this.path(opts);
   this.queries[type] = this.updateIn(tree, path, this.nodeWriter(opts));
 };
 
-Teleturn.prototype.dissocQuery = function(opts) {
+Admin.prototype.dissocQuery = function(opts) {
   var type = opts.type;
   var tree = this.queries[type] || {values: []};
   var path = this.path(opts);
