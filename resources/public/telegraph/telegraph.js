@@ -1,9 +1,37 @@
-var Telegraph = function (opts) {
-  this.initialize = function(opts) {
-    this.from  = opts.from;
-    this.until = opts.until;
-  }
-  this.initialize(opts);
+var Telegraph = function (selector, chart, opts) {
+  this.chart    = chart;
+  this.selector = selector;
+  this.from     = opts.from;
+  this.until    = opts.until;
+
+  var self = this;
+  nv.addGraph(function() {
+    self.svg().datum([])
+        .transition().duration(500)
+        .call(chart);
+    return chart;
+  });
+};
+
+Telegraph.prototype.svg = function() {
+  return d3.select(this.selector).select('svg');
+};
+
+Telegraph.prototype.css = function(opts) {
+  $(this.selector).css(opts);
+};
+
+Telegraph.prototype.update = function(targets) {
+  var self = this;
+  this.fetchData(targets, function(data) {
+    if (data.length == 0) {
+      self.css({opacity: 0})
+    } else {
+      self.svg().datum(data);
+      self.chart.update();
+      setTimeout(function() { self.css({opacity: 1}) }, 500);
+    }
+  });
 };
 
 Telegraph.prototype.fetchData = function(targets, success) {

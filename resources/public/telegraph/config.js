@@ -1,1 +1,2 @@
-var telegraphBaseUrl = "";
+var telegraphBaseUrls = [];
+

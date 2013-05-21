@@ -16,38 +16,20 @@
   <script src="/telegraph/config.js"></script>
 
   <script>
-    window.targets = [];
+    var targets = [];
 
-    nv.addGraph(function() {
-      window.chart = nv.models.lineChart();
-      chart.xAxis.tickFormat(function(d){ return d3.time.format('%X')(new Date(d * 1000)) });
-      chart.yAxis.tickFormat(d3.format('d'));
+    var chart = nv.models.lineChart();
+    chart.xAxis.tickFormat(function(d){ return d3.time.format('%X')(new Date(d * 1000)) });
+    chart.yAxis.tickFormat(d3.format('d'));
 
-      d3.select('.graph svg')
-        .datum([])
-        .transition().duration(500)
-        .call(window.chart);
-
-      return window.chart;
+    var telegraph = new Telegraph(".graph", chart, {
+      from:  $("#from").val()  || "-24h",
+      until: $("#until").val() || "0h"
     });
 
     function redrawChart() {
-      var telegraph = new Telegraph({
-        from:  $("#from").val()  || "-24h",
-        until: $("#until").val() || "0h"
-      });
-
-      telegraph.fetchData(targets, function(data) {
-        if (data.length == 0) {
-          $(".graph").css({opacity: 0})
-        } else {
-          d3.select('.graph svg')
-            .datum(data);
-          window.chart.update();
-          setTimeout(function() { $(".graph").css({opacity: 1}) }, 500);
-        }
-      });
-    }
+      telegraph.update(targets);
+    };
 
     function removeTarget(e) {
       var link = $(this);
@@ -62,12 +44,12 @@
       var query   = $("#query").val();
       var shift   = $("#shift").val();
       var name    = label || _.compact([shift, query]).join(":");
-      var baseUrl = $("#baseUrl").val() || "http://telemetry-001.geni.com:1847/phonograph/render";
+      var baseUrl = $("#baseUrl").val();
 
       targets.push({
         name:     name,
         query:    query,
-        shift:    shift,
+        shift:    shift || '0h',
         baseUrl:  baseUrl
       });
 
@@ -90,6 +72,11 @@
     $(document).ready(function() {
       $("#add").click(addTarget);
       $("#redraw").click(redrawChart);
+
+      var $select = $("#baseUrl");
+      _.each(telegraphBaseUrls, function (base) {
+        $select.append('<option value=' + base.url + '>' + base.label + '</option>');
+      });
     });
   </script>
 </head>
