@@ -32,8 +32,9 @@ Admin.prototype.fetchQueries = function() {
     url: this.baseUrl + "/" + this.queriesPath,
     async: false,
     success: function(queries) {
-      _.each(queries, function(opts) {
-        self.assocQuery(opts);
+      queries = _.sortBy(queries, function(q) {return q.name});
+      _.each(queries, function(q) {
+        self.assocQuery(q);
       });
     }
   });
