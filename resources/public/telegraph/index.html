@@ -16,7 +16,6 @@
   <script src="/telegraph/config.js"></script>
 
   <script>
-    window.telegraph = new Telegraph({baseUrl: telegraphBaseUrl});
     window.targets = [];
 
     nv.addGraph(function() {
@@ -33,46 +32,63 @@
     });
 
     function redrawChart() {
-      var data = telegraph.getData(_.compact(targets), {
-        type:  "phonograph",
+      var telegraph = new Telegraph({
         from:  $("#from").val()  || "-24h",
         until: $("#until").val() || "0h"
       });
 
-      if (data.length == 0) {
-        $(".graph").css({opacity: 0})
-      } else {
-        d3.select('.graph svg')
-          .datum(data);
-        window.chart.update();
-        setTimeout(function() { $(".graph").css({opacity: 1}) }, 500);
-      }
+      telegraph.fetchData(targets, function(data) {
+        if (data.length == 0) {
+          $(".graph").css({opacity: 0})
+        } else {
+          d3.select('.graph svg')
+            .datum(data);
+          window.chart.update();
+          setTimeout(function() { $(".graph").css({opacity: 1}) }, 500);
+        }
+      });
     }
 
     function removeTarget(e) {
       var link = $(this);
       link.parents("tr").remove();
-      targets[link.attr("target_id")] = null;
+      targets[link.attr("targetId")] = null;
       redrawChart();
     };
 
-    $(document).ready(function() {
-      $("#add").click(function(e) {
-        var query = $("#query").val();
-        var name  = $("#name").val() || query;
-        var target_id = targets.length;
+    function addTarget(e) {
+      var id      = targets.length;
+      var label   = $("#label").val();
+      var query   = $("#query").val();
+      var shift   = $("#shift").val();
+      var name    = label || _.compact([shift, query]).join(":");
+      var baseUrl = $("#baseUrl").val() || "http://telemetry-001.geni.com:1847/phonograph/render";
 
-        targets.push({name: name, query: query, target_id: target_id});
-
-        var queryLink  = $("<a/>", {text: query})
-        var removeLink = $("<a/>", {text: "remove", target_id: target_id}).on("click", removeTarget);
-        var row = $("<tr/>").append($("<td/>", {text: name}))
-                            .append($("<td/>").html(queryLink))
-                            .append($("<td/>").html(removeLink));
-        $(".targets").append(row);
-
-        redrawChart();
+      targets.push({
+        name:     name,
+        query:    query,
+        shift:    shift,
+        baseUrl:  baseUrl
       });
+
+      var queryLink  = $("<a/>", {text: query}).on("click", function() {
+        $("#label").val(label);
+        $("#query").val(query);
+        $("#baseUrl").val(baseUrl);
+        $("#shift").val(shift);
+      });
+      var removeLink = $("<a/>", {text: "remove", targetId: id}).on("click", removeTarget);
+      var row = $("<tr/>").append($("<td/>", {text: name}))
+                          .append($("<td/>").html(queryLink))
+                          .append($("<td/>", {text: shift}))
+                          .append($("<td/>").html(removeLink));
+      $(".targets").append(row);
+
+      redrawChart();
+    }
+
+    $(document).ready(function() {
+      $("#add").click(addTarget);
     });
   </script>
 </head>
@@ -80,21 +96,24 @@
 <body>
   <div id="add-container">
     <form>
-      <input type="text" id="name" placeholder="Query Name">
+      <select id="baseUrl"></select>
+      <input type="text" id="label" placeholder="Query Name">
       <textarea id="query"></textarea>
-      <input type="text" id="from" placeholder="-24h">
-      <input type="text" id="until" placeholder="">
-
-      <div id="buttons">
-        <button type="button" id="add" class="button">Add</button>
-      </div>
+      <input type="text" id="shift" placeholder="timeshift">
+      <button type="button" id="add" class="button">Add</button>
     </form>
   </div>
   <div id="list-container">
     <table class="targets table table-striped">
     </table>
   </div>
+
   <div id="graph-container">
+    <form>
+      <input type="text" id="from" placeholder="-24h">
+      <input type="text" id="until" placeholder="">
+      <button type="button" id="redraw" class="button">Redraw</button>
+    </form>
     <div class="chart graph">
       <svg></svg>
     </div>

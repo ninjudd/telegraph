@@ -1,46 +1,57 @@
 var Telegraph = function (opts) {
   this.initialize = function(opts) {
-    this.baseUrl     = opts.baseUrl;
-    this.renderPath  = opts.renderPath  || 'render';
+    this.from  = opts.from;
+    this.until = opts.until;
   }
   this.initialize(opts);
 };
 
-Telegraph.prototype.renderUrl = function(targets, type) {
-  var targetParams = _.map(targets, function(t) {
+Telegraph.prototype.fetchData = function(targets, success) {
+  var self = this;
+  var data = [];
+
+  targets = _.compact(targets);
+  var targetGroups = _.groupBy(targets, function(target, index) {
+    target.index = index;
+    return [target.baseUrl, target.shift]
+  });
+
+  var promises = _.map(targetGroups, function(targets) {
+    return self.getData(data, targets);
+  });
+
+  $.when.apply($, promises).then(function (e) {
+    success(data);
+  });
+};
+
+Telegraph.prototype.getData = function(data, targets) {
+  if (targets.length == 0) return;
+
+  var opts = {
+    from:  this.from,
+    until: this.until,
+    shift: targets[0].shift
+  };
+
+  var url = targets[0].baseUrl + "?" + _.map(targets, function(t) {
     return "target=" + encodeURIComponent(t.query)
   }).join('&');
-  var url = this.baseUrl;
-  if (type) url = url + '/' + type;
-  return url + '/' + this.renderPath + "?" + targetParams;
-};
 
-Telegraph.prototype.getData = function(targets, opts) {
-  var self = this;
-  var data;
-
-  if (targets.length == 0) return [];
-
-  $.ajax({
-    url: this.renderUrl(targets, opts.type),
-    data: {
-      from:  opts.from,
-      until: opts.until
-    },
-    async: false,
-    success: function(d) {
-      data = self.toD3Friendly(targets, d);
+  return $.ajax({
+    url: url,
+    data: opts,
+    success: function(rawData) {
+      _.each(rawData, function(val, i) {
+        var datapoints = _.map(val.datapoints, function(d) {
+          return { x: d[1] || 0, y: d[0] || 0 }
+        });
+        var target = targets[i];
+        data[target.index] = {
+          key: target.name || val.target,
+          values: datapoints
+        };
+      });
     }
   });
-  return data;
-};
-
-Telegraph.prototype.toD3Friendly = function(targets, rawData) {
-  var data = [];
-  _.each(rawData, function(obj, idx) {
-    var dps = _.map(obj.datapoints, function(obj){ return { x: obj[1] || 0, y: obj[0] || 0 } });
-    var d = { key: targets[idx].name || obj.target, values: dps };
-    data.push(d);
-  });
-  return data;
 };
