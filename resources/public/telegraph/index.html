@@ -27,8 +27,8 @@
       if (chart.yAxis2) chart.yAxis2.tickFormat(d3.format('d'));
 
       var telegraph = new Telegraph(".graph", chart, {
-        from:  $("#from").val()  || "-24h",
-        until: $("#until").val() || "0h"
+        from:  $("#from").val(),
+        until: $("#until").val()
       });
 
       telegraph.draw(targets);
@@ -55,7 +55,7 @@
       targets.push({
         name:     name,
         query:    query,
-        shift:    shift || '0h',
+        shift:    shift,
         baseUrl:  baseUrl,
         bar:      bar,
         type:     type,
