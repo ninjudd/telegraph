@@ -3,13 +3,18 @@ var Telegraph = function (selector, chart, opts) {
   this.selector = selector;
   this.from     = opts.from;
   this.until    = opts.until;
+  this.targets  = opts.targets;
 
   var self = this;
-  nv.addGraph(function() {
-    self.svg().datum([])
-        .transition().duration(500)
-        .call(chart);
-    return chart;
+  this.fetchData(this.targets, function(data) {
+    if (data.length > 0) {
+      nv.addGraph(function() {
+        self.svg().datum(data)
+            .transition().duration(500)
+            .call(self.chart);
+        return self.chart;
+      });
+    }
   });
 };
 
@@ -21,17 +26,11 @@ Telegraph.prototype.css = function(opts) {
   $(this.selector).css(opts);
 };
 
-Telegraph.prototype.draw = function(targets) {
+Telegraph.prototype.update = function() {
   var self = this;
-  this.fetchData(targets, function(data) {
-    if (data.length == 0) {
-      self.css({opacity: 0})
-    } else {
-      self.svg().text("");
-      self.svg().datum(data);
-      self.chart.update();
-      setTimeout(function() { self.css({opacity: 1}) }, 500);
-    }
+  this.fetchData(this.targets, function(data) {
+    self.svg().datum(data);
+    self.chart.update();
   });
 };
 

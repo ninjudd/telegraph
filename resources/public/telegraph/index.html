@@ -17,8 +17,11 @@
 
   <script>
     var targets = [];
+    var telegraph;
 
     function redrawChart() {
+      $(".graph svg").text("");
+
       var chartType = $("#chart").val();
       var chart = nv.models[chartType]();
       chart.xAxis.tickFormat(function(d){ return d3.time.format('%X')(new Date(d * 1000)) });
@@ -26,12 +29,17 @@
       if (chart.yAxis1) chart.yAxis1.tickFormat(d3.format('d'));
       if (chart.yAxis2) chart.yAxis2.tickFormat(d3.format('d'));
 
-      var telegraph = new Telegraph(".graph", chart, {
+      telegraph = new Telegraph(".graph", chart, {
         from:  $("#from").val(),
-        until: $("#until").val()
+        until: $("#until").val(),
+        targets: targets
       });
 
-      telegraph.draw(targets);
+      displayChartOptions();
+    };
+
+    function updateChart() {
+      telegraph.update();
     };
 
     function removeTarget(e) {
@@ -71,29 +79,34 @@
         $("#type").val(type);
         $("#yAxis").val(yAxis);
       });
-      var removeLink = $("<a/>", {text: "remove", targetId: id}).on("click", removeTarget);
-      var row = $("<tr/>").append($("<td/>", {text: name}))
+      var removeLink = $("<span/>", {class: "btn", text: "Remove", targetId: id}).on("click", removeTarget);
+      var row = $("<tr/>").append($("<td/>", {text: label}))
                           .append($("<td/>").html(queryLink))
+                          .append($("<td/>", {class: "multi", text: type}))
+                          .append($("<td/>", {class: "multi"}).html(yAxis == 1 ? "&larr;" : "&rarr;"))
+                          .append($("<td/>", {class: "line-plus-bar", text: bar || "line"}))
                           .append($("<td/>", {text: shift}))
                           .append($("<td/>").html(removeLink));
       $(".targets").append(row);
-
       redrawChart();
     };
 
     function display(selector, show) {
-      show ? $(selector).css({display: "inline"}) : $(selector).hide();
+      show ? $(selector).removeClass("hidden") : $(selector).addClass("hidden");
+    };
+
+    function displayChartOptions() {
+      var chart = $("#chart").val();
+      display(".multi", chart == "multiChart");
+      display(".line-plus-bar", chart == "linePlusBarChart");
     };
 
     $(document).ready(function() {
       $("#add").click(addTarget);
-      $("#redraw").click(redrawChart);
-
-      $("#chart").on("change", function() {
-        var type = $(this).val();
-        display("#multi", type == "multiChart");
-        display("#line-plus-bar", type == "linePlusBarChart");
-      });
+      $("#refresh").click(updateChart);
+      $("#from").on("change", redrawChart);
+      $("#until").on("change", redrawChart);
+      $("#chart").on("change", redrawChart);
 
       var $select = $("#baseUrl");
       _.each(telegraphBaseUrls, function (base) {
@@ -106,16 +119,16 @@
 <body>
   <div id="add-container">
     <select id="baseUrl"></select>
-    <input type="text" id="label" placeholder="Query Name">
+    <input type="text" id="label" placeholder="label">
     <textarea id="query"></textarea>
     <input type="text" id="shift" placeholder="timeshift">
-    <span id="line-plus-bar">
+    <span class="line-plus-bar hidden">
       <select id="bar">
         <option value="">line</option>
         <option value="bar">bar</option>
       </select>
     </span>
-    <span id="multi">
+    <span class="multi hidden">
       <select id="type">
         <option value="line">line</option>
         <option value="bar">bar</option>
@@ -144,7 +157,9 @@
         <option value="lineWithFocusChart">line with viewfinder</option>
         <option value="cumulativeLineChart">cumulative line</option>
       </select>
-      <span id="redraw" class="btn">Redraw</span>
+      <span id="refresh" class="clickable">
+        <img id="refresh-icon" src="/telegraph/images/refresh.gif">
+      </span>
       <table class="targets table table-striped">
       </table>
     </div>
