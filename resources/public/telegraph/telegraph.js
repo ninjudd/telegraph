@@ -21,12 +21,13 @@ Telegraph.prototype.css = function(opts) {
   $(this.selector).css(opts);
 };
 
-Telegraph.prototype.update = function(targets) {
+Telegraph.prototype.draw = function(targets) {
   var self = this;
   this.fetchData(targets, function(data) {
     if (data.length == 0) {
       self.css({opacity: 0})
     } else {
+      self.svg().text("");
       self.svg().datum(data);
       self.chart.update();
       setTimeout(function() { self.css({opacity: 1}) }, 500);
@@ -76,8 +77,11 @@ Telegraph.prototype.getData = function(data, targets) {
         });
         var target = targets[i];
         data[target.index] = {
-          key: target.name || val.target,
-          values: datapoints
+          key:    target.name || val.target,
+          values: datapoints,
+          bar:    target.bar,
+          type:   target.type,
+          yAxis:  target.yAxis
         };
       });
     }
