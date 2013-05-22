@@ -2,7 +2,7 @@
 <title>Telegraph Graph Editor</title>
 
 <head>
-  <link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css">
+  <link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css">
   <link rel="stylesheet" type="text/css" href="/telegraph/lib/nv.d3.css">
   <link rel="stylesheet" type="text/css" href="/telegraph/style.css">
 
@@ -16,62 +16,101 @@
   <script src="/telegraph/config.js"></script>
 
   <script>
-    window.telegraph = new Telegraph({baseUrl: telegraphBaseUrl});
-    window.targets = [];
-
-    nv.addGraph(function() {
-      window.chart = nv.models.lineChart();
-      chart.xAxis.tickFormat(function(d){ return d3.time.format('%X')(new Date(d * 1000)) });
-      chart.yAxis.tickFormat(d3.format('d'));
-
-      d3.select('.graph svg')
-        .datum([])
-        .transition().duration(500)
-        .call(window.chart);
-
-      return window.chart;
-    });
+    var targets = [];
+    var telegraph;
 
     function redrawChart() {
-      var data = telegraph.getData(_.compact(targets), {
-        type:  "phonograph",
-        from:  $("#from").val()  || "-24h",
-        until: $("#until").val() || "0h"
+      $(".graph svg").text("");
+
+      var chartType = $("#chart").val();
+      var chart = nv.models[chartType]();
+      chart.xAxis.tickFormat(function(d){ return d3.time.format('%X')(new Date(d * 1000)) });
+      if (chart.yAxis)  chart.yAxis.tickFormat(d3.format('d'));
+      if (chart.yAxis1) chart.yAxis1.tickFormat(d3.format('d'));
+      if (chart.yAxis2) chart.yAxis2.tickFormat(d3.format('d'));
+
+      telegraph = new Telegraph(".graph", chart, {
+        from:  $("#from").val(),
+        until: $("#until").val(),
+        targets: targets
       });
 
-      if (data.length == 0) {
-        $(".graph").css({opacity: 0})
-      } else {
-        d3.select('.graph svg')
-          .datum(data);
-        window.chart.update();
-        setTimeout(function() { $(".graph").css({opacity: 1}) }, 500);
-      }
-    }
+      displayChartOptions();
+    };
+
+    function updateChart() {
+      telegraph.update();
+    };
 
     function removeTarget(e) {
       var link = $(this);
       link.parents("tr").remove();
-      targets[link.attr("target_id")] = null;
+      targets[link.attr("targetId")] = null;
       redrawChart();
     };
 
+    function addTarget(e) {
+      var id      = targets.length;
+      var label   = $("#label").val();
+      var query   = $("#query").val();
+      var shift   = $("#shift").val();
+      var name    = label || _.compact([shift, query]).join(":");
+      var baseUrl = $("#baseUrl").val();
+      var bar     = $("#bar").val();
+      var type    = $("#type").val();
+      var yAxis   = $("#yAxis").val();
+
+      targets.push({
+        name:     name,
+        query:    query,
+        shift:    shift,
+        baseUrl:  baseUrl,
+        bar:      bar,
+        type:     type,
+        yAxis:    yAxis
+      });
+
+      var queryLink  = $("<a/>", {text: query}).on("click", function() {
+        $("#label").val(label);
+        $("#query").val(query);
+        $("#baseUrl").val(baseUrl);
+        $("#shift").val(shift);
+        $("#bar").val(bar);
+        $("#type").val(type);
+        $("#yAxis").val(yAxis);
+      });
+      var removeLink = $("<span/>", {class: "btn", text: "Remove", targetId: id}).on("click", removeTarget);
+      var row = $("<tr/>").append($("<td/>", {text: label}))
+                          .append($("<td/>").html(queryLink))
+                          .append($("<td/>", {class: "multi", text: type}))
+                          .append($("<td/>", {class: "multi"}).html(yAxis == 1 ? "&larr;" : "&rarr;"))
+                          .append($("<td/>", {class: "line-plus-bar", text: bar || "line"}))
+                          .append($("<td/>", {text: shift}))
+                          .append($("<td/>").html(removeLink));
+      $(".targets").append(row);
+      redrawChart();
+    };
+
+    function display(selector, show) {
+      show ? $(selector).removeClass("hidden") : $(selector).addClass("hidden");
+    };
+
+    function displayChartOptions() {
+      var chart = $("#chart").val();
+      display(".multi", chart == "multiChart");
+      display(".line-plus-bar", chart == "linePlusBarChart");
+    };
+
     $(document).ready(function() {
-      $("#add").click(function(e) {
-        var query = $("#query").val();
-        var name  = $("#name").val() || query;
-        var target_id = targets.length;
+      $("#add").click(addTarget);
+      $("#refresh").click(updateChart);
+      $("#from").on("change", redrawChart);
+      $("#until").on("change", redrawChart);
+      $("#chart").on("change", redrawChart);
 
-        targets.push({name: name, query: query, target_id: target_id});
-
-        var queryLink  = $("<a/>", {text: query})
-        var removeLink = $("<a/>", {text: "remove", target_id: target_id}).on("click", removeTarget);
-        var row = $("<tr/>").append($("<td/>", {text: name}))
-                            .append($("<td/>").html(queryLink))
-                            .append($("<td/>").html(removeLink));
-        $(".targets").append(row);
-
-        redrawChart();
+      var $select = $("#baseUrl");
+      _.each(telegraphBaseUrls, function (base) {
+        $select.append('<option value=' + base.url + '>' + base.label + '</option>');
       });
     });
   </script>
@@ -79,21 +118,53 @@
 
 <body>
   <div id="add-container">
-    <form>
-      <input type="text" id="name" placeholder="Query Name">
-      <textarea id="query"></textarea>
+    <select id="baseUrl"></select>
+    <input type="text" id="label" placeholder="label">
+    <textarea id="query"></textarea>
+    <input type="text" id="shift" placeholder="timeshift">
+    <span class="line-plus-bar hidden">
+      <select id="bar">
+        <option value="">line</option>
+        <option value="bar">bar</option>
+      </select>
+    </span>
+    <span class="multi hidden">
+      <select id="type">
+        <option value="line">line</option>
+        <option value="bar">bar</option>
+        <option value="area">area</option>
+      </select>
+      <select id="yAxis">
+        <option value="1">left</option>
+        <option value="2">right</option>
+      </select>
+    </span>
+    <div id="buttons">
+      <span id="add" class="btn">Add</span>
+    </div>
+  </div>
+
+  <div id="list-container">
+    <div id="graph-options">
       <input type="text" id="from" placeholder="-24h">
       <input type="text" id="until" placeholder="">
+      <select id="chart">
+        <option value="lineChart">line</option>
+        <option value="stackedAreaChart">stacked area</option>
+        <option value="multiBarChart">multi bar</option>
+        <option value="linePlusBarChart">line plus bar</option>
+        <option value="multiChart">multi</option>
+        <option value="lineWithFocusChart">line with viewfinder</option>
+        <option value="cumulativeLineChart">cumulative line</option>
+      </select>
+      <span id="refresh" class="clickable">
+        <img id="refresh-icon" src="/telegraph/images/refresh.gif">
+      </span>
+      <table class="targets table table-striped">
+      </table>
+    </div>
+  </div>
 
-      <div id="buttons">
-        <button type="button" id="add" class="button">Add</button>
-      </div>
-    </form>
-  </div>
-  <div id="list-container">
-    <table class="targets table table-striped">
-    </table>
-  </div>
   <div id="graph-container">
     <div class="chart graph">
       <svg></svg>

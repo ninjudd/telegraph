@@ -21,25 +21,21 @@ body * {
 #graph-container {
   margin-top: 20px;
   float: left;
-  width: 100%;
+  width: 95%;
   height: 450px;
 }
 
 .targets {
-  margin-top: 30px;
-}
-
-.targets tr td:first-child {
-  width: 180px;
+  margin-top: 10px;
 }
 
 .targets tr td:nth-child(2) {
   font-family: monospace;
 }
 
-.graph {
-  opacity: 0;
-  -webkit-transition: all 0.5s;
+#baseUrl {
+  height: auto;
+  font-family: monospace;
 }
 
 #query {
@@ -48,6 +44,54 @@ body * {
   font-family: monospace;
 }
 
+#shift {
+  font-family: monospace;
+}
+
 #buttons {
   float: right;
+}
+
+#type {
+  width: 80px;
+  height: auto;
+  font-family: monospace;
+}
+
+#from {
+  font-family: monospace;
+}
+
+#until {
+  font-family: monospace;
+}
+
+#chart {
+  height: auto;
+  font-family: monospace;
+}
+
+#bar {
+  height: auto;
+  width: 80px;
+  font-family: monospace;
+}
+
+#yAxis {
+  height: auto;
+  width: 80px;
+  font-family: monospace;
+}
+
+#refresh:hover {
+  cursor: pointer;
+}
+
+#refresh-icon {
+  margin-bottom: 10px;
+}
+
+.btn {
+  padding: 0px 8px;
+  margin-bottom: 10px;
 }

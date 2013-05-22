@@ -54,9 +54,9 @@ Admin.prototype.getSchema = function() {
 
 Admin.prototype.addOpts = function(field, selector) {
   var schema = this.getSchema();
-  var select = $(selector);
+  var $select = $(selector);
   _.each(schema[field], function(opt, index) {
-    select.append('<option value=' + opt + '>' + opt + '</option>');
+    $select.append('<option value=' + opt + '>' + opt + '</option>');
   });
 };
 

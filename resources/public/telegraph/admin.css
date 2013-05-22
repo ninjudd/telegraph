@@ -26,6 +26,7 @@ body * {
 #inspect-container {
   float: right;
   height: 300px;
+  position: relative;
   width: 49%;
 }
 
@@ -36,7 +37,9 @@ body * {
 }
 
 #inspect-query {
-  float: left;
+  position: absolute;
+  right: 150px;
+  left: 0;
 }
 
 .inspect-header {
@@ -50,8 +53,13 @@ body * {
 
 #inspect-results {
   width: 100%;
-  height: 260px;
+  height: 265px;
   font-family: monospace;
+  color: gray;
+  overflow: scroll;
+  float: left;
+  margin-top: 5px;
+  padding: 5px
 }
 
 #buttons {
