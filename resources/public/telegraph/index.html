@@ -43,47 +43,29 @@
       redrawChart();
     };
 
-    function addTarget(e) {
-      var id      = targets.length;
-      var label   = $("#label").val();
-      var query   = $("#query").val();
-      var shift   = $("#shift").val();
-      var name    = label || _.compact([shift, query]).join(":");
-      var baseUrl = $("#baseUrl").val();
-      var bar     = $("#bar").val();
-      var type    = $("#type").val();
-      var yAxis   = $("#yAxis").val();
+    function addTarget(target) {
+      var id = targets.length;
+      targets.push(target);
 
-      targets.push({
-        name:     name,
-        query:    query,
-        shift:    shift,
-        baseUrl:  baseUrl,
-        bar:      bar,
-        type:     type,
-        yAxis:    yAxis
-      });
-
-      var queryLink  = $("<a/>", {text: query}).on("click", function() {
-        $("#label").val(label);
-        $("#query").val(query);
-        $("#baseUrl").val(baseUrl);
-        $("#shift").val(shift);
-        $("#bar").val(bar);
-        $("#type").val(type);
-        $("#yAxis").val(yAxis);
+      var queryLink  = $("<a/>", {text: target.query}).on("click", function() {
+        $("#label").val(target.label);
+        $("#query").val(target.query);
+        $("#baseUrl").val(target.baseUrl);
+        $("#shift").val(target.shift);
+        $("#bar").val(target.bar);
+        $("#type").val(target.type);
+        $("#yAxis").val(target.yAxis);
       });
       var removeIcon = $("<img/>", {src: "/telegraph/images/x.gif"});
       var removeLink = $("<span/>", {id: "remove", targetId: id}).html(removeIcon).on("click", removeTarget);
-      var row = $("<tr/>").append($("<td/>", {text: label}))
+      var row = $("<tr/>").append($("<td/>", {text: target.label}))
                           .append($("<td/>").html(queryLink))
-                          .append($("<td/>", {class: "multi", text: type}))
-                          .append($("<td/>", {class: "multi"}).html(yAxis == 1 ? "&larr;" : "&rarr;"))
-                          .append($("<td/>", {class: "line-plus-bar", text: bar || "line"}))
-                          .append($("<td/>", {text: shift}))
+                          .append($("<td/>", {class: "multi", text: target.type}))
+                          .append($("<td/>", {class: "multi"}).html(target.yAxis == 1 ? "&larr;" : "&rarr;"))
+                          .append($("<td/>", {class: "line-plus-bar", text: target.bar || "line"}))
+                          .append($("<td/>", {text: target.shift}))
                           .append($("<td/>").html(removeLink));
       $(".targets").append(row);
-      redrawChart();
     };
 
     function display(selector, show) {
@@ -97,7 +79,19 @@
     };
 
     $(document).ready(function() {
-      $("#add").click(addTarget);
+      $("#add").click(function() {
+        addTarget({
+          label:    $("#label").val(),
+          query:    $("#query").val(),
+          shift:    $("#shift").val(),
+          baseUrl:  $("#baseUrl").val(),
+          bar:      $("#bar").val(),
+          type:     $("#type").val(),
+          yAxis:    $("#yAxis").val()
+        });
+        redrawChart();
+      });
+
       $("#refresh").click(updateChart);
       $("#from").on("change", redrawChart);
       $("#until").on("change", redrawChart);
