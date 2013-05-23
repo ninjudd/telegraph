@@ -1,6 +1,7 @@
 var Telegraph = function (selector, opts) {
   this.selector  = selector;
   this.chartType = opts.chart;
+  this.chart     = this.makeChart(this.chartType);
   this.from      = opts.from;
   this.until     = opts.until;
   this.targets   = opts.targets;
@@ -8,15 +9,13 @@ var Telegraph = function (selector, opts) {
 
   var self = this;
   this.fetchData(this.targets, function(data) {
-    if (data.length > 0) {
-      nv.addGraph(function() {
-        var chart = self.chart();
-        self.svg().datum(data)
-            .transition().duration(500)
-            .call(chart);
-        return chart;
-      });
-    }
+    nv.addGraph(function() {
+      self.svg().datum(data)
+          .transition().duration(500)
+          .call(self.chart);
+      nv.utils.windowResize(self.chart.update);
+      return self.chart;
+    });
   });
 };
 
@@ -36,8 +35,8 @@ Telegraph.prototype.hasVariables = function() {
   return _.some(this.targets, function(t) { return self.queryHasVariables(t.query) });
 };
 
-Telegraph.prototype.chart = function() {
-  var chart = nv.models[this.chartType]();
+Telegraph.prototype.makeChart = function(chartType) {
+  var chart = nv.models[chartType]();
   chart.xAxis.tickFormat(function(d){ return d3.time.format('%X')(new Date(d * 1000)) });
   if (chart.yAxis)  chart.yAxis.tickFormat(d3.format('d'));
   if (chart.yAxis1) chart.yAxis1.tickFormat(d3.format('d'));
@@ -61,7 +60,7 @@ Telegraph.prototype.update = function() {
   });
 };
 
-Telegraph.prototype.fetchData = function(targets, success) {
+Telegraph.prototype.fetchData = function(targets, callback) {
   var self = this;
   var data = [];
 
@@ -75,8 +74,8 @@ Telegraph.prototype.fetchData = function(targets, success) {
     return self.getData(data, targets);
   });
 
-  $.when.apply($, promises).then(function (e) {
-    success(data);
+  $.when.apply($, promises).always(function (e) {
+    callback(data);
   });
 };
 
