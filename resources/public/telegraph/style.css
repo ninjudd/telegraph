@@ -38,6 +38,15 @@ body * {
   padding: 0px 5px;
 }
 
+.graph {
+  top: 230px;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  position: absolute;
+  padding-right: 10px;
+}
+
 #baseUrl {
   height: auto;
   font-family: monospace;
