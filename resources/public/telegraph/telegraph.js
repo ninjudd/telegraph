@@ -27,8 +27,13 @@ Telegraph.prototype.subVariables = function(target) {
   }, target);
 };
 
+Telegraph.prototype.queryHasVariables = function(query) {
+  return query.match(/\$/);
+};
+
 Telegraph.prototype.hasVariables = function() {
-  return _.some(this.targets, function(t) { return t.query.match(/\$/) });
+  var self = this;
+  return _.some(this.targets, function(t) { return self.queryHasVariables(t.query) });
 };
 
 Telegraph.prototype.chart = function() {
@@ -86,9 +91,10 @@ Telegraph.prototype.getData = function(data, targets) {
     shift: targets[0].shift
   };
 
-  var url = targets[0].baseUrl + "?" + _.map(targets, function(t) {
-    return "target=" + encodeURIComponent(self.subVariables(t.query))
-  }).join('&');
+  var url = targets[0].baseUrl + "?" + _.compact(_.map(targets, function(t) {
+    var query = self.subVariables(t.query);
+    if (!self.queryHasVariables(query)) return "target=" + encodeURIComponent(query);
+  })).join('&');
 
   return $.ajax({
     url: url,
