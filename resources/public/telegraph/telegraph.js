@@ -1,21 +1,31 @@
-var Telegraph = function (selector, chart, opts) {
-  this.chart    = chart;
-  this.selector = selector;
-  this.from     = opts.from;
-  this.until    = opts.until;
-  this.targets  = opts.targets;
+var Telegraph = function (selector, opts) {
+  this.selector  = selector;
+  this.chartType = opts.chart;
+  this.from      = opts.from;
+  this.until     = opts.until;
+  this.targets   = opts.targets;
 
   var self = this;
   this.fetchData(this.targets, function(data) {
     if (data.length > 0) {
       nv.addGraph(function() {
+        var chart = self.chart();
         self.svg().datum(data)
             .transition().duration(500)
-            .call(self.chart);
-        return self.chart;
+            .call(chart);
+        return chart;
       });
     }
   });
+};
+
+Telegraph.prototype.chart = function() {
+  var chart = nv.models[this.chartType]();
+  chart.xAxis.tickFormat(function(d){ return d3.time.format('%X')(new Date(d * 1000)) });
+  if (chart.yAxis)  chart.yAxis.tickFormat(d3.format('d'));
+  if (chart.yAxis1) chart.yAxis1.tickFormat(d3.format('d'));
+  if (chart.yAxis2) chart.yAxis2.tickFormat(d3.format('d'));
+  return chart;
 };
 
 Telegraph.prototype.svg = function() {

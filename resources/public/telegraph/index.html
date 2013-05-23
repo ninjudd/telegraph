@@ -22,16 +22,10 @@
     function redrawChart() {
       $(".graph svg").text("");
 
-      var chartType = $("#chart").val();
-      var chart = nv.models[chartType]();
-      chart.xAxis.tickFormat(function(d){ return d3.time.format('%X')(new Date(d * 1000)) });
-      if (chart.yAxis)  chart.yAxis.tickFormat(d3.format('d'));
-      if (chart.yAxis1) chart.yAxis1.tickFormat(d3.format('d'));
-      if (chart.yAxis2) chart.yAxis2.tickFormat(d3.format('d'));
-
-      telegraph = new Telegraph(".graph", chart, {
+      telegraph = new Telegraph(".graph", {
         from:  $("#from").val(),
         until: $("#until").val(),
+        chart: $("#chart").val(),
         targets: targets
       });
 
@@ -108,6 +102,10 @@
       $("#from").on("change", redrawChart);
       $("#until").on("change", redrawChart);
       $("#chart").on("change", redrawChart);
+
+      $("#save").click(function() {
+        console.log(telegraph);
+      });
 
       var $select = $("#baseUrl");
       _.each(telegraphBaseUrls, function (base) {
