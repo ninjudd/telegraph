@@ -4,6 +4,7 @@ var Telegraph = function (selector, opts) {
   this.from      = opts.from;
   this.until     = opts.until;
   this.targets   = opts.targets;
+  this.variables = opts.variables;
 
   var self = this;
   this.fetchData(this.targets, function(data) {
@@ -17,6 +18,13 @@ var Telegraph = function (selector, opts) {
       });
     }
   });
+};
+
+Telegraph.prototype.subVariables = function(target) {
+  return _.reduce(this.variables, function (target, value, key) {
+    var pattern = new RegExp("\\$" + key, 'g');
+    return target.replace(pattern, value);
+  }, target);
 };
 
 Telegraph.prototype.chart = function() {
@@ -64,6 +72,8 @@ Telegraph.prototype.fetchData = function(targets, success) {
 };
 
 Telegraph.prototype.getData = function(data, targets) {
+  var self = this;
+
   if (targets.length == 0) return;
 
   var opts = {
@@ -73,7 +83,7 @@ Telegraph.prototype.getData = function(data, targets) {
   };
 
   var url = targets[0].baseUrl + "?" + _.map(targets, function(t) {
-    return "target=" + encodeURIComponent(t.query)
+    return "target=" + encodeURIComponent(self.subVariables(t.query))
   }).join('&');
 
   return $.ajax({

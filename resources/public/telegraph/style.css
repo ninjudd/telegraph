@@ -71,6 +71,12 @@ body * {
   font-family: monospace;
 }
 
+#variables {
+  width: 200px;
+  display: none;
+  font-family: monospace;
+}
+
 #chart {
   height: auto;
   font-family: monospace;

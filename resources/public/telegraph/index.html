@@ -22,11 +22,14 @@
     function redrawChart() {
       $(".graph svg").text("");
 
+      var variables = $("#variables").val();
+
       telegraph = new Telegraph(".graph", {
         from:  $("#from").val(),
         until: $("#until").val(),
         chart: $("#chart").val(),
-        targets: targets
+        targets: targets,
+        variables: variables ? JSON.parse(variables) : null
       });
 
       displayChartOptions();
@@ -72,10 +75,16 @@
       show ? $(selector).removeClass("hidden") : $(selector).addClass("hidden");
     };
 
+    function hasVariables() {
+      return _.some(targets, function(t) { return t.query.match(/\$/) });
+    };
+
     function displayChartOptions() {
       var chart = $("#chart").val();
       display(".multi", chart == "multiChart");
       display(".line-plus-bar", chart == "linePlusBarChart");
+
+      hasVariables() ? $("#variables").show() : $("#variables").hide();
     };
 
     $(document).ready(function() {
@@ -96,6 +105,7 @@
       $("#from").on("change", redrawChart);
       $("#until").on("change", redrawChart);
       $("#chart").on("change", redrawChart);
+      $("#variables").on("change", redrawChart);
 
       $("#save").click(function() {
         console.log(telegraph);
@@ -159,6 +169,8 @@
 
       <table class="targets table table-striped">
       </table>
+
+      <textarea id="variables"></textarea>
     </div>
   </div>
 
