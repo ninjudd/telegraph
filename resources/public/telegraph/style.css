@@ -51,6 +51,7 @@ body * {
 
 #shift {
   font-family: monospace;
+  width: 100px;
 }
 
 #buttons {
