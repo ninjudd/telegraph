@@ -65,10 +65,12 @@ body * {
 
 #from {
   font-family: monospace;
+  width: 100px;
 }
 
 #until {
   font-family: monospace;
+  width: 100px;
 }
 
 #variables {
