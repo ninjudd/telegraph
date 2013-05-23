@@ -33,6 +33,11 @@ body * {
   font-family: monospace;
 }
 
+.targets tr td {
+  vertical-align: middle;
+  padding: 0px 5px;
+}
+
 #baseUrl {
   height: auto;
   font-family: monospace;
@@ -88,7 +93,17 @@ body * {
 }
 
 #refresh-icon {
+  margin-left: 5px;
   margin-bottom: 10px;
+}
+
+#remove {
+  padding: 5px;
+  float: right;
+}
+
+#remove:hover {
+  cursor: pointer;
 }
 
 .btn {

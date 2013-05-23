@@ -79,7 +79,8 @@
         $("#type").val(type);
         $("#yAxis").val(yAxis);
       });
-      var removeLink = $("<span/>", {class: "btn", text: "Remove", targetId: id}).on("click", removeTarget);
+      var removeIcon = $("<img/>", {src: "/telegraph/images/x.gif"});
+      var removeLink = $("<span/>", {id: "remove", targetId: id}).html(removeIcon).on("click", removeTarget);
       var row = $("<tr/>").append($("<td/>", {text: label}))
                           .append($("<td/>").html(queryLink))
                           .append($("<td/>", {class: "multi", text: type}))
@@ -157,9 +158,13 @@
         <option value="lineWithFocusChart">line with viewfinder</option>
         <option value="cumulativeLineChart">cumulative line</option>
       </select>
-      <span id="refresh" class="clickable">
+      <span id="refresh">
         <img id="refresh-icon" src="/telegraph/images/refresh.gif">
       </span>
+      <div id="buttons">
+        <span id="save" class="btn">Save</span>
+      </div>
+
       <table class="targets table table-striped">
       </table>
     </div>
