@@ -102,10 +102,10 @@
       });
 
       $("#refresh").click(updateChart);
-      $("#from").on("change", redrawChart);
-      $("#until").on("change", redrawChart);
-      $("#chart").on("change", redrawChart);
-      $("#variables").on("change", redrawChart);
+      $("#from").change(redrawChart);
+      $("#until").change(redrawChart);
+      $("#chart").change(redrawChart);
+      $("#variables").change(redrawChart);
 
       $("#save").click(function() {
         console.log(telegraph);
