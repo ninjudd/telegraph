@@ -32,6 +32,8 @@
         variables: variables ? JSON.parse(variables) : null
       });
 
+      telegraph.hasVariables() ? $("#variables").show() : $("#variables").hide();
+
       displayChartOptions();
     };
 
@@ -75,16 +77,10 @@
       show ? $(selector).removeClass("hidden") : $(selector).addClass("hidden");
     };
 
-    function hasVariables() {
-      return _.some(targets, function(t) { return t.query.match(/\$/) });
-    };
-
     function displayChartOptions() {
       var chart = $("#chart").val();
       display(".multi", chart == "multiChart");
       display(".line-plus-bar", chart == "linePlusBarChart");
-
-      hasVariables() ? $("#variables").show() : $("#variables").hide();
     };
 
     $(document).ready(function() {

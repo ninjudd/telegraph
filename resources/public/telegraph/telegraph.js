@@ -27,6 +27,10 @@ Telegraph.prototype.subVariables = function(target) {
   }, target);
 };
 
+Telegraph.prototype.hasVariables = function() {
+  return _.some(this.targets, function(t) { return t.query.match(/\$/) });
+};
+
 Telegraph.prototype.chart = function() {
   var chart = nv.models[this.chartType]();
   chart.xAxis.tickFormat(function(d){ return d3.time.format('%X')(new Date(d * 1000)) });
