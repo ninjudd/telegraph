@@ -107,6 +107,9 @@
       $("#chart").change(redrawChart);
       $("#variables").change(redrawChart);
 
+      $("#variables").focus(function(e) { $(this).css({height: "200px"}) });
+      $("#variables").blur(function(e) { $(this).css({height: "20px"}) });
+
       $("#save").click(function() {
         console.log(telegraph);
       });
@@ -163,14 +166,13 @@
       <span id="refresh">
         <img id="refresh-icon" src="/telegraph/images/refresh.gif">
       </span>
+      <textarea id="variables" placeholder="template variables"></textarea>
       <div id="buttons">
         <span id="save" class="btn">Save</span>
       </div>
 
       <table class="targets table table-striped">
       </table>
-
-      <textarea id="variables"></textarea>
     </div>
   </div>
 

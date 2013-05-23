@@ -75,9 +75,14 @@ body * {
 }
 
 #variables {
-  width: 200px;
+  width: 250px;
+  height: 20px;
   display: none;
   font-family: monospace;
+  vertical-align: top;
+  position: absolute;
+  margin-left: 10px;
+  padding: 0px 5px;
 }
 
 #chart {
