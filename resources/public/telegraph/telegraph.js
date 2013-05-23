@@ -86,7 +86,7 @@ Telegraph.prototype.getData = function(data, targets) {
         });
         var target = targets[i];
         data[target.index] = {
-          key:    target.name || val.target,
+          key:    target.label || _.compact([target.shift, target.query]).join(":"),
           values: datapoints,
           bar:    target.bar,
           type:   target.type,
