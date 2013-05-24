@@ -1,7 +1,12 @@
 var Telegraph = function (selector, opts) {
+  var chart = this.makeChart(opts.chart);
+  nv.utils.windowResize(function() {
+    chart.update()
+  });
+
   this.selector  = selector;
   this.chartType = opts.chart;
-  this.chart     = this.makeChart(this.chartType);
+  this.chart     = chart;
   this.from      = opts.from;
   this.until     = opts.until;
   this.targets   = opts.targets;
@@ -12,9 +17,8 @@ var Telegraph = function (selector, opts) {
     nv.addGraph(function() {
       self.svg().datum(data)
           .transition().duration(500)
-          .call(self.chart);
-      nv.utils.windowResize(self.chart.update);
-      return self.chart;
+          .call(chart);
+      return chart;
     });
   });
 };
