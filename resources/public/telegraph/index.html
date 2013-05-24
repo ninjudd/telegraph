@@ -21,7 +21,7 @@
     var targets = new Table("#targets", targetCells, redrawChart);
 
     function targetCells(target) {
-      var query = telegraph.subVariables(target.query);
+      var query = $("#variables").is(":focus") ? target.query : telegraph.subVariables(target.query);
       var cells = [
         {text: target.label},
         {html: $("<a/>", {text: query}).click(_.partial(fillQuery, target))},
@@ -63,6 +63,10 @@
       telegraph.update();
     };
 
+    function updateTargets() {
+      targets.update()
+    };
+
     function fillQuery(target) {
       $("#label").val(target.label);
       $("#query").val(target.query);
@@ -92,11 +96,15 @@
 
       $("#refresh").click(updateChart);
 
-      var update = function () { targets.update() };
-      $("#from").change(update);
-      $("#until").change(update);
-      $("#chart").change(update);
-      $("#variables").change(update);
+      $("#from").change(redrawChart);
+      $("#until").change(redrawChart);
+      $("#chart").change(redrawChart);
+      $("#variables").blur(updateTargets);
+      $("#variables").focus(updateTargets);
+      $("#variables").change(function() {
+        redrawChart();
+        updateTargets();
+      });
 
       $("#variables").focus(function(e) { $(this).css({height: "78px"}) });
       $("#variables").blur(function(e) { $(this).css({height: "21px"}) });
