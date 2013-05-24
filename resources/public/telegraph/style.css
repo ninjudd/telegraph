@@ -30,7 +30,7 @@ body * {
   margin-top: 5px;
 }
 
-#targets tr td:nth-child(2) {
+.monospace {
   font-family: monospace;
 }
 

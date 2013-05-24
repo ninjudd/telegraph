@@ -83,7 +83,7 @@ Telegraph.prototype.getData = function(data, targets) {
   var opts = {
     from:  this.from,
     until: this.until,
-    shift: targets[0].shift
+    shift: self.subVariables(targets[0].shift)
   };
 
   var labels = [];

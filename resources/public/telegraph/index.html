@@ -21,11 +21,16 @@
     var targets = new Table("#targets", targetCells, redrawChart);
 
     function targetCells(target) {
-      var query = $("#variables").is(":focus") ? target.query : telegraph.subVariables(target.query);
+      var sub = $("#variables").is(":focus") ? _.identity : telegraph.subVariables;
+
+      var query = sub(target.query);
+      var label = sub(target.label);
+      var shift = sub(target.shift);
+
       var cells = [
-        {text: target.label},
-        {html: $("<a/>", {text: query}).click(_.partial(fillQuery, target))},
-        {text: target.shift}
+        {text: label},
+        {class: "monospace", html: $("<a/>", {text: query}).click(_.partial(fillQuery, target))},
+        {class: "monospace", text: shift}
       ]
       var chart = $("#chart").val();
 
@@ -50,6 +55,7 @@
         targets: targets.items,
         variables: variables ? JSON.parse(variables) : null
       });
+      _.bindAll(telegraph);
 
       telegraph.hasVariables() ? $("#variables").show() : $("#variables").hide();
 
