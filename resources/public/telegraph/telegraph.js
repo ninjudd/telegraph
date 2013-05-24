@@ -89,10 +89,11 @@ Telegraph.prototype.getData = function(data, targets) {
   var labels = [];
   var url = targets[0].baseUrl + "?" + _.compact(_.map(targets, function(t, i) {
     var query = self.subVariables(t.query);
-    labels[i] = t.label || _.compact([t.shift, query]).join(":");
+    var label = t.label || _.compact([t.shift, t.query]).join(":");
+    labels[i] = self.subVariables(label);
     return "target=" + encodeURIComponent(query);
   })).join('&');
-console.log(url, labels);
+
   return $.ajax({
     url: url,
     data: opts,
