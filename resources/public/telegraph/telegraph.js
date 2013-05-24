@@ -37,7 +37,7 @@ Telegraph.prototype.hasVariables = function() {
 
 Telegraph.prototype.makeChart = function(chartType) {
   var chart = nv.models[chartType]();
-  chart.xAxis.tickFormat(function(d){ return d3.time.format('%X')(new Date(d * 1000)) });
+  chart.xAxis.tickFormat(function(d) { return d3.time.format('%X')(new Date(d * 1000)) });
   if (chart.yAxis)  chart.yAxis.tickFormat(d3.format('d'));
   if (chart.yAxis1) chart.yAxis1.tickFormat(d3.format('d'));
   if (chart.yAxis2) chart.yAxis2.tickFormat(d3.format('d'));
