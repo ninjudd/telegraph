@@ -24,11 +24,18 @@
       var sub = $("#variables").is(":focus") ? _.identity : telegraph.subVariables;
 
       var query = sub(target.query);
-      var label = sub(target.label);
       var shift = sub(target.shift);
 
+      var labelField = $("<span/>", {text: target.label, contenteditable: true}).blur(function(e) {
+        var newLabel = $(this).text();
+        if (newLabel != target.label) {
+          target.label = newLabel;
+          redrawChart();
+        }
+      });
+
       var cells = [
-        {text: label},
+        {html: labelField},
         {class: "monospace", html: $("<a/>", {text: query}).click(_.partial(fillQuery, target))},
         {class: "monospace", text: shift}
       ]
@@ -74,7 +81,6 @@
     };
 
     function fillQuery(target) {
-      $("#label").val(target.label);
       $("#query").val(target.query);
       $("#baseUrl").val(target.baseUrl);
       $("#shift").val(target.shift);
@@ -89,10 +95,12 @@
 
     $(document).ready(function() {
       $("#add").click(function() {
+        var query = $("#query").val();
+        var shift = $("#shift").val();
         targets.add({
-          label:    $("#label").val(),
-          query:    $("#query").val(),
-          shift:    $("#shift").val(),
+          label:    _.compact([shift, query]).join(":"),
+          query:    query,
+          shift:    shift,
           baseUrl:  $("#baseUrl").val(),
           bar:      $("#bar").val(),
           type:     $("#type").val(),
@@ -134,8 +142,6 @@
       <textarea id="query"></textarea>
       <div id="query-options">
         <input type="text" id="shift" placeholder="timeshift">
-        <input type="text" id="label" placeholder="label">
-
         <span class="line-plus-bar">
           <select id="bar">
             <option value="">line</option>

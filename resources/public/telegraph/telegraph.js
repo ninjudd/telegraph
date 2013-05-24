@@ -89,8 +89,7 @@ Telegraph.prototype.getData = function(data, targets) {
   var labels = [];
   var url = targets[0].baseUrl + "?" + _.compact(_.map(targets, function(t, i) {
     var query = self.subVariables(t.query);
-    var label = t.label || _.compact([t.shift, t.query]).join(":");
-    labels[i] = self.subVariables(label);
+    labels[i] = self.subVariables(t.label);
     return "target=" + encodeURIComponent(query);
   })).join('&');
 
