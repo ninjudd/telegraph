@@ -110,7 +110,12 @@ Admin.prototype.selectTree = function(type) {
   if (this.queryTree.update) this.queryTree.update();
 }
 
-Admin.prototype.addQuery = function(opts, success) {
+Admin.prototype.addQuery = function(opts, done) {
+  if (!opts.name) {
+    done();
+    return;
+  }
+
   var self = this;
 
   $.ajax({
@@ -121,7 +126,7 @@ Admin.prototype.addQuery = function(opts, success) {
     success: function(d) {
       self.assocQuery(opts);
       self.queryTree.update();
-      if (success) success(d);
+      if (done) done(d);
     },
     dataType: "text"
   });

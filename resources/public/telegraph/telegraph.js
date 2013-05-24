@@ -32,7 +32,7 @@ Telegraph.prototype.queryHasVariables = function(query) {
 
 Telegraph.prototype.hasVariables = function() {
   var self = this;
-  return _.some(this.targets, function(t) { return self.queryHasVariables(t.query) });
+  return _.some(this.targets, function(t) { return t && self.queryHasVariables(t.query) });
 };
 
 Telegraph.prototype.makeChart = function(chartType) {
@@ -48,10 +48,6 @@ Telegraph.prototype.svg = function() {
   return d3.select(this.selector).select('svg');
 };
 
-Telegraph.prototype.css = function(opts) {
-  $(this.selector).css(opts);
-};
-
 Telegraph.prototype.update = function() {
   var self = this;
   this.fetchData(this.targets, function(data) {
@@ -60,7 +56,7 @@ Telegraph.prototype.update = function() {
   });
 };
 
-Telegraph.prototype.fetchData = function(targets, callback) {
+Telegraph.prototype.fetchData = function(targets, done) {
   var self = this;
   var data = [];
 
@@ -75,7 +71,7 @@ Telegraph.prototype.fetchData = function(targets, callback) {
   });
 
   $.when.apply($, promises).always(function (e) {
-    callback(data);
+    done(data);
   });
 };
 
@@ -90,11 +86,13 @@ Telegraph.prototype.getData = function(data, targets) {
     shift: targets[0].shift
   };
 
-  var url = targets[0].baseUrl + "?" + _.compact(_.map(targets, function(t) {
+  var labels = [];
+  var url = targets[0].baseUrl + "?" + _.compact(_.map(targets, function(t, i) {
     var query = self.subVariables(t.query);
-    if (!self.queryHasVariables(query)) return "target=" + encodeURIComponent(query);
+    labels[i] = t.label || _.compact([t.shift, query]).join(":");
+    return "target=" + encodeURIComponent(query);
   })).join('&');
-
+console.log(url, labels);
   return $.ajax({
     url: url,
     data: opts,
@@ -105,7 +103,7 @@ Telegraph.prototype.getData = function(data, targets) {
         });
         var target = targets[i];
         data[target.index] = {
-          key:    target.label || _.compact([target.shift, target.query]).join(":"),
+          key:    labels[i],
           values: datapoints,
           bar:    target.bar,
           type:   target.type,

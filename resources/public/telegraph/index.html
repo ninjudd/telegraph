@@ -13,79 +13,73 @@
 
   <script src="/telegraph/lib/nv.d3.js"></script>
   <script src="/telegraph/telegraph.js"></script>
+  <script src="/telegraph/table.js"></script>
   <script src="/telegraph/config.js"></script>
 
   <script>
-    var targets = [];
     var telegraph;
+    var targets = new Table("#targets", targetCells, redrawChart);
+
+    function targetCells(target) {
+      var query = telegraph.subVariables(target.query);
+      var cells = [
+        {text: target.label},
+        {html: $("<a/>", {text: query}).click(_.partial(fillQuery, target))},
+        {text: target.shift}
+      ]
+      var chart = $("#chart").val();
+
+      if (chart == "multiChart") {
+        cells.push({text: target.type});
+        cells.push({html: (target.yAxis == 1 ? "&larr;" : "&rarr;")});
+      } else if (chart == "linePlusBarChart") {
+        cells.push({text: target.bar || "line"});
+      }
+      return cells;
+    };
 
     function redrawChart() {
-      $(".graph svg").text("");
+      $("#graph svg").text("");
 
       var variables = $("#variables").val();
 
-      telegraph = new Telegraph(".graph", {
+      telegraph = new Telegraph("#graph", {
         from:  $("#from").val(),
         until: $("#until").val(),
         chart: $("#chart").val(),
-        targets: targets,
+        targets: targets.items,
         variables: variables ? JSON.parse(variables) : null
       });
 
       telegraph.hasVariables() ? $("#variables").show() : $("#variables").hide();
 
-      displayChartOptions();
+      $("#refresh").show();
+      var chart = $("#chart").val();
+      display(".multi", chart == "multiChart");
+      display(".line-plus-bar", chart == "linePlusBarChart");
     };
 
     function updateChart() {
       telegraph.update();
     };
 
-    function removeTarget(e) {
-      var link = $(this);
-      link.parents("tr").remove();
-      targets[link.attr("targetId")] = null;
-      redrawChart();
-    };
-
-    function addTarget(target) {
-      var id = targets.length;
-      targets.push(target);
-
-      var queryLink  = $("<a/>", {text: target.query}).on("click", function() {
-        $("#label").val(target.label);
-        $("#query").val(target.query);
-        $("#baseUrl").val(target.baseUrl);
-        $("#shift").val(target.shift);
-        $("#bar").val(target.bar);
-        $("#type").val(target.type);
-        $("#yAxis").val(target.yAxis);
-      });
-      var removeIcon = $("<img/>", {src: "/telegraph/images/x.gif"});
-      var removeLink = $("<span/>", {id: "remove", targetId: id}).html(removeIcon).on("click", removeTarget);
-      var row = $("<tr/>").append($("<td/>", {text: target.label}))
-                          .append($("<td/>").html(queryLink))
-                          .append($("<td/>", {class: "multi", text: target.type}))
-                          .append($("<td/>", {class: "multi"}).html(target.yAxis == 1 ? "&larr;" : "&rarr;"))
-                          .append($("<td/>", {class: "line-plus-bar", text: target.bar || "line"}))
-                          .append($("<td/>", {text: target.shift}))
-                          .append($("<td/>").html(removeLink));
-      $(".targets").append(row);
+    function fillQuery(target) {
+      $("#label").val(target.label);
+      $("#query").val(target.query);
+      $("#baseUrl").val(target.baseUrl);
+      $("#shift").val(target.shift);
+      $("#bar").val(target.bar);
+      $("#type").val(target.type);
+      $("#yAxis").val(target.yAxis);
     };
 
     function display(selector, show) {
-      show ? $(selector).removeClass("hidden") : $(selector).addClass("hidden");
-    };
-
-    function displayChartOptions() {
-      var chart = $("#chart").val();
-      display(".multi", chart == "multiChart");
-      display(".line-plus-bar", chart == "linePlusBarChart");
+      $(selector).css({display: show ? "inline-block" : "none"})
     };
 
     $(document).ready(function() {
       $("#add").click(function() {
-        addTarget({
+        targets.add({
           label:    $("#label").val(),
           query:    $("#query").val(),
           shift:    $("#shift").val(),
@@ -94,17 +88,18 @@
           type:     $("#type").val(),
           yAxis:    $("#yAxis").val()
         });
-        redrawChart();
       });
 
       $("#refresh").click(updateChart);
-      $("#from").change(redrawChart);
-      $("#until").change(redrawChart);
-      $("#chart").change(redrawChart);
-      $("#variables").change(redrawChart);
 
-      $("#variables").focus(function(e) { $(this).css({height: "200px"}) });
-      $("#variables").blur(function(e) { $(this).css({height: "20px"}) });
+      var update = function () { targets.update() };
+      $("#from").change(update);
+      $("#until").change(update);
+      $("#chart").change(update);
+      $("#variables").change(update);
+
+      $("#variables").focus(function(e) { $(this).css({height: "78px"}) });
+      $("#variables").blur(function(e) { $(this).css({height: "21px"}) });
 
       $("#save").click(function() {
         console.log(telegraph);
@@ -119,61 +114,63 @@
 </head>
 
 <body>
-  <div id="add-container">
-    <select id="baseUrl"></select>
-    <input type="text" id="label" placeholder="label">
-    <textarea id="query"></textarea>
-    <input type="text" id="shift" placeholder="timeshift">
-    <span class="line-plus-bar hidden">
-      <select id="bar">
-        <option value="">line</option>
-        <option value="bar">bar</option>
-      </select>
-    </span>
-    <span class="multi hidden">
-      <select id="type">
-        <option value="line">line</option>
-        <option value="bar">bar</option>
-        <option value="area">area</option>
-      </select>
-      <select id="yAxis">
-        <option value="1">left</option>
-        <option value="2">right</option>
-      </select>
-    </span>
-    <div id="buttons">
-      <span id="add" class="btn">Add</span>
-    </div>
-  </div>
+  <div id="edit-container" class="clearfix">
+    <div id="query-container">
+      <select id="baseUrl"></select>
+      <textarea id="query"></textarea>
+      <div id="query-options">
+        <input type="text" id="shift" placeholder="timeshift">
+        <input type="text" id="label" placeholder="label">
 
-  <div id="list-container">
-    <div id="graph-options">
-      <input type="text" id="from" placeholder="-24h">
-      <input type="text" id="until" placeholder="">
-      <select id="chart">
-        <option value="lineChart">line</option>
-        <option value="stackedAreaChart">stacked area</option>
-        <option value="multiBarChart">multi bar</option>
-        <option value="linePlusBarChart">line plus bar</option>
-        <option value="multiChart">multi</option>
-        <option value="lineWithFocusChart">line with viewfinder</option>
-        <option value="cumulativeLineChart">cumulative line</option>
-      </select>
-      <textarea id="variables" placeholder="macro variables"></textarea>
-      <div id="buttons">
-        <span id="refresh">
-          <img id="refresh-icon" src="/telegraph/images/refresh.gif">
+        <span class="line-plus-bar">
+          <select id="bar">
+            <option value="">line</option>
+            <option value="bar">bar</option>
+          </select>
         </span>
+
+        <span class="multi">
+          <select id="type">
+            <option value="line">line</option>
+            <option value="bar">bar</option>
+            <option value="area">area</option>
+          </select>
+          <select id="yAxis">
+            <option value="1">left</option>
+            <option value="2">right</option>
+          </select>
+        </span>
+
+        <span id="add" class="btn">Add</span>
+      </div>
+    </div>
+
+    <div id="list-container">
+      <table id="targets" class="table table-striped">
+      </table>
+      <div id="graph-options">
+        <input type="text" id="from" placeholder="-24h">
+        <input type="text" id="until" placeholder="">
+        <select id="chart">
+          <option value="lineChart">line</option>
+          <option value="stackedAreaChart">stacked area</option>
+          <option value="multiBarChart">multi bar</option>
+          <option value="linePlusBarChart">line plus bar</option>
+          <option value="multiChart">multi</option>
+          <option value="lineWithFocusChart">line with viewfinder</option>
+          <option value="cumulativeLineChart">cumulative line</option>
+        </select>
+        <textarea id="variables" placeholder="macro variables"></textarea>
         <span id="save" class="btn">Save</span>
       </div>
-
-      <table class="targets table table-striped">
-      </table>
     </div>
   </div>
 
   <div id="graph-container">
-    <div class="chart graph">
+    <span id="refresh">
+      <img src="/telegraph/images/refresh.gif">
+    </span>
+    <div id="graph" class="chart">
       <svg></svg>
     </div>
   </div>

@@ -1,50 +1,55 @@
 body {
   min-width: 1170px;
-  padding: 10px;
 }
 
 body * {
   box-sizing: border-box;
 }
 
-#add-container {
+#edit-container {
+  padding: 10px;
+  background: #f6f6f6;
+  border-bottom: 1px solid #ddd;
+}
+
+#query-container {
   width: 38%;
-  height: 200px;
+  height: 220px;
   float: left;
+  position: relative;
 }
 
 #list-container {
-  float: right;
   width: 60%;
+  height: 220px;
+  float: right;
+  position: relative;
 }
 
-#graph-container {
-  margin-top: 20px;
-  float: left;
-  width: 95%;
-  height: 450px;
-}
-
-.targets {
+#targets {
   margin-top: 5px;
 }
 
-.targets tr td:nth-child(2) {
+#targets tr td:nth-child(2) {
   font-family: monospace;
 }
 
-.targets tr td {
+#targets tr td {
   vertical-align: middle;
   padding: 0px 5px;
 }
 
-.graph {
-  top: 230px;
+#graph-container {
+  top: 250px;
   bottom: 0;
   right: 0;
   left: 0;
   position: absolute;
-  padding-right: 10px;
+}
+
+#graph {
+  width: 100%;
+  height: 100%;
 }
 
 #baseUrl {
@@ -54,7 +59,7 @@ body * {
 
 #query {
   width: 100%;
-  height: 150px;
+  height: 140px;
   font-family: monospace;
 }
 
@@ -63,14 +68,36 @@ body * {
   width: 100px;
 }
 
-#buttons {
+#label {
+  width: 150px;
+}
+
+.line-plus-bar {
+  display: none;
+}
+
+.multi {
+  display: none;
+}
+
+#add {
   float: right;
 }
 
-#type {
-  width: 80px;
-  height: auto;
-  font-family: monospace;
+#save {
+  float: right;
+}
+
+#query-options {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+#graph-options {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 }
 
 #from {
@@ -85,13 +112,14 @@ body * {
 
 #variables {
   width: 250px;
-  height: 20px;
+  height: 21px;
   display: none;
   font-family: monospace;
   vertical-align: top;
   position: absolute;
   margin-left: 10px;
   padding: 0px 5px;
+  z-index: 1;
 }
 
 #chart {
@@ -101,23 +129,30 @@ body * {
 
 #bar {
   height: auto;
-  width: 80px;
+  width: 70px;
+  font-family: monospace;
+}
+
+#type {
+  width: 70px;
+  height: auto;
   font-family: monospace;
 }
 
 #yAxis {
   height: auto;
-  width: 80px;
+  width: 70px;
   font-family: monospace;
+}
+
+#refresh {
+  display: none;
+  position: absolute;
+  right: 10px;
 }
 
 #refresh:hover {
   cursor: pointer;
-}
-
-#refresh-icon {
-  margin-left: 5px;
-  margin-bottom: 10px;
 }
 
 #remove {
