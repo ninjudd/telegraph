@@ -147,6 +147,15 @@ body * {
   cursor: pointer;
 }
 
+#graph-header:after {
+  content: "\25BE";
+  opacity: 0;
+}
+
+#graph-header:hover:after {
+  opacity: 1;
+}
+
 #graph-icon {
   width: 15px;
 }
