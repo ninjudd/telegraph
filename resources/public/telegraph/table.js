@@ -15,6 +15,15 @@ Table.prototype.add = function(item) {
   return item.id;
 };
 
+Table.prototype.replace = function(items) {
+  this.items = items;
+  _.each(items, function(item) {
+    item.id = this.itemCount++;
+  });
+  this.change(this);
+  this.update();
+};
+
 Table.prototype.remove = function(id) {
   this.items = _.reject(this.items, function(item) { return item.id == id });
   this.change(this);

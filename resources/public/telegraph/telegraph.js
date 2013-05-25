@@ -1,25 +1,32 @@
-var Telegraph = function (selector, opts) {
-  var chart = this.makeChart(opts.chart);
-  nv.utils.windowResize(function() {
-    chart.update()
-  });
+var Telegraph = function (opts) {
+  if (opts) {
+    this.version   = opts.version;
+    this.name      = opts.name;
+    this.from      = opts.from;
+    this.until     = opts.until;
+    this.targets   = opts.targets;
+    this.variables = opts.variables;
+    this.chart     = opts.chart;
+  }
+};
 
-  this.selector  = selector;
-  this.chartType = opts.chart;
-  this.chart     = chart;
-  this.from      = opts.from;
-  this.until     = opts.until;
-  this.targets   = opts.targets;
-  this.variables = opts.variables;
-
+Telegraph.prototype.draw = function(selector) {
   var self = this;
+  $(selector).find("svg").text("");
+
+  this.svg = d3.select(selector).select("svg");
+  this.nvChart = this.makeChart(this.chart);
   this.fetchData(this.targets, function(data) {
     nv.addGraph(function() {
-      self.svg().datum(data)
+      self.svg.datum(data)
           .transition().duration(500)
-          .call(chart);
-      return chart;
+          .call(self.nvChart);
+      return self.nvChart;
     });
+  });
+
+  nv.utils.windowResize(function() {
+    self.nvChart.update()
   });
 };
 
@@ -39,24 +46,21 @@ Telegraph.prototype.hasVariables = function() {
   return _.some(this.targets, function(t) { return t && self.queryHasVariables(t.query) });
 };
 
-Telegraph.prototype.makeChart = function(chartType) {
-  var chart = nv.models[chartType]();
-  chart.xAxis.tickFormat(function(d) { return d3.time.format('%X')(new Date(d * 1000)) });
-  if (chart.yAxis)  chart.yAxis.tickFormat(d3.format('d'));
-  if (chart.yAxis1) chart.yAxis1.tickFormat(d3.format('d'));
-  if (chart.yAxis2) chart.yAxis2.tickFormat(d3.format('d'));
-  return chart;
-};
-
-Telegraph.prototype.svg = function() {
-  return d3.select(this.selector).select('svg');
+Telegraph.prototype.makeChart = function(chart) {
+  var nvChart = nv.models[chart]();
+  nvChart.xAxis.tickFormat(function(d) { return d3.time.format('%X')(new Date(d * 1000)) });
+  if (nvChart.yAxis)  nvChart.yAxis.tickFormat(d3.format('d'));
+  if (nvChart.yAxis1) nvChart.yAxis1.tickFormat(d3.format('d'));
+  if (nvChart.yAxis2) nvChart.yAxis2.tickFormat(d3.format('d'));
+  _.bindAll(nvChart);
+  return nvChart;
 };
 
 Telegraph.prototype.update = function() {
   var self = this;
   this.fetchData(this.targets, function(data) {
-    self.svg().datum(data);
-    self.chart.update();
+    self.svg.datum(data);
+    self.nvChart.update();
   });
 };
 
@@ -100,8 +104,8 @@ Telegraph.prototype.getData = function(data, targets) {
   return $.ajax({
     url: url,
     data: opts,
-    success: function(rawData) {
-      _.each(rawData, function(val, i) {
+    success: function(results) {
+      _.each(results, function(val, i) {
         var datapoints = _.map(val.datapoints, function(d) {
           return { x: d[1] || 0, y: d[0] || 0 }
         });
@@ -114,6 +118,45 @@ Telegraph.prototype.getData = function(data, targets) {
           yAxis:  target.yAxis
         };
       });
+    }
+  });
+};
+
+Telegraph.prototype.save = function() {
+  if (this.name) {
+    var self = this;
+    var data = {
+      name: this.name,
+      version: this.version,
+      chart: this.chart,
+      from: this.from,
+      until: this.until,
+      targets: this.targets,
+      variables: this.variables
+    };
+
+    return $.ajax({
+      url: "/graph/save",
+      data: JSON.stringify(data),
+      type: "POST",
+      success: function(results) {
+        self.version = results.version;
+      },
+      error: function(results) {
+        console.log(JSON.parse(results.responseText));
+      }
+    });
+  }
+};
+
+Telegraph.load = function(name, success) {
+  $.ajax({
+    url: "/graph/load?name=" + encodeURIComponent(name),
+    success: function(results) {
+      if (results) {
+        var telegraph = new Telegraph(results);
+        success(telegraph);
+      }
     }
   });
 };

@@ -5,5 +5,5 @@
 
 (def handler
   (-> (wakeful :root "flatland.telegraph"
-               :config (graph/-init))
+               :config (graph/-init "graphs.clj"))
       (wrap-rewrites #"^/telegraph/?$" "/telegraph/index.html")))

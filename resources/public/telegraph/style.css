@@ -80,14 +80,6 @@ body * {
   display: none;
 }
 
-#add {
-  float: right;
-}
-
-#save {
-  float: right;
-}
-
 #query-options {
   position: absolute;
   bottom: 0;
@@ -102,16 +94,16 @@ body * {
 
 #from {
   font-family: monospace;
-  width: 100px;
+  width: 50px;
 }
 
 #until {
   font-family: monospace;
-  width: 100px;
+  width: 50px;
 }
 
 #variables {
-  width: 250px;
+  width: 180px;
   height: 21px;
   display: none;
   font-family: monospace;
@@ -124,6 +116,7 @@ body * {
 
 #chart {
   height: auto;
+  width: 200px;
   font-family: monospace;
 }
 
@@ -145,6 +138,10 @@ body * {
   font-family: monospace;
 }
 
+#name {
+  width: 180px;
+}
+
 #refresh {
   display: none;
   position: absolute;
@@ -162,6 +159,10 @@ body * {
 
 #remove:hover {
   cursor: pointer;
+}
+
+.buttons {
+   float: right;
 }
 
 .btn {

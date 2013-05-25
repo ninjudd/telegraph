@@ -17,8 +17,14 @@
   <script src="/telegraph/config.js"></script>
 
   <script>
-    var telegraph;
-    var targets = new Table("#targets", targetCells, redrawChart);
+    var telegraph = new Telegraph({chart: "lineChart"});
+    _.bindAll(telegraph);
+
+    var targets = new Table("#targets", targetCells, function(targets) {
+      telegraph.targets = targets.items;
+      redraw();
+    });
+    _.bindAll(targets)
 
     function targetCells(target) {
       var sub = $("#variables").is(":focus") ? _.identity : telegraph.subVariables;
@@ -30,7 +36,7 @@
         var newLabel = $(this).text();
         if (newLabel != target.label) {
           target.label = newLabel;
-          redrawChart();
+          redraw();
         }
       });
 
@@ -50,34 +56,14 @@
       return cells;
     };
 
-    function redrawChart() {
-      $("#graph svg").text("");
-
-      var variables = $("#variables").val();
-
-      telegraph = new Telegraph("#graph", {
-        from:  $("#from").val(),
-        until: $("#until").val(),
-        chart: $("#chart").val(),
-        targets: targets.items,
-        variables: variables ? JSON.parse(variables) : null
-      });
-      _.bindAll(telegraph);
-
+    function redraw(name) {
+      telegraph.draw("#graph");
       telegraph.hasVariables() ? $("#variables").show() : $("#variables").hide();
 
       $("#refresh").show();
       var chart = $("#chart").val();
       display(".multi", chart == "multiChart");
       display(".line-plus-bar", chart == "linePlusBarChart");
-    };
-
-    function updateChart() {
-      telegraph.update();
-    };
-
-    function updateTargets() {
-      targets.update()
     };
 
     function fillQuery(target) {
@@ -108,23 +94,59 @@
         });
       });
 
-      $("#refresh").click(updateChart);
+      $("#refresh").click(telegraph.update);
 
-      $("#from").change(redrawChart);
-      $("#until").change(redrawChart);
-      $("#chart").change(redrawChart);
-      $("#variables").blur(updateTargets);
-      $("#variables").focus(updateTargets);
+      $("#from").change(function() {
+        telegraph.from = $(this).val();
+        redraw();
+      });
+      $("#until").change(function() {
+        telegraph.until = $(this).val();
+        redraw();
+      });
+      $("#chart").change(function() {
+        telegraph.chart = $(this).val();
+        redraw();
+      });
       $("#variables").change(function() {
-        redrawChart();
-        updateTargets();
+        var variables = $("#variables").val();
+        telegraph.variables = variables ? JSON.parse(variables) : null
+        redraw();
+        targets.update();
+      });
+      $("#variables").focus(function() {
+        $(this).css({height: "78px"});
+        targets.update();
+      });
+      $("#variables").blur(function() {
+        $(this).css({height: "21px"});
+        targets.update();
+      });
+      $("#name").change(function() {
+        telegraph.name = $(this).val();
+        telegraph.version = null;
+        redraw();
       });
 
-      $("#variables").focus(function(e) { $(this).css({height: "78px"}) });
-      $("#variables").blur(function(e) { $(this).css({height: "21px"}) });
-
       $("#save").click(function() {
-        console.log(telegraph);
+        telegraph.name = telegraph.name || prompt("Save graph as:");
+        telegraph.save();
+      });
+
+      $("#load").click(function() {
+        var name = prompt("Load graph:");
+
+        Telegraph.load(name, function(t) {;
+          telegraph = t;
+
+          $("#name").val(telegraph.name);
+          $("#from").val(telegraph.from);
+          $("#until").val(telegraph.until);
+          $("#chart").val(telegraph.chart);
+          $("#variables").val(JSON.stringify(telegraph.variables));
+
+          targets.replace(telegraph.targets);
+        });
       });
 
       var $select = $("#baseUrl");
@@ -160,8 +182,9 @@
             <option value="2">right</option>
           </select>
         </span>
-
-        <span id="add" class="btn">Add</span>
+        <div class="buttons">
+          <span id="add" class="btn">Add</span>
+        </div>
       </div>
     </div>
 
@@ -181,7 +204,11 @@
           <option value="cumulativeLineChart">cumulative line</option>
         </select>
         <textarea id="variables" placeholder="macro variables"></textarea>
-        <span id="save" class="btn">Save</span>
+        <div class="buttons">
+          <input type="text" id="name" placeholder="graph name"></input>
+          <span id="load" class="btn">Load</span>
+          <span id="save" class="btn">Save</span>
+        </div>
       </div>
     </div>
   </div>
