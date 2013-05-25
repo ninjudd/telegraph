@@ -172,7 +172,7 @@ Admin.prototype.removeQuery = function(opts, success) {
 // Helper functions //
 
 Admin.prototype.path = function(opts) {
-  return opts.name.split(/[\.:]/);
+  return opts.name.split(/:/);
 };
 
 Admin.prototype.values = function(node) {
