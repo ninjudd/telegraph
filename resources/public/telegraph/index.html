@@ -57,7 +57,9 @@
     };
 
     function redraw(name) {
-      telegraph.draw("#graph");
+      telegraph.draw("#graph", function() {
+        $("#graph-header").show();
+      });
       telegraph.hasVariables() ? $("#variables").show() : $("#variables").hide();
 
       $("#refresh").show();
@@ -122,8 +124,8 @@
         $(this).css({height: "21px"});
         targets.update();
       });
-      $("#name").change(function() {
-        telegraph.name = $(this).val();
+      $("#name").blur(function() {
+        telegraph.name = $(this).text();
         telegraph.version = null;
         redraw();
       });
@@ -139,7 +141,7 @@
         Telegraph.load(name, function(t) {;
           telegraph = t;
 
-          $("#name").val(telegraph.name);
+          $("#name").text(telegraph.name);
           $("#from").val(telegraph.from);
           $("#until").val(telegraph.until);
           $("#chart").val(telegraph.chart);
@@ -205,7 +207,6 @@
         </select>
         <textarea id="variables" placeholder="macro variables"></textarea>
         <div class="buttons">
-          <input type="text" id="name" placeholder="graph name"></input>
           <span id="load" class="btn">Load</span>
           <span id="save" class="btn">Save</span>
         </div>
@@ -214,6 +215,10 @@
   </div>
 
   <div id="graph-container">
+    <div id="graph-header">
+      <object id="graph-icon" data="/telegraph/images/graph.svg" type="image/svg+xml"></object>
+      <span id="name"></span>
+    </div>
     <span id="refresh">
       <img src="/telegraph/images/refresh.gif">
     </span>

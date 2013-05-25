@@ -10,7 +10,7 @@ var Telegraph = function (opts) {
   }
 };
 
-Telegraph.prototype.draw = function(selector) {
+Telegraph.prototype.draw = function(selector, done) {
   var self = this;
   $(selector).find("svg").text("");
 
@@ -21,6 +21,7 @@ Telegraph.prototype.draw = function(selector) {
       self.svg.datum(data)
           .transition().duration(500)
           .call(self.nvChart);
+      if (done) done();
       return self.nvChart;
     });
   });

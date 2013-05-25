@@ -45,6 +45,7 @@ body * {
   right: 0;
   left: 0;
   position: absolute;
+  text-align: center;
 }
 
 #graph {
@@ -138,8 +139,16 @@ body * {
   font-family: monospace;
 }
 
-#name {
-  width: 180px;
+#graph-header {
+  display: none;
+}
+
+#graph-header:hover {
+  cursor: pointer;
+}
+
+#graph-icon {
+  width: 15px;
 }
 
 #refresh {
