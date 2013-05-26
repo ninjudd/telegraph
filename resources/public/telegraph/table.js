@@ -33,8 +33,7 @@ Table.prototype.remove = function(id) {
 
 Table.prototype.removeLink = function(id) {
   var self = this;
-  var icon = $("<img/>", {src: "/telegraph/images/x.gif"});
-  return $("<span/>", {id: "remove"}).html(icon).on("click", function() { self.remove(id) });
+  return $("<span/>", {id: "remove", html: "&times;"}).on("click", function() { self.remove(id) });
 };
 
 Table.prototype.update = function() {
