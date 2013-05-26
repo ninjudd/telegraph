@@ -1,13 +1,13 @@
 var Telegraph = function (opts) {
-  if (opts) {
-    this.version   = opts.version;
-    this.name      = opts.name;
-    this.from      = opts.from;
-    this.until     = opts.until;
-    this.targets   = opts.targets;
-    this.variables = opts.variables;
-    this.chart     = opts.chart;
-  }
+  opts = opts || {chart: "lineChart"};
+
+  this.version   = opts.version;
+  this.name      = opts.name;
+  this.from      = opts.from;
+  this.until     = opts.until;
+  this.targets   = opts.targets;
+  this.variables = opts.variables;
+  this.chart     = opts.chart;
 };
 
 Telegraph.prototype.draw = function(selector, done) {
@@ -123,7 +123,7 @@ Telegraph.prototype.getData = function(data, targets) {
   });
 };
 
-Telegraph.prototype.save = function() {
+Telegraph.prototype.save = function(opts) {
   if (this.name) {
     var self = this;
     var data = {
@@ -133,7 +133,8 @@ Telegraph.prototype.save = function() {
       from: this.from,
       until: this.until,
       targets: this.targets,
-      variables: this.variables
+      variables: this.variables,
+      force: opts.force
     };
 
     return $.ajax({
@@ -142,22 +143,25 @@ Telegraph.prototype.save = function() {
       type: "POST",
       success: function(results) {
         self.version = results.version;
+        if (opts.success) opts.success(results);
       },
       error: function(results) {
-        console.log(JSON.parse(results.responseText));
+        var response = JSON.parse(results.responseText);
+        if (opts.error) opts.error(response.error);
       }
     });
   }
 };
 
 Telegraph.load = function(name, success) {
-  $.ajax({
-    url: "/graph/load?name=" + encodeURIComponent(name),
-    success: function(results) {
-      if (results) {
-        var telegraph = new Telegraph(results);
-        success(telegraph);
+  if (name) {
+    $.ajax({
+      url: "/graph/load?name=" + encodeURIComponent(name),
+      success: function(results) {
+        success(new Telegraph(results));
       }
-    }
-  });
+    });
+  } else {
+    success(new Telegraph());
+  }
 };

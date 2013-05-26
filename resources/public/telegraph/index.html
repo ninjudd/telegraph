@@ -18,14 +18,15 @@
   <script src="/telegraph/config.js"></script>
 
   <script>
-    var telegraph = new Telegraph({chart: "lineChart"});
-    _.bindAll(telegraph);
-
+    var telegraph;
     var targets = new Table("#targets", targetCells, function(targets) {
       telegraph.targets = targets.items;
       redraw();
     });
     _.bindAll(targets)
+
+    load();
+    $(window).on("hashchange", function () { load() });
 
     function targetCells(target) {
       var sub = $("#variables").is(":focus") ? _.identity : telegraph.subVariables;
@@ -57,10 +58,13 @@
       return cells;
     };
 
+    function displayHeader() {
+      $("#name").text(telegraph.name);
+      $("#graph-header").css({display: telegraph.name ? "inline-block" : "none"});
+    };
+
     function redraw(name) {
-      telegraph.draw("#graph", function() {
-        $("#graph-header").css({display: "inline-block"});
-      });
+      telegraph.draw("#graph", displayHeader);
       telegraph.hasVariables() ? $("#variables").show() : $("#variables").hide();
 
       $("#refresh").show();
@@ -82,6 +86,41 @@
       $(selector).css({display: show ? "inline-block" : "none"})
     };
 
+    function save() {
+      telegraph.save({
+        success: displayHeader,
+        error: function(error) {
+          if (confirm(error + " Would you like to overwrite?")) {
+            telegraph.save({force: true});
+          }
+        }
+      });
+    };
+
+    function pushHistory(name) {
+      history.pushState(name, "", window.location.pathname + (name ? "#" + name : ""));
+    }
+
+    function load(name) {
+      if (name == null) {
+        name = window.location.hash.substr(1);
+      } else {
+        pushHistory(name);
+      }
+
+      Telegraph.load(name, function(t) {;
+        telegraph = t;
+        _.bindAll(telegraph);
+
+        $("#from").val(telegraph.from);
+        $("#until").val(telegraph.until);
+        $("#chart").val(telegraph.chart);
+        $("#variables").val(JSON.stringify(telegraph.variables));
+
+        targets.replace(telegraph.targets);
+      });
+    };
+
     $(document).ready(function() {
       $("#add").click(function() {
         var query = $("#query").val();
@@ -97,7 +136,9 @@
         });
       });
 
-      $("#refresh").click(telegraph.update);
+      $("#refresh").click(function() {
+        telegraph.update();
+      });
 
       $("#from").change(function() {
         telegraph.from = $(this).val();
@@ -128,28 +169,32 @@
       $("#name").blur(function() {
         telegraph.name = $(this).text();
         telegraph.version = null;
-        redraw();
+        $(this).attr({contenteditable: false});
+      });
+
+      $("#name").keydown(function(e) {
+        if(e.keyCode == 13) $(this).blur();
       });
 
       $("#save").click(function() {
         telegraph.name = telegraph.name || prompt("Save graph as:");
-        telegraph.save();
+        save();
+      });
+
+      $("#duplicate").click(function() {
+        $("#name").attr({contenteditable: true}).text(telegraph.name + " copy").focus();
+        document.execCommand("selectAll",false,null);
+        return false;
+      });
+
+      $("#close").click(function() {
+        load("");
+        return false;
       });
 
       $("#load").click(function() {
         var name = prompt("Load graph:");
-
-        Telegraph.load(name, function(t) {;
-          telegraph = t;
-
-          $("#name").text(telegraph.name);
-          $("#from").val(telegraph.from);
-          $("#until").val(telegraph.until);
-          $("#chart").val(telegraph.chart);
-          $("#variables").val(JSON.stringify(telegraph.variables));
-
-          targets.replace(telegraph.targets);
-        });
+        load(name);
       });
 
       var $select = $("#baseUrl");
@@ -226,11 +271,11 @@
         <span id="name"></span>
       </span>
       <ul class="dropdown-menu" role="menu">
-        <li><a tabindex="-1" href="#">Rename</a></li>
-        <li><a tabindex="-1" href="#">Duplicate</a></li>
-        <li><a tabindex="-1" href="#">Lock</a></li>
+        <li><a id="rename"    href="#">Rename</a></li>
+        <li><a id="duplicate" href="#">Duplicate</a></li>
+        <li><a id="close"     href="#">Close</a></li>
         <li class="divider"></li>
-        <li><a tabindex="-1" href="#">Delete</a></li>
+        <li><a id="delete"    href="#">Delete</a></li>
       </ul>
     </div>
 

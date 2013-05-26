@@ -157,6 +157,10 @@ body * {
   opacity: 1;
 }
 
+#name br {
+  display:none;
+}
+
 .icon {
   width: 15px;
 }
