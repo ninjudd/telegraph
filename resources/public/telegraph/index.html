@@ -2,14 +2,15 @@
 <title>Telegraph Graph Editor</title>
 
 <head>
-  <link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css">
+  <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap.css">
   <link rel="stylesheet" type="text/css" href="/telegraph/lib/nv.d3.css">
   <link rel="stylesheet" type="text/css" href="/telegraph/style.css">
 
-  <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore.js"></script>
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/d3/2.10.0/d3.v2.js"></script>
+  <script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/d3/2.10.0/d3.v2.js"></script>
 
   <script src="/telegraph/lib/nv.d3.js"></script>
   <script src="/telegraph/telegraph.js"></script>
@@ -151,6 +152,22 @@
         });
       });
 
+      $("#name").popover({
+        html: true,
+        content: $("#graph-menu-content").html(),
+        placement: "bottom",
+        trigger: "manual"
+      });
+
+      $("#name").click(function(e) {
+        e.stopPropagation();
+        $(this).popover("toggle");
+      });
+
+      $("html").click(function() {
+        $("#name").popover("hide");
+      });
+
       var $select = $("#baseUrl");
       _.each(telegraphBaseUrls, function (base) {
         $select.append('<option value=' + base.url + '>' + base.label + '</option>');
@@ -219,6 +236,13 @@
       <object id="graph-icon" data="/telegraph/images/graph.svg" type="image/svg+xml"></object>
       <span id="name"></span>
     </div>
+
+    <div id="graph-menu-content" style="display: none;">
+      <div id="rename">Rename</div>
+      <div id="duplicate">Duplicate</div>
+      <div id="lock">Lock</div>
+    </div>
+
     <span id="refresh">
       <img src="/telegraph/images/refresh.gif">
     </span>
