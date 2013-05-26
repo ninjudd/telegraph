@@ -59,7 +59,7 @@
 
     function redraw(name) {
       telegraph.draw("#graph", function() {
-        $("#graph-header").show();
+        $("#graph-header").css({display: "inline-block"});
       });
       telegraph.hasVariables() ? $("#variables").show() : $("#variables").hide();
 
@@ -152,22 +152,6 @@
         });
       });
 
-      $("#name").popover({
-        html: true,
-        content: $("#graph-menu-content").html(),
-        placement: "bottom",
-        trigger: "manual"
-      });
-
-      $("#name").click(function(e) {
-        e.stopPropagation();
-        $(this).popover("toggle");
-      });
-
-      $("html").click(function() {
-        $("#name").popover("hide");
-      });
-
       var $select = $("#baseUrl");
       _.each(telegraphBaseUrls, function (base) {
         $select.append('<option value=' + base.url + '>' + base.label + '</option>');
@@ -232,15 +216,18 @@
   </div>
 
   <div id="graph-container">
-    <div id="graph-header">
-      <object id="graph-icon" data="/telegraph/images/graph.svg" type="image/svg+xml"></object>
-      <span id="name"></span>
-    </div>
-
-    <div id="graph-menu-content" style="display: none;">
-      <div id="rename">Rename</div>
-      <div id="duplicate">Duplicate</div>
-      <div id="lock">Lock</div>
+    <div id="graph-header" class="dropdown">
+      <span id="graph-menu" class="dropdown-toggle" data-toggle="dropdown">
+        <object id="graph-icon" data="/telegraph/images/graph.svg" type="image/svg+xml"></object>
+        <span id="name"></span>
+      </span>
+      <ul class="dropdown-menu" role="menu">
+        <li><a tabindex="-1" href="#">Rename</a></li>
+        <li><a tabindex="-1" href="#">Duplicate</a></li>
+        <li><a tabindex="-1" href="#">Lock</a></li>
+        <li class="divider"></li>
+        <li><a tabindex="-1" href="#">Delete</a></li>
+      </ul>
     </div>
 
     <span id="refresh">

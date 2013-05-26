@@ -141,18 +141,19 @@ body * {
 
 #graph-header {
   display: none;
+  text-align: left;
 }
 
-#graph-header:hover {
+#graph-menu:hover {
   cursor: pointer;
 }
 
-#graph-header:after {
+#graph-menu:after {
   content: "\25BE";
   opacity: 0;
 }
 
-#graph-header:hover:after {
+#graph-menu:hover:after {
   opacity: 1;
 }
 
