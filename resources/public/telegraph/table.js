@@ -17,8 +17,8 @@ Table.prototype.add = function(item) {
 
 Table.prototype.replace = function(items) {
   var self = this;
-  this.items = items;
-  _.each(items, function(item) {
+  this.items = items || [];
+  _.each(this.items, function(item) {
     item.id = self.itemCount++;
   });
   this.change(this);

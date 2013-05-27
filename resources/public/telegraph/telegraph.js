@@ -14,21 +14,25 @@ Telegraph.prototype.draw = function(selector, done) {
   var self = this;
   $(selector).find("svg").text("");
 
-  this.svg = d3.select(selector).select("svg");
-  this.nvChart = this.makeChart(this.chart);
-  this.fetchData(this.targets, function(data) {
-    nv.addGraph(function() {
-      self.svg.datum(data)
-          .transition().duration(500)
-          .call(self.nvChart);
-      if (done) done();
-      return self.nvChart;
+  if (this.targets && this.targets.length > 0) {
+    this.svg = d3.select(selector).select("svg");
+    this.nvChart = this.makeChart(this.chart);
+    this.fetchData(this.targets, function(data) {
+      nv.addGraph(function() {
+        self.svg.datum(data)
+            .transition().duration(500)
+            .call(self.nvChart);
+        if (done) done();
+        return self.nvChart;
+      });
     });
-  });
 
-  nv.utils.windowResize(function() {
-    self.nvChart.update()
-  });
+    nv.utils.windowResize(function() {
+      self.nvChart.update()
+    });
+  } else {
+    if (done) done();
+  }
 };
 
 Telegraph.prototype.subVariables = function(target) {
@@ -153,12 +157,16 @@ Telegraph.prototype.save = function(opts) {
   }
 };
 
-Telegraph.load = function(name, success) {
+Telegraph.load = function(name, success, error) {
   if (name) {
     $.ajax({
       url: "/graph/load?name=" + encodeURIComponent(name),
       success: function(results) {
-        success(new Telegraph(results));
+        if (results) {
+          success(new Telegraph(results));
+        } else {
+          error(name);
+        }
       }
     });
   } else {

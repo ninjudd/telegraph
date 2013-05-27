@@ -60,7 +60,7 @@
 
     function displayHeader() {
       $("#name").text(telegraph.name);
-      $("#graph-header").css({display: telegraph.name ? "inline-block" : "none"});
+      $("#graph-header").css({display: telegraph.name ? "block" : "none"});
     };
 
     function redraw(name) {
@@ -88,7 +88,10 @@
 
     function save() {
       telegraph.save({
-        success: displayHeader,
+        success: function(results) {
+          showAlert(results.name + " saved");
+          displayHeader();
+        },
         error: function(error) {
           if (confirm(error + " Would you like to overwrite?")) {
             telegraph.save({force: true});
@@ -99,26 +102,31 @@
 
     function pushHistory(name) {
       history.pushState(name, "", window.location.pathname + (name ? "#" + name : ""));
-    }
+    };
+
+    function showAlert(text, type) {
+      if (type) type = "alert-" + type;
+      $("#alerts").append($("<div/>", {class: "alert fade in " + type, text: text}));
+      setTimeout(function() { $(".alert").alert('close'); }, 3000);
+    };
+
+    function hash() {
+      return window.location.hash.substr(1)
+    };
 
     function load(name) {
-      if (name == null) {
-        name = window.location.hash.substr(1);
-      } else {
-        pushHistory(name);
-      }
-
-      Telegraph.load(name, function(t) {;
+      Telegraph.load(name == null ? hash() : name, function(t) {;
         telegraph = t;
         _.bindAll(telegraph);
 
+        if (name != null) pushHistory(telegraph.name);
         $("#from").val(telegraph.from);
         $("#until").val(telegraph.until);
         $("#chart").val(telegraph.chart);
         $("#variables").val(JSON.stringify(telegraph.variables));
 
         targets.replace(telegraph.targets);
-      });
+      }, function(name) { showAlert("no such graph: " + name) });
     };
 
     $(document).ready(function() {
@@ -183,6 +191,7 @@
 
       $("#duplicate").click(function() {
         $("#name").attr({contenteditable: true}).text(telegraph.name + " copy").focus();
+        $("#graph-menu").dropdown("toggle");
         document.execCommand("selectAll",false,null);
         return false;
       });
@@ -261,22 +270,25 @@
   </div>
 
   <div id="graph-container">
-    <span id="refresh">
-      <img class="icon" src="/telegraph/images/refresh.svg">
-    </span>
-
-    <div id="graph-header" class="dropdown">
-      <span id="graph-menu" class="dropdown-toggle" data-toggle="dropdown">
-        <img class="icon" src="/telegraph/images/graph.svg">
-        <span id="name"></span>
+    <div id="alerts"></div>
+    <div id="graph-header">
+      <span id="refresh">
+        <img class="icon" src="/telegraph/images/refresh.svg">
       </span>
-      <ul class="dropdown-menu" role="menu">
-        <li><a id="rename"    href="#">Rename</a></li>
-        <li><a id="duplicate" href="#">Duplicate</a></li>
-        <li><a id="close"     href="#">Close</a></li>
-        <li class="divider"></li>
-        <li><a id="delete"    href="#">Delete</a></li>
-      </ul>
+
+      <div id="graph-title" class="dropdown">
+        <span id="graph-name" class="dropdown-toggle" data-toggle="dropdown">
+          <img class="icon" src="/telegraph/images/graph.svg">
+          <span id="name"></span>
+        </span>
+        <ul id="graph-menu" class="dropdown-menu" role="menu">
+          <li><a id="rename"    href="#">Rename</a></li>
+          <li><a id="duplicate" href="#">Duplicate</a></li>
+          <li><a id="close"     href="#">Close</a></li>
+          <li class="divider"></li>
+          <li><a id="delete"    href="#">Delete</a></li>
+        </ul>
+      </div>
     </div>
 
     <div id="graph" class="chart">
