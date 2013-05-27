@@ -66,11 +66,11 @@
     };
 
     function markChanged(changed) {
-      var rename = $("#rename").parent();
+      var revert = $("#revert").parent();
       if (changed) {
-        rename.addClass("disabled");
+        revert.removeClass("disabled");
       } else {
-        rename.removeClass("disabled");
+        revert.addClass("disabled");
       }
 
       $("#save").attr("disabled", !changed);
