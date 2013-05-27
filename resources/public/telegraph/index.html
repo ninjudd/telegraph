@@ -34,7 +34,9 @@
       var query = sub(target.query);
       var shift = sub(target.shift);
 
-      var labelField = $("<span/>", {text: target.label, contenteditable: true}).blur(function(e) {
+      var labelField = $("<span/>", {text: target.label, contenteditable: true})
+      blurOnEnter(labelField);
+      labelField.blur(function(e) {
         var newLabel = $(this).text();
         if (newLabel != target.label) {
           target.label = newLabel;
@@ -129,6 +131,12 @@
       }, function(name) { showAlert("no such graph: " + name) });
     };
 
+    function blurOnEnter(selector) {
+      $(selector).keydown(function(e) {
+        if(e.keyCode == 13) $(this).blur();
+      });
+    };
+
     $(document).ready(function() {
       $("#add").click(function() {
         var query = $("#query").val();
@@ -152,37 +160,41 @@
         telegraph.from = $(this).val();
         redraw();
       });
+
       $("#until").change(function() {
         telegraph.until = $(this).val();
         redraw();
       });
+
       $("#chart").change(function() {
         telegraph.chart = $(this).val();
         redraw();
       });
+
       $("#variables").change(function() {
         var variables = $("#variables").val();
         telegraph.variables = variables ? JSON.parse(variables) : null
         redraw();
         targets.update();
       });
+
       $("#variables").focus(function() {
         $(this).css({height: "78px"});
         targets.update();
       });
+
       $("#variables").blur(function() {
         $(this).css({height: "21px"});
         targets.update();
       });
+
       $("#name").blur(function() {
         telegraph.name = $(this).text();
         telegraph.version = null;
         $(this).attr({contenteditable: false});
       });
 
-      $("#name").keydown(function(e) {
-        if(e.keyCode == 13) $(this).blur();
-      });
+      blurOnEnter("#name");
 
       $("#save").click(function() {
         telegraph.name = telegraph.name || prompt("Save graph as:");
