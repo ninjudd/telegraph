@@ -65,9 +65,23 @@
       $("#graph-header").css({display: telegraph.name ? "block" : "none"});
     };
 
+    function markChanged(changed) {
+      var rename = $("#rename").parent();
+      if (changed) {
+        rename.addClass("disabled");
+      } else {
+        rename.removeClass("disabled");
+      }
+
+      $("#save").attr("disabled", !changed);
+    }
+
     function redraw(name) {
       telegraph.draw("#graph", displayHeader);
       telegraph.hasVariables() ? $("#variables").show() : $("#variables").hide();
+
+      // Use draw count as a proxy for changes since we only redraw when a change is made.
+      markChanged(telegraph.draws > 1);
 
       var chart = $("#chart").val();
       display(".multi", chart == "multiChart");
@@ -300,7 +314,7 @@
           <span id="name"></span>
         </span>
         <ul id="graph-menu" class="dropdown-menu" role="menu">
-          <li class="disabled"><a id="rename"    href="#">Rename</a></li>
+          <li><a id="rename"    href="#">Rename</a></li>
           <li><a id="duplicate" href="#">Duplicate</a></li>
           <li><a id="revert"    href="#">Revert</a></li>
           <li><a id="close"     href="#">Close</a></li>

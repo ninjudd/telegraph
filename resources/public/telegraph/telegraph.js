@@ -8,6 +8,7 @@ var Telegraph = function (opts) {
   this.targets   = opts.targets;
   this.variables = opts.variables;
   this.chart     = opts.chart;
+  this.draws     = 0;
 };
 
 Telegraph.prototype.draw = function(selector, done) {
@@ -15,6 +16,7 @@ Telegraph.prototype.draw = function(selector, done) {
   $(selector).find("svg").text("");
 
   if (this.targets && this.targets.length > 0) {
+    this.draws++;
     this.svg = d3.select(selector).select("svg");
     this.nvChart = this.makeChart(this.chart);
     this.fetchData(this.targets, function(data) {
