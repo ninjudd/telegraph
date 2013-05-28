@@ -194,3 +194,19 @@ Telegraph.prototype.rename = function(opts) {
     }
   });
 };
+
+Telegraph.prototype.delete = function(opts) {
+  var self = this;
+  return $.ajax({
+    url: "/graph/delete",
+    data: JSON.stringify({name: self.name}),
+    type: "POST",
+    success: function(results) {
+      if (opts.success) opts.success();
+    },
+    error: function(results) {
+      var response = JSON.parse(results.responseText);
+      if (opts.error) opts.error(response.error);
+    }
+  });
+};

@@ -16,7 +16,7 @@
          :body {:error (format "The graph %s has been modified by someone else." name)}}))))
 
 (defn delete! [{:keys [graphs]} request]
-  (let [name (get (:params request) "name")]
+  (let [name (get (:body request) "name")]
     (if-let [old (utils/delete! graphs name)]
       {:body old}
       {:status 400

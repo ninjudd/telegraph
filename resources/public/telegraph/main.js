@@ -251,6 +251,22 @@ $(document).ready(function() {
     return false;
   });
 
+  $("#delete").click(function() {
+    $("#graph-menu").dropdown("toggle");
+    if (confirm("Graph " + telegraph.name + " will be permanently deleted. Are you sure?")) {
+      telegraph.delete({
+        success: function() {
+          showAlert("Deleted graph " + telegraph.name, "success");
+          load("");
+        },
+        error: function(error) {
+          showAlert(error, "error");
+        }
+      });
+    }
+    return false;
+  });
+
   $("#load").click(function() {
     var name = prompt("Load graph:");
     load(name);
