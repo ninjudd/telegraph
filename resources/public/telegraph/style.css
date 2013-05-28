@@ -222,6 +222,10 @@ body * {
   margin-bottom: 10px;
 }
 
+.ui-front {
+  z-index: 1011;
+}
+
 #load-form {
   display: none;
 }

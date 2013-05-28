@@ -296,9 +296,11 @@ $(document).ready(function() {
         e.stopPropagation();
       }).blur(function() {
         $("#load").popover("toggle");
-      }).typeahead({
-        source: function(query) {
-          return _.filter(options, function(name) { return name.indexOf(query) == 0 });
+      }).autocomplete({
+        minLength: 0,
+        source: function(request, response) {
+          var matches = _.filter(options, function(name) { return name.indexOf(request.term) >= 0 });
+          response(matches);
         }
       }).focus();
 
