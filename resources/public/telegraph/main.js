@@ -118,7 +118,7 @@ function load(name) {
     success: function(t) {;
                           telegraph = t;
                           _.bindAll(telegraph);
-                          
+
                           if (name != null) pushHistory(telegraph.name);
                           $("#from").val(telegraph.from);
                           $("#until").val(telegraph.until);
@@ -193,6 +193,7 @@ $(document).ready(function() {
 
   var renaming;
   $("#name").blur(function() {
+    var self = this;
     var name = $(this).text();
     if (renaming) {  // rename
       telegraph.rename({
@@ -203,7 +204,7 @@ $(document).ready(function() {
         },
         error: function(error) {
           showAlert(error);
-          $(this).text(telegraph.name);
+          $(self).text(telegraph.name);
         }
       });
       renaming = false;
