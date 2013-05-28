@@ -271,8 +271,9 @@ $(document).ready(function() {
     return false;
   });
 
-  var loadName = $("<input/>", {type: "text", id: "load-name", placeholder: "graph name"});
+  var loadName = $("<input/>", {type: "text", id: "load-name", placeholder: "load graph"});
   $("#load").popover({
+    placement: "right",
     html: true,
     content: loadName,
     trigger: "manual"
