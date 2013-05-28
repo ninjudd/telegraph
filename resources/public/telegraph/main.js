@@ -284,6 +284,7 @@ $(document).ready(function() {
     if ($(this).next('div.popover:visible').length == 0) {
       $(this).popover("show");
 
+      var options = [];
       $("#load-name").keydown(function(e) {
         if (e.keyCode == 13) {
           $(this).blur();
@@ -294,7 +295,16 @@ $(document).ready(function() {
         e.stopPropagation();
       }).blur(function() {
         $("#load").popover("toggle");
+      }).typeahead({
+        source: function(query) {
+          return _.filter(options, function(name) { return name.indexOf(query) == 0 });
+        }
       }).focus();
+
+      // Load typeahead asynchronously.
+      Telegraph.list(function(names) {
+        options = names;
+      });
 
       selectAll();
     } else {

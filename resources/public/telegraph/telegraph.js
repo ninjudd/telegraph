@@ -211,3 +211,11 @@ Telegraph.load = function(opts) {
   }
 };
 
+Telegraph.list = function(process) {
+  $.ajax({
+    url: "/graph/list",
+    success: function(results) {
+      process(results);
+    }
+  });
+};
