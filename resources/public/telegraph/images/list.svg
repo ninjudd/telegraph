@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.1" id="Calque_1"
+     x="0px" y="0px" width="16px" height="16px"
+     preserveAspectRatio="xMinYMin meet"
+     viewBox="1 1 15 15"
+     enable-background="new 0 0 16 16"
+     xml:space="preserve">
+  <g>
+    <rect x="4" y="4" width="8" height="1"/>
+    <rect x="4" y="6" width="8" height="1"/>
+    <rect x="4" y="8" width="8" height="1"/>
+    <rect x="4" y="10" width="8" height="1"/>
+    <path d="M2,2v11h4.171L8,13H14V2H2z M13,12h-2.172H5.171H3V3h10V12z"/>
+  </g>
+</svg>

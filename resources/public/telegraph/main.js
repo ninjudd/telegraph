@@ -273,7 +273,6 @@ $(document).ready(function() {
 
   var loadName = $("<input/>", {type: "text", id: "load-name", placeholder: "graph name"});
   $("#load").popover({
-    placement: "bottom",
     html: true,
     content: loadName,
     trigger: "manual"
@@ -281,20 +280,26 @@ $(document).ready(function() {
 
   $("#load").click(function(e) {
     e.stopPropagation();
-    $(this).popover("toggle");
 
-    $("#load-name").keydown(function(e) {
-      if (e.keyCode == 13) {
-        $(this).blur();
-        var name = $(this).val();
-        load(name);
-      }
-    }).blur(function() {
-      $("#load").popover("toggle");
-    });
+    if ($(this).next('div.popover:visible').length == 0) {
+      $(this).popover("show");
 
-    $("#load-name").focus();
-    selectAll();
+      $("#load-name").keydown(function(e) {
+        if (e.keyCode == 13) {
+          $(this).blur();
+          var name = $(this).val();
+          load(name);
+        }
+      }).click(function(e) {
+        e.stopPropagation();
+      }).blur(function() {
+        $("#load").popover("toggle");
+      }).focus();
+
+      selectAll();
+    } else {
+      $(this).popover("hide");
+    }
   });
 
   $("html").click(function() {
