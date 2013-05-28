@@ -187,7 +187,6 @@ body * {
 }
 
 #refresh {
-  display: none;
   float: right;
   margin: 10px;
 }
