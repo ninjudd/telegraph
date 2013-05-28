@@ -140,6 +140,10 @@ function blurOnEnter(selector) {
   });
 };
 
+function selectAll() {
+  document.execCommand("selectAll",false,null);
+};
+
 $(document).ready(function() {
   $("#add").click(function() {
     var query = $("#query").val();
@@ -227,7 +231,7 @@ $(document).ready(function() {
     renaming = true;
     $("#graph-menu").dropdown("toggle");
     $("#name").attr({contenteditable: true}).focus();
-    document.execCommand("selectAll",false,null);
+    selectAll();
     return false;
   });
 
@@ -267,9 +271,34 @@ $(document).ready(function() {
     return false;
   });
 
-  $("#load").click(function() {
-    var name = prompt("Load graph:");
-    load(name);
+  var loadName = $("<input/>", {type: "text", id: "load-name", placeholder: "graph name"});
+  $("#load").popover({
+    placement: "bottom",
+    html: true,
+    content: loadName,
+    trigger: "manual"
+  });
+
+  $("#load").click(function(e) {
+    e.stopPropagation();
+    $(this).popover("toggle");
+
+    $("#load-name").keydown(function(e) {
+      if (e.keyCode == 13) {
+        $(this).blur();
+        var name = $(this).val();
+        load(name);
+      }
+    }).blur(function() {
+      $("#load").popover("toggle");
+    });
+
+    $("#load-name").focus();
+    selectAll();
+  });
+
+  $("html").click(function() {
+    $("#load").popover("hide");
   });
 
   var $select = $("#baseUrl");
