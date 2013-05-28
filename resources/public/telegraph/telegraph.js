@@ -1,7 +1,7 @@
 var Telegraph = function (opts) {
   opts = opts || {chart: "lineChart"};
 
-  this.version   = opts.version;
+  this.hash      = opts.hash;
   this.name      = opts.name;
   this.from      = opts.from;
   this.until     = opts.until;
@@ -13,10 +13,11 @@ var Telegraph = function (opts) {
 
 Telegraph.prototype.draw = function(selector, done) {
   var self = this;
+  this.draws++;
+
   $(selector).find("svg").text("");
 
   if (this.targets && this.targets.length > 0) {
-    this.draws++;
     this.svg = d3.select(selector).select("svg");
     this.nvChart = this.makeChart(this.chart);
     this.fetchData(this.targets, function(data) {
@@ -134,7 +135,7 @@ Telegraph.prototype.save = function(opts) {
     var self = this;
     var data = {
       name: this.name,
-      version: this.version,
+      hash: this.hash,
       chart: this.chart,
       from: this.from,
       until: this.until,
@@ -148,7 +149,7 @@ Telegraph.prototype.save = function(opts) {
       data: JSON.stringify(data),
       type: "POST",
       success: function(results) {
-        self.version = results.version;
+        self.hash = results.hash;
         if (opts.success) opts.success(results);
       },
       error: function(results) {

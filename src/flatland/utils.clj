@@ -10,12 +10,13 @@
                  (locking ref
                    (spit file (pr-str new-state)))))))
 
-(defn save-versioned! [ref key version value]
+(defn save-hashed! [ref key hashed value]
   (dosync
    (let [old (get @ref key)]
      (when (or (nil? old)
-               (= version (:version old)))
-       (let [version (inc (or version 0))]
+               (= hashed (:hash old))
+               (:force value))
+       (let [hashed (hash value)]
          (alter ref assoc key
-                (assoc value :version version))
-         version)))))
+                (assoc value :hash hashed))
+         hashed)))))

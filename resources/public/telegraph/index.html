@@ -101,15 +101,18 @@
       $(selector).css({display: show ? "inline-block" : "none"})
     };
 
-    function save() {
+    function save(force) {
       telegraph.save({
+        force: force,
         success: function(results) {
-          showAlert(results.name + " saved");
+          showAlert(results.name + " saved", "success");
+          pushHistory(telegraph.name);
+          markChanged(false);
           displayHeader();
         },
         error: function(error) {
           if (confirm(error + " Would you like to overwrite?")) {
-            telegraph.save({force: true});
+            save(true);
           }
         }
       });
@@ -122,7 +125,7 @@
     function showAlert(text, type) {
       if (type) type = "alert-" + type;
       $("#alerts").append($("<div/>", {class: "alert fade in " + type, text: text}));
-      setTimeout(function() { $(".alert").alert('close'); }, 3000);
+      setTimeout(function() { $(".alert").alert('close'); }, 2000);
     };
 
     function hash() {
@@ -141,7 +144,10 @@
         $("#variables").val(JSON.stringify(telegraph.variables));
 
         targets.replace(telegraph.targets);
-      }, function(name) { showAlert("no such graph: " + name) });
+      }, function(name) {
+        showAlert("no such graph: " + name);
+        if (!telegraph) load("");
+      });
     };
 
     function blurOnEnter(selector) {
@@ -203,7 +209,8 @@
 
       $("#name").blur(function() {
         telegraph.name = $(this).text();
-        telegraph.version = null;
+        pushHistory(telegraph.name);
+        telegraph.hash = null;
         $(this).attr({contenteditable: false});
       });
 
@@ -217,6 +224,7 @@
       $("#duplicate").click(function() {
         $("#graph-menu").dropdown("toggle");
         $("#name").attr({contenteditable: true}).text(telegraph.name + " copy").focus();
+        markChanged(true);
         document.execCommand("selectAll",false,null);
         return false;
       });
@@ -295,7 +303,7 @@
         <textarea id="variables" placeholder="macro variables"></textarea>
         <div class="buttons">
           <span id="load" class="btn">Load</span>
-          <span id="save" class="btn">Save</span>
+          <span id="save" class="btn" disabled>Save</span>
         </div>
       </div>
     </div>
