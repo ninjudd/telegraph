@@ -160,19 +160,37 @@ Telegraph.prototype.save = function(opts) {
   }
 };
 
-Telegraph.load = function(name, success, error) {
-  if (name) {
+Telegraph.load = function(opts) {
+  if (opts.name) {
     $.ajax({
-      url: "/graph/load?name=" + encodeURIComponent(name),
+      url: "/graph/load?name=" + encodeURIComponent(opts.name),
       success: function(results) {
         if (results) {
-          success(new Telegraph(results));
+          opts.success(new Telegraph(results));
         } else {
-          error(name);
+          if (opts.error) opts.error(opts.name);
         }
       }
     });
   } else {
-    success(new Telegraph());
+    opts.success(new Telegraph());
   }
+};
+
+Telegraph.prototype.rename = function(opts) {
+  var self = this;
+  var from = this.name;
+  return $.ajax({
+    url: "/graph/rename",
+    data: JSON.stringify({from: self.name, to: opts.name}),
+    type: "POST",
+    success: function(results) {
+      self.name = opts.name;
+      if (opts.success) opts.success(from);
+    },
+    error: function(results) {
+      var response = JSON.parse(results.responseText);
+      if (opts.error) opts.error(response.error);
+    }
+  });
 };

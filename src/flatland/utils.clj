@@ -1,7 +1,7 @@
 (ns flatland.utils)
 
 (defn file-ref [file]
-  (let [ref (ref (read-string 
+  (let [ref (ref (read-string
                   (try (slurp file)
                        (catch Exception e
                          "{}"))))]
@@ -10,7 +10,7 @@
                  (locking ref
                    (spit file (pr-str new-state)))))))
 
-(defn save-hashed! [ref key hashed value]
+(defn save! [ref key hashed value]
   (dosync
    (let [old (get @ref key)]
      (when (or (nil? old)
@@ -20,3 +20,19 @@
          (alter ref assoc key
                 (assoc value :hash hashed))
          hashed)))))
+
+(defn delete! [ref key]
+  (dosync
+   (let [old (get @ref key)]
+     (alter ref dissoc key)
+     old)))
+
+(defn rename! [ref from to]
+  (dosync
+   (if (get @ref to)
+     from
+     (when-let [val (get @ref from)]
+       (alter ref dissoc from)
+       (alter ref assoc to
+              (assoc val :name to))
+       to))))

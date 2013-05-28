@@ -133,20 +133,24 @@
     };
 
     function load(name) {
-      Telegraph.load(name == null ? hash() : name, function(t) {;
-        telegraph = t;
-        _.bindAll(telegraph);
+      Telegraph.load({
+        name: name == null ? hash() : name,
+        success: function(t) {;
+          telegraph = t;
+          _.bindAll(telegraph);
+  
+          if (name != null) pushHistory(telegraph.name);
+          $("#from").val(telegraph.from);
+          $("#until").val(telegraph.until);
+          $("#chart").val(telegraph.chart);
+          $("#variables").val(JSON.stringify(telegraph.variables));
 
-        if (name != null) pushHistory(telegraph.name);
-        $("#from").val(telegraph.from);
-        $("#until").val(telegraph.until);
-        $("#chart").val(telegraph.chart);
-        $("#variables").val(JSON.stringify(telegraph.variables));
-
-        targets.replace(telegraph.targets);
-      }, function(name) {
-        showAlert("no such graph: " + name);
-        if (!telegraph) load("");
+          targets.replace(telegraph.targets);
+        },
+        error: function(name) {
+          showAlert("no such graph: " + name);
+          if (!telegraph) load("");
+        }
       });
     };
 
@@ -207,10 +211,27 @@
         targets.update();
       });
 
+      var renaming;
       $("#name").blur(function() {
-        telegraph.name = $(this).text();
-        pushHistory(telegraph.name);
-        telegraph.hash = null;
+        var name = $(this).text();
+        if (renaming) {  // rename
+          telegraph.rename({
+            name: name,
+            success: function(from) {
+              showAlert("Renamed " + from + " to " + name, "success");
+              pushHistory(telegraph.name);
+            },
+            error: function(error) {
+              showAlert(error);
+              $(this).text(telegraph.name);
+            }
+          });
+          renaming = false;
+        } else {  // duplicate
+          telegraph.name = name;
+          pushHistory(telegraph.name);
+          telegraph.hash = null;
+        }
         $(this).attr({contenteditable: false});
       });
 
@@ -219,6 +240,14 @@
       $("#save").click(function() {
         telegraph.name = telegraph.name || prompt("Save graph as:");
         save();
+      });
+
+      $("#rename").click(function() {
+        renaming = true;
+        $("#graph-menu").dropdown("toggle");
+        $("#name").attr({contenteditable: true}).focus();
+        document.execCommand("selectAll",false,null);
+        return false;
       });
 
       $("#duplicate").click(function() {
