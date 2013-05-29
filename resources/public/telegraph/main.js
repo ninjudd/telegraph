@@ -39,7 +39,7 @@ function targetCells(target) {
     cells.push({text: target.type});
     cells.push({html: (target.yAxis == 1 ? "&larr;" : "&rarr;")});
   } else if (chart == "linePlusBarChart") {
-    cells.push({text: target.bar || "line"});
+    cells.push({text: target.bar ? "bar" : "line"});
   }
   return cells;
 };
@@ -74,9 +74,14 @@ function fillQuery(target) {
   $("#query").val(target.query);
   $("#source").val(target.source);
   $("#shift").val(target.shift);
-  $("#bar").val(target.bar);
-  $("#type").val(target.type);
   $("#yAxis").val(target.yAxis);
+
+  flipClass("active", $("#multi-line"), target.type == "line");
+  flipClass("active", $("#multi-bar"),  target.type == "bar");
+  flipClass("active", $("#multi-area"), target.type == "area");
+
+  flipClass("active", $("#line"), !target.bar);
+  flipClass("active", $("#bar"), target.bar);
 };
 
 function display(selector, show) {
@@ -158,6 +163,11 @@ function flipClass(classString, element, state) {
   state ? element.addClass(classString) : element.removeClass(classString);
 };
 
+function activeId(selector) {
+console.log($(selector).find(".active").length)
+  return $(selector).find(".active")[0].id;
+};
+
 $(document).ready(function() {
   $("#add").click(function() {
     var query = $("#query").val();
@@ -167,9 +177,9 @@ $(document).ready(function() {
       query:  query,
       shift:  shift,
       source: $("#source").val(),
-      bar:    $("#bar").val(),
-      type:   $("#type").val(),
-      yAxis:  $("#yAxis").val()
+      bar:    activeId("#line-bar") == "bar",
+      type:   activeId("#multi-type"),
+      yAxis:  activeId("#axis")
     });
   });
 

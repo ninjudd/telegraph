@@ -132,12 +132,6 @@ body * {
   font-family: monospace;
 }
 
-#bar {
-  height: auto;
-  width: 70px;
-  font-family: monospace;
-}
-
 #type {
   width: 70px;
   height: auto;

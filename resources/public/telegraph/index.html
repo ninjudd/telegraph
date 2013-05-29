@@ -28,24 +28,22 @@
       <textarea id="query"></textarea>
       <div id="query-options">
         <input type="text" id="shift" placeholder="timeshift">
-        <span class="line-plus-bar-options">
-          <select id="bar">
-            <option value="">line</option>
-            <option value="bar">bar</option>
-          </select>
-        </span>
+        <div id="line-bar" class="line-plus-bar-options btn-group" data-toggle="buttons-radio">
+          <button id="line" type="button" class="btn active">Line</button>
+          <button id="bar"  type="button" class="btn">Bar</button>
+        </div>
 
-        <span class="multi-options">
-          <select id="type">
-            <option value="line">line</option>
-            <option value="bar">bar</option>
-            <option value="area">area</option>
-          </select>
-          <select id="yAxis">
-            <option value="1">left</option>
-            <option value="2">right</option>
-          </select>
-        </span>
+        <div id="multi-type" class="multi-options btn-group" data-toggle="buttons-radio">
+          <button id="line" type="button" class="btn active">Line</button>
+          <button id="bar"  type="button" class="btn">Bar</button>
+          <button id="area" type="button" class="btn">Area</button>
+        </div>
+
+        <div id="axis" class="multi-options btn-group" data-toggle="buttons-radio">
+          <button id="1"  type="button" class="btn active">Left</button>
+          <button id="2" type="button" class="btn">Right</button>
+        </div>
+
         <div class="buttons">
           <button id="add" class="btn">Add</span>
         </div>
