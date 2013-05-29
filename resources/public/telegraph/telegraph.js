@@ -11,6 +11,8 @@ var Telegraph = function (opts) {
   this.draws     = 0;
 };
 
+Telegraph.baseUrls = {};
+
 Telegraph.prototype.draw = function(selector, done) {
   var self = this;
   this.draws++;
@@ -79,7 +81,7 @@ Telegraph.prototype.fetchData = function(targets, done) {
   targets = _.compact(targets);
   var targetGroups = _.groupBy(targets, function(target, index) {
     target.index = index;
-    return [target.baseUrl, target.shift]
+    return [target.source, target.shift]
   });
 
   var promises = _.map(targetGroups, function(targets) {
@@ -103,7 +105,7 @@ Telegraph.prototype.getData = function(data, targets) {
   };
 
   var labels = [];
-  var url = targets[0].baseUrl + "?" + _.compact(_.map(targets, function(t, i) {
+  var url = Telegraph.baseUrls[targets[0].source] + "?" + _.compact(_.map(targets, function(t, i) {
     var query = self.subVariables(t.query);
     labels[i] = self.subVariables(t.label);
     return "target=" + encodeURIComponent(query);

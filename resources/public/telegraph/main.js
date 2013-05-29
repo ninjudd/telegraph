@@ -71,7 +71,7 @@ function redraw(name) {
 
 function fillQuery(target) {
   $("#query").val(target.query);
-  $("#baseUrl").val(target.baseUrl);
+  $("#source").val(target.source);
   $("#shift").val(target.shift);
   $("#bar").val(target.bar);
   $("#type").val(target.type);
@@ -154,13 +154,13 @@ $(document).ready(function() {
     var query = $("#query").val();
     var shift = $("#shift").val();
     targets.add({
-      label:    _.compact([shift, query]).join(":"),
-      query:    query,
-      shift:    shift,
-      baseUrl:  $("#baseUrl").val(),
-      bar:      $("#bar").val(),
-      type:     $("#type").val(),
-      yAxis:    $("#yAxis").val()
+      label:  _.compact([shift, query]).join(":"),
+      query:  query,
+      shift:  shift,
+      source: $("#source").val(),
+      bar:    $("#bar").val(),
+      type:   $("#type").val(),
+      yAxis:  $("#yAxis").val()
     });
   });
 
@@ -328,9 +328,9 @@ $(document).ready(function() {
     $("#load").popover("hide");
   });
 
-  var $select = $("#baseUrl");
-  _.each(telegraphBaseUrls, function (base) {
-    $select.append('<option value=' + base.url + '>' + base.label + '</option>');
+  var $select = $("#source");
+  _.each(telegraphSources, function (source) {
+    $select.append('<option value=' + source + '>' + source + '</option>');
   });
 
   $("#from").focus(function(e) { $(this).attr("placeholder", "-24h") });
