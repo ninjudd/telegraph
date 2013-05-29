@@ -1,7 +1,9 @@
 var telegraph;
-var targets = new Table("#targets", targetCells, function(targets) {
-  telegraph.targets = targets.items;
-  redraw();
+var targets = new Table("#targets", Table.deletable(targetCells), {
+  change: function(targets) {
+    telegraph.targets = targets.items;
+    redraw();
+  }
 });
 _.bindAll(targets)
 

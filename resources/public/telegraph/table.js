@@ -1,9 +1,21 @@
-var Table = function (selector, toCells, change) {
+var Table = function (selector, toCells, opts) {
+  opts = opts || {};
+
   this.selector  = selector
   this.toCells   = toCells;
-  this.change    = change || function () {};
+  this.change    = opts.change || function () {};
   this.items     = [];
   this.itemCount = 0;
+};
+
+Table.deletable = function(toCells) {
+  return function(item) {
+    var cells = toCells(item);
+    var removeLink = $("<span/>", {id: "remove", html: "&times;"})
+    removeLink.on("click", function() { self.remove(item.id) });
+    cells.push({html: removeLink});
+    return cells;
+  };
 };
 
 Table.prototype.add = function(item) {
@@ -31,11 +43,6 @@ Table.prototype.remove = function(id) {
   this.update();
 };
 
-Table.prototype.removeLink = function(id) {
-  var self = this;
-  return $("<span/>", {id: "remove", html: "&times;"}).on("click", function() { self.remove(id) });
-};
-
 Table.prototype.update = function() {
   var self = this;
   var table = $(this.selector);
@@ -43,7 +50,6 @@ Table.prototype.update = function() {
   _.each(this.items, function(item) {
     var row   = $("<tr/>")
     var cells = self.toCells(item);
-    cells.push({html: self.removeLink(item.id)});
     _.each(cells, function(opts) {
       row.append($("<td/>", opts));
     });
