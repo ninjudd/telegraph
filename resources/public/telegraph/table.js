@@ -2,8 +2,8 @@ var Table = function (selector, opts) {
   opts = opts || {};
 
   this.selector  = selector
-  this.toCells   = opts.toCells || function (item) { return _.map(item, function() {}) };
-  this.change    = opts.change || function () {};
+  this.toCells   = opts.toCells || Table.defaultCells;
+  this.change    = opts.change;
   this.invert    = opts.invert;
   this.class     = opts.class;
   this.items     = opts.items || [];
@@ -18,6 +18,12 @@ Table.deletable = function(toCells) {
     cells.push({html: removeLink});
     return cells;
   };
+};
+
+Table.defaultCells = function (item) {
+  return _.map(item, function(val) {
+    return {text: val};
+  })
 };
 
 Table.prototype.add = function(item) {

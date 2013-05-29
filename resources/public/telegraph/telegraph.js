@@ -43,15 +43,25 @@ Telegraph.prototype.draw = function(selector, done) {
 
 Telegraph.prototype.tableDraw = function(selector, data) {
   var self = this;
-
+  var times = [""].concat(_.map(data[0].values, function (val) {
+    return Telegraph.formatTime(val.x);
+  }));
+  var items = _.map(data, function (item) {
+    return [item.key].concat(_.map(item.values, function(val) { return val.y }));
+  });
+  this.table = new Table(selector, {
+    class: "table table-striped",
+    items: [times].concat(items)
+  })
+  _.bindAll(this.table);
+  this.table.update();
 };
 
 Telegraph.prototype.nvDraw = function(selector, data) {
   var self = this;
-
   $(selector).append("<svg><svg/>");
   this.svg = d3.select(selector).select("svg");
-  this.nvChart = this.makeChart(this.chart);
+  this.nvChart = Telegraph.makeChart(this.chart);
 
   nv.addGraph(function() {
     self.svg.datum(data)
@@ -81,14 +91,18 @@ Telegraph.prototype.hasVariables = function() {
   return _.some(this.targets, function(t) { return t && self.queryHasVariables(t.query) });
 };
 
-Telegraph.prototype.makeChart = function(chart) {
+Telegraph.makeChart = function(chart) {
   var nvChart = nv.models[chart]();
-  nvChart.xAxis.tickFormat(function(d) { return d3.time.format('%X')(new Date(d * 1000)) });
+  nvChart.xAxis.tickFormat(Telegraph.formatTime);
   if (nvChart.yAxis)  nvChart.yAxis.tickFormat(d3.format('d'));
   if (nvChart.yAxis1) nvChart.yAxis1.tickFormat(d3.format('d'));
   if (nvChart.yAxis2) nvChart.yAxis2.tickFormat(d3.format('d'));
   _.bindAll(nvChart);
   return nvChart;
+};
+
+Telegraph.formatTime = function(d) {
+  return d3.time.format('%X')(new Date(d * 1000))
 };
 
 Telegraph.prototype.update = function() {
