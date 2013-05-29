@@ -222,6 +222,10 @@ body * {
   margin-bottom: 10px;
 }
 
+.btn:disabled {
+  pointer-events: none;
+}
+
 .ui-front {
   z-index: 1011;
 }
