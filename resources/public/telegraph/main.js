@@ -195,6 +195,7 @@ $(document).ready(function() {
   $("#chart").change(function() {
     telegraph.chart = $(this).val();
     redraw();
+    targets.update();
   });
 
   $("#invert").click(function(e) {
