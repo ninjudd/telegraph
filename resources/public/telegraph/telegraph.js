@@ -9,6 +9,7 @@ var Telegraph = function (opts) {
   this.variables = opts.variables;
   this.chart     = opts.chart;
   this.total     = opts.total;
+  this.invert    = opts.invert;
   this.refresh   = opts.refresh;
   this.draws     = 0;
 };
@@ -63,6 +64,7 @@ Telegraph.prototype.tableDraw = function(selector, data) {
   }
 
   this.table = new Table(selector, {
+    invert: this.invert,
     class: "table table-striped",
     items: [times].concat(items)
   })
