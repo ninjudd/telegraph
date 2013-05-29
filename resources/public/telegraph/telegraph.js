@@ -19,36 +19,51 @@ Telegraph.prototype.draw = function(selector, done) {
   var self = this;
   this.draws++;
 
-  $(selector).find("svg").text("");
+  $(selector).html("");
   if (this.refreshInterval) clearInterval(this.refreshInterval);
 
   if (this.targets && this.targets.length > 0) {
-    this.svg = d3.select(selector).select("svg");
-    this.nvChart = this.makeChart(this.chart);
     this.fetchData(this.targets, function(data) {
-      nv.addGraph(function() {
-        self.svg.datum(data)
-            .transition().duration(500)
-            .call(self.nvChart);
-        if (done) done();
-        return self.nvChart;
-      });
+      if (self.chart == 'table') {
+        self.tableDraw(selector, data);
+      } else {
+        self.nvDraw(selector, data);
+      }
     });
-
-    nv.utils.windowResize(function() {
-      self.nvChart.update()
-    });
+    if (done) done();
 
     var refresh = this.refresh;
     if (this.refresh == null) refresh = Telegraph.defaultRefresh;
     if (refresh) {
-      this.refreshInterval = setInterval(function () {
-        self.update();
-      }, refresh * 1000);
+      this.refreshInterval = setInterval(_.bind(this.update, this), refresh * 1000);
     }
   } else {
     if (done) done();
   }
+};
+
+Telegraph.prototype.tableDraw = function(selector, data) {
+  var self = this;
+
+};
+
+Telegraph.prototype.nvDraw = function(selector, data) {
+  var self = this;
+
+  $(selector).append("<svg><svg/>");
+  this.svg = d3.select(selector).select("svg");
+  this.nvChart = this.makeChart(this.chart);
+
+  nv.addGraph(function() {
+    self.svg.datum(data)
+        .transition().duration(500)
+        .call(self.nvChart);
+    return self.nvChart;
+  });
+
+  nv.utils.windowResize(function() {
+    self.nvChart.update()
+  });
 };
 
 Telegraph.prototype.subVariables = function(target) {
