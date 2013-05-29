@@ -346,7 +346,7 @@ $(document).ready(function() {
   $("#until").focus(function(e) { $(this).attr("placeholder", "-0h") });
   $("#until").blur(function(e)  { $(this).attr("placeholder", "until") });
 
-  $("#refresh").focus(function(e) { $(this).attr("placeholder", "60") });
+  $("#refresh").focus(function(e) { $(this).attr("placeholder", Telegraph.defaultRefresh) });
   $("#refresh").blur(function(e)  { $(this).attr("placeholder", "refresh") });
 
   $("#shift").focus(function(e) { $(this).attr("placeholder", "-0h") });
