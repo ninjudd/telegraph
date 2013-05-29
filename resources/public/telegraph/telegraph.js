@@ -109,6 +109,7 @@ Telegraph.prototype.hasVariables = function() {
 Telegraph.makeChart = function(chart) {
   var nvChart = nv.models[chart]();
   nvChart.xAxis.tickFormat(Telegraph.formatTime);
+  nvChart.margin({left: 40, right: 30, bottom: 20, top: 20});
   if (nvChart.yAxis)  nvChart.yAxis.tickFormat(d3.format('d'));
   if (nvChart.yAxis1) nvChart.yAxis1.tickFormat(d3.format('d'));
   if (nvChart.yAxis2) nvChart.yAxis2.tickFormat(d3.format('d'));
