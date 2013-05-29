@@ -1,5 +1,4 @@
 var Telegraph = function (opts) {
-console.log(opts)
   opts = opts || {chart: "lineChart"};
 
   this.hash      = opts.hash;
