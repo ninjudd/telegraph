@@ -79,7 +79,6 @@ Telegraph.prototype.makeChart = function(chart) {
 
 Telegraph.prototype.update = function() {
   var self = this;
-console.log("fetching");
   this.fetchData(this.targets, function(data) {
     self.svg.datum(data);
     self.nvChart.update();
