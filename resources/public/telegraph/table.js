@@ -1,11 +1,11 @@
-var Table = function (selector, toCells, opts) {
+var Table = function (selector, opts) {
   opts = opts || {};
 
   this.selector  = selector
-  this.toCells   = toCells;
+  this.toCells   = opts.toCells || function (item) { return _.map(item, function() {}) };
   this.change    = opts.change || function () {};
   this.invert    = opts.invert;
-  this.items     = [];
+  this.items     = opts.items || [];
   this.itemCount = 0;
 };
 

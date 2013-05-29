@@ -1,5 +1,6 @@
 var telegraph;
-var targets = new Table("#targets", Table.deletable(targetCells), {
+var targets = new Table("#targets", {
+  toCells: Table.deletable(targetCells),
   change: function(targets) {
     telegraph.targets = targets.items;
     redraw();
