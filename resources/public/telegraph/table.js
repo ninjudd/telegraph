@@ -12,6 +12,7 @@ var Table = function (selector, opts) {
 
 Table.deletable = function(toCells) {
   return function(item) {
+    var self = this;
     var cells = toCells(item);
     var removeLink = $("<span/>", {id: "remove", html: "&times;"})
     removeLink.on("click", function() { self.remove(item.id) });
