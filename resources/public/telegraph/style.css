@@ -105,6 +105,11 @@ body * {
   width: 60px;
 }
 
+#refresh {
+  font-family: monospace;
+  width: 80px;
+}
+
 #variables {
   width: 180px;
   height: 21px;
@@ -186,12 +191,12 @@ body * {
   text-align: center;
 }
 
-#refresh {
+#refresh-graph {
   float: right;
   margin: 10px;
 }
 
-#refresh:hover {
+#refresh-graph:hover {
   cursor: pointer;
 }
 

@@ -1,4 +1,5 @@
 var Telegraph = function (opts) {
+console.log(opts)
   opts = opts || {chart: "lineChart"};
 
   this.hash      = opts.hash;
@@ -8,6 +9,7 @@ var Telegraph = function (opts) {
   this.targets   = opts.targets;
   this.variables = opts.variables;
   this.chart     = opts.chart;
+  this.refresh   = opts.refresh;
   this.draws     = 0;
 };
 
@@ -18,6 +20,7 @@ Telegraph.prototype.draw = function(selector, done) {
   this.draws++;
 
   $(selector).find("svg").text("");
+  if (this.refreshInterval) clearInterval(this.refreshInterval);
 
   if (this.targets && this.targets.length > 0) {
     this.svg = d3.select(selector).select("svg");
@@ -35,6 +38,14 @@ Telegraph.prototype.draw = function(selector, done) {
     nv.utils.windowResize(function() {
       self.nvChart.update()
     });
+
+    var refresh = this.refresh;
+    if (this.refresh == null) refresh = Telegraph.defaultRefresh;
+    if (refresh) {
+      this.refreshInterval = setInterval(function () {
+        self.update();
+      }, refresh * 1000);
+    }
   } else {
     if (done) done();
   }
@@ -68,6 +79,7 @@ Telegraph.prototype.makeChart = function(chart) {
 
 Telegraph.prototype.update = function() {
   var self = this;
+console.log("fetching");
   this.fetchData(this.targets, function(data) {
     self.svg.datum(data);
     self.nvChart.update();
@@ -141,6 +153,7 @@ Telegraph.prototype.save = function(opts) {
       chart: this.chart,
       from: this.from,
       until: this.until,
+      refresh: this.refresh,
       targets: this.targets,
       variables: this.variables,
       force: opts.force

@@ -115,19 +115,21 @@ function hash() {
 
 function load(name) {
   Telegraph.load({
+    refresh: 3000,
     name: name == null ? hash() : name,
-    success: function(t) {;
-                          telegraph = t;
-                          _.bindAll(telegraph);
+    success: function(t) {
+      telegraph = t;
+      _.bindAll(telegraph);
 
-                          if (name != null) pushHistory(telegraph.name);
-                          $("#from").val(telegraph.from);
-                          $("#until").val(telegraph.until);
-                          $("#chart").val(telegraph.chart);
-                          $("#variables").val(JSON.stringify(telegraph.variables));
-
-                          targets.replace(telegraph.targets);
-                         },
+      if (name != null) pushHistory(telegraph.name);
+      $("#from").val(telegraph.from);
+      $("#until").val(telegraph.until);
+      $("#refresh").val(telegraph.refresh);
+      $("#chart").val(telegraph.chart);
+      $("#variables").val(JSON.stringify(telegraph.variables));
+      
+      targets.replace(telegraph.targets);
+    },
     error: function(name) {
       showAlert("no such graph: " + name);
       if (!telegraph) load("");
@@ -164,7 +166,7 @@ $(document).ready(function() {
     });
   });
 
-  $("#refresh").click(function() {
+  $("#refresh-graph").click(function() {
     telegraph.update();
   });
 
@@ -175,6 +177,11 @@ $(document).ready(function() {
 
   $("#until").change(function() {
     telegraph.until = $(this).val();
+    redraw();
+  });
+
+  $("#refresh").change(function() {
+    telegraph.refresh = parseInt($(this).val());
     redraw();
   });
 
@@ -335,8 +342,13 @@ $(document).ready(function() {
 
   $("#from").focus(function(e) { $(this).attr("placeholder", "-24h") });
   $("#from").blur(function(e)  { $(this).attr("placeholder", "from") });
+
   $("#until").focus(function(e) { $(this).attr("placeholder", "-0h") });
   $("#until").blur(function(e)  { $(this).attr("placeholder", "until") });
+
+  $("#refresh").focus(function(e) { $(this).attr("placeholder", "60") });
+  $("#refresh").blur(function(e)  { $(this).attr("placeholder", "refresh") });
+
   $("#shift").focus(function(e) { $(this).attr("placeholder", "-0h") });
   $("#shift").blur(function(e)  { $(this).attr("placeholder", "timeshift") });
 });
