@@ -87,6 +87,10 @@ body * {
   display: none;
 }
 
+.visible-options {
+  display: inline-block;
+}
+
 #query-options {
   position: absolute;
   bottom: 0;
@@ -129,18 +133,6 @@ body * {
 #chart {
   height: auto;
   width: 200px;
-  font-family: monospace;
-}
-
-#type {
-  width: 70px;
-  height: auto;
-  font-family: monospace;
-}
-
-#yAxis {
-  height: auto;
-  width: 70px;
   font-family: monospace;
 }
 

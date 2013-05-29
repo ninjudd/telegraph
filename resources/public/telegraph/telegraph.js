@@ -177,9 +177,9 @@ Telegraph.prototype.getData = function(data, targets) {
         data[target.index] = {
           key:    labels[i],
           values: datapoints,
-          bar:    target.bar,
+          bar:    target.type == 'bar',
           type:   target.type,
-          yAxis:  target.yAxis
+          yAxis:  target.axis == 'right' ? 2 : 1,
         };
       });
     }

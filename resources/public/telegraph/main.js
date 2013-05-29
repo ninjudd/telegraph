@@ -30,16 +30,16 @@ function targetCells(target) {
 
   var cells = [
     {html: labelField},
-    {class: "monospace", html: $("<a/>", {text: query}).click(_.partial(fillQuery, target))},
+    {class: "monospace", html: $("<a/>", {text: query}).click(_.partial(fillTarget, target))},
     {class: "monospace", text: shift}
   ]
   var chart = $("#chart").val();
 
   if (chart == "multiChart") {
     cells.push({text: target.type});
-    cells.push({html: (target.yAxis == 1 ? "&larr;" : "&rarr;")});
+    cells.push({html: (target.axis == "right" ? "&rarr;" : "&larr;")});
   } else if (chart == "linePlusBarChart") {
-    cells.push({text: target.bar ? "bar" : "line"});
+    cells.push({text: target.type});
   }
   return cells;
 };
@@ -65,23 +65,24 @@ function redraw(name) {
   markChanged(telegraph.draws > 1);
 
   var chart = $("#chart").val();
-  display(".table-options", chart == "table");
-  display(".multi-options", chart == "multiChart");
-  display(".line-plus-bar-options", chart == "linePlusBarChart");
+
+  $(".table-options, .multi-options, .line-plus-bar-options").removeClass("visible-options");
+  if (chart == "table")            $(".table-options").addClass("visible-options");
+  if (chart == "multiChart")       $(".multi-options").addClass("visible-options");
+  if (chart == "linePlusBarChart") $(".line-plus-bar-options").addClass("visible-options");
 };
 
-function fillQuery(target) {
+function fillTarget(target) {
   $("#query").val(target.query);
   $("#source").val(target.source);
   $("#shift").val(target.shift);
-  $("#yAxis").val(target.yAxis);
 
-  flipClass("active", $("#multi-line"), target.type == "line");
-  flipClass("active", $("#multi-bar"),  target.type == "bar");
-  flipClass("active", $("#multi-area"), target.type == "area");
+  flipClass("active", $("#left"),  target.axis != "right");
+  flipClass("active", $("#right"), target.axis == "right");
 
-  flipClass("active", $("#line"), !target.bar);
-  flipClass("active", $("#bar"), target.bar);
+  flipClass("active", $("#line"), target.type == "line");
+  flipClass("active", $("#bar"),  target.type == "bar");
+  flipClass("active", $("#area"), target.type == "area");
 };
 
 function display(selector, show) {
@@ -159,7 +160,8 @@ function confirmRevert() {
   return !isChanged || confirm("All unsaved changes to " + telegraph.name + " will be lost. Are you sure?");
 };
 
-function flipClass(classString, element, state) {
+function flipClass(classString, selector, state) {
+  var element = $(selector);
   state ? element.addClass(classString) : element.removeClass(classString);
 };
 
@@ -177,9 +179,8 @@ $(document).ready(function() {
       query:  query,
       shift:  shift,
       source: $("#source").val(),
-      bar:    activeId("#line-bar") == "bar",
-      type:   activeId("#multi-type"),
-      yAxis:  activeId("#axis")
+      type:   activeId("#type"),
+      axis:   activeId("#axis")
     });
   });
 
