@@ -45,14 +45,15 @@ function displayHeader() {
   $("#graph-header").css({display: telegraph.name ? "block" : "none"});
 };
 
+var isChanged;
 function markChanged(changed) {
+  isChanged = changed;
   var revert = $("#revert").parent();
   if (changed) {
     revert.removeClass("disabled");
   } else {
     revert.addClass("disabled");
   }
-
   $("#save").attr("disabled", !changed);
 }
 
@@ -142,6 +143,10 @@ function blurOnEnter(selector) {
 
 function selectAll() {
   document.execCommand("selectAll",false,null);
+};
+
+function confirmRevert() {
+  return !isChanged || confirm("All unsaved changes to " + telegraph.name + " will be lost. Are you sure?");
 };
 
 $(document).ready(function() {
@@ -245,14 +250,18 @@ $(document).ready(function() {
 
   $("#revert").click(function() {
     $("#graph-menu").dropdown("toggle");
-    load(telegraph.name);
-    return false;
+    if (confirmRevert()) {
+      load(telegraph.name);
+      return false;
+    }
   });
 
   $("#close").click(function() {
     $("#graph-menu").dropdown("toggle");
-    load("");
-    return false;
+    if (confirmRevert()) {
+      load("");
+      return false;
+    }
   });
 
   $("#delete").click(function() {
