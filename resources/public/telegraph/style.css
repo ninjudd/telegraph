@@ -75,11 +75,15 @@ body * {
   width: 150px;
 }
 
-.line-plus-bar {
+.line-plus-bar-options {
   display: none;
 }
 
-.multi {
+.multi-options {
+  display: none;
+}
+
+.table-options {
   display: none;
 }
 

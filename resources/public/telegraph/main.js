@@ -53,11 +53,7 @@ var isChanged;
 function markChanged(changed) {
   isChanged = changed;
   var revert = $("#revert").parent();
-  if (changed) {
-    revert.removeClass("disabled");
-  } else {
-    revert.addClass("disabled");
-  }
+  flipClass("disabled", revert, !changed);
   $("#save").attr("disabled", !changed);
 }
 
@@ -69,8 +65,9 @@ function redraw(name) {
   markChanged(telegraph.draws > 1);
 
   var chart = $("#chart").val();
-  display(".multi", chart == "multiChart");
-  display(".line-plus-bar", chart == "linePlusBarChart");
+  display(".table-options", chart == "table");
+  display(".multi-options", chart == "multiChart");
+  display(".line-plus-bar-options", chart == "linePlusBarChart");
 };
 
 function fillQuery(target) {
@@ -131,7 +128,9 @@ function load(name) {
       $("#refresh").val(telegraph.refresh);
       $("#chart").val(telegraph.chart);
       $("#variables").val(JSON.stringify(telegraph.variables));
-      
+      flipClass("active", $("#invert"),    telegraph.invert);
+      flipClass("active", $("#summarize"), telegraph.summarize);
+
       targets.replace(telegraph.targets);
     },
     error: function(name) {
@@ -153,6 +152,10 @@ function selectAll() {
 
 function confirmRevert() {
   return !isChanged || confirm("All unsaved changes to " + telegraph.name + " will be lost. Are you sure?");
+};
+
+function flipClass(classString, element, state) {
+  state ? element.addClass(classString) : element.removeClass(classString);
 };
 
 $(document).ready(function() {
@@ -191,6 +194,20 @@ $(document).ready(function() {
 
   $("#chart").change(function() {
     telegraph.chart = $(this).val();
+    redraw();
+  });
+
+  $("#invert").click(function(e) {
+    e.stopPropagation(); // Make sure the button is toggled before we check it.
+    $(this).toggleClass("active");
+    telegraph.invert = $(this).hasClass("active");
+    redraw();
+  });
+
+  $("#summarize").click(function(e) {
+    e.stopPropagation(e); // Make sure the button is toggled before we check it.
+    $(this).toggleClass("active");
+    telegraph.summarize = $(this).hasClass("active");
     redraw();
   });
 

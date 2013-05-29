@@ -8,7 +8,7 @@ var Telegraph = function (opts) {
   this.targets   = opts.targets;
   this.variables = opts.variables;
   this.chart     = opts.chart;
-  this.total     = opts.total;
+  this.summarize = opts.summarize;
   this.invert    = opts.invert;
   this.refresh   = opts.refresh;
   this.draws     = 0;
@@ -53,14 +53,14 @@ Telegraph.prototype.tableDraw = function(selector, data) {
     return [item.key].concat(values);
   });
 
-  if (this.total) {
+  if (this.summarize) {
     var rows = _.map(data, function(e) { return _.pluck(e.values, "y") });
     var totals = _.map(_.zip.apply(_, rows), function (col) {
       return _.reduce(col, function(acc, num) {
         return acc + num;
       }, 0);
     });
-    items.push(["Total"].concat(totals));
+    items.push(["total"].concat(totals));
   }
 
   this.table = new Table(selector, {
@@ -195,6 +195,8 @@ Telegraph.prototype.save = function(opts) {
       chart: this.chart,
       from: this.from,
       until: this.until,
+      invert: this.invert,
+      summarize: this.summarize,
       refresh: this.refresh,
       targets: this.targets,
       variables: this.variables,

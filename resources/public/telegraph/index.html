@@ -28,14 +28,14 @@
       <textarea id="query"></textarea>
       <div id="query-options">
         <input type="text" id="shift" placeholder="timeshift">
-        <span class="line-plus-bar">
+        <span class="line-plus-bar-options">
           <select id="bar">
             <option value="">line</option>
             <option value="bar">bar</option>
           </select>
         </span>
 
-        <span class="multi">
+        <span class="multi-options">
           <select id="type">
             <option value="line">line</option>
             <option value="bar">bar</option>
@@ -67,6 +67,12 @@
           <option value="cumulativeLineChart">cumulative line</option>
           <option value="table">table</option>
         </select>
+
+        <div class="table-options btn-group" data-toggle="buttons-checkbox">
+          <button id="invert"    type="button" class="btn">Invert</button>
+          <button id="summarize" type="button" class="btn">Summarize</button>
+        </div>
+
         <textarea id="variables" placeholder="macro variables"></textarea>
         <div class="buttons">
           <input type="text" id="refresh" placeholder="refresh">
