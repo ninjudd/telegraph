@@ -332,4 +332,11 @@ $(document).ready(function() {
   _.each(telegraphBaseUrls, function (base) {
     $select.append('<option value=' + base.url + '>' + base.label + '</option>');
   });
+
+  $("#from").focus(function(e) { $(this).attr("placeholder", "-24h") });
+  $("#from").blur(function(e)  { $(this).attr("placeholder", "from") });
+  $("#until").focus(function(e) { $(this).attr("placeholder", "-0h") });
+  $("#until").blur(function(e)  { $(this).attr("placeholder", "until") });
+  $("#shift").focus(function(e) { $(this).attr("placeholder", "-0h") });
+  $("#shift").blur(function(e)  { $(this).attr("placeholder", "timeshift") });
 });
