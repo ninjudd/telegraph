@@ -4,6 +4,7 @@ var Table = function (selector, toCells, opts) {
   this.selector  = selector
   this.toCells   = toCells;
   this.change    = opts.change || function () {};
+  this.invert    = opts.invert;
   this.items     = [];
   this.itemCount = 0;
 };
@@ -45,14 +46,25 @@ Table.prototype.remove = function(id) {
 
 Table.prototype.update = function() {
   var self = this;
+
+  var cells = []
+  _.each(this.items, function(item, i) {
+    _.each(self.toCells(item), function(cell, j) {
+      if (self.invert) {
+        cells[j] = cells[j] || [];
+        cells[j][i] = cell;
+      } else {
+        cells[i] = cells[i] || []
+        cells[i][j] = cell;
+      }
+    });
+  });
+
   var table = $(this.selector);
   table.html("");
-  _.each(this.items, function(item) {
-    var row   = $("<tr/>")
-    var cells = self.toCells(item);
-    _.each(cells, function(opts) {
-      row.append($("<td/>", opts));
-    });
-    table.append(row);
+  _.each(cells, function(row) {
+    var tr = $("<tr/>")
+    _.each(row, function(cell) { tr.append($("<td/>", cell)) });
+    table.append(tr);
   });
 };
