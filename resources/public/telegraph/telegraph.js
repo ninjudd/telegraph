@@ -43,8 +43,7 @@ Telegraph.prototype.draw = function(selector, done) {
   }
 };
 
-Telegraph.prototype.tableDraw = function(selector, data) {
-  var self = this;
+Telegraph.prototype.tableItems = function(data) {
   var times = [""].concat(_.map(data[0].values, function (val) {
     return Telegraph.formatTime(val.x);
   }));
@@ -63,10 +62,14 @@ Telegraph.prototype.tableDraw = function(selector, data) {
     items.push(["total"].concat(totals));
   }
 
+  return [times].concat(items);
+};
+
+Telegraph.prototype.tableDraw = function(selector, data) {
   this.table = new Table(selector, {
     invert: this.invert,
     class: "telegraph-table table table-striped",
-    items: [times].concat(items)
+    items: this.tableItems(data)
   })
   _.bindAll(this.table);
   this.table.update();
@@ -124,8 +127,13 @@ Telegraph.formatTime = function(d) {
 Telegraph.prototype.update = function() {
   var self = this;
   this.fetchData(this.targets, function(data) {
-    self.svg.datum(data);
-    self.nvChart.update();
+    if (self.chart == 'table') {
+      self.table.items = self.tableItems(data);
+      self.table.update();
+    } else {
+      self.svg.datum(data);
+      self.nvChart.update();
+    }
   });
 };
 
