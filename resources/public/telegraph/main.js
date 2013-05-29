@@ -1,5 +1,6 @@
 var telegraph;
 var targets = new Table("#targets", {
+  class: "table table-striped",
   toCells: Table.deletable(targetCells),
   change: function(targets) {
     telegraph.targets = targets.items;

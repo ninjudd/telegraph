@@ -5,6 +5,7 @@ var Table = function (selector, opts) {
   this.toCells   = opts.toCells || function (item) { return _.map(item, function() {}) };
   this.change    = opts.change || function () {};
   this.invert    = opts.invert;
+  this.class     = opts.class;
   this.items     = opts.items || [];
   this.itemCount = 0;
 };
@@ -60,11 +61,11 @@ Table.prototype.update = function() {
     });
   });
 
-  var table = $(this.selector);
-  table.html("");
+  var table = $("<table/>", {class: this.class});
   _.each(cells, function(row) {
     var tr = $("<tr/>")
     _.each(row, function(cell) { tr.append($("<td/>", cell)) });
     table.append(tr);
   });
+  $(this.selector).html("").append(table);
 };
