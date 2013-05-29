@@ -20,7 +20,7 @@ Telegraph.prototype.draw = function(selector, done) {
   var self = this;
   this.draws++;
 
-  $(selector).html("");
+  $(selector).empty();
   if (this.refreshInterval) clearInterval(this.refreshInterval);
 
   if (this.targets && this.targets.length > 0) {
@@ -65,7 +65,7 @@ Telegraph.prototype.tableDraw = function(selector, data) {
 
   this.table = new Table(selector, {
     invert: this.invert,
-    class: "table table-striped",
+    class: "telegraph-table table table-striped",
     items: [times].concat(items)
   })
   _.bindAll(this.table);

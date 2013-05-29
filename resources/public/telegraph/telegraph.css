@@ -1,0 +1,9 @@
+.telegraph-table tr:first-child td {
+  font-weight: bold;
+  border-bottom: double 3px #ddd;
+}
+
+.telegraph-table tr td:first-child {
+  font-weight: bold;
+  border-right: double 3px #ddd;
+}
