@@ -1,16 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg"
-     xmlns:xlink="http://www.w3.org/1999/xlink"
-     version="1.1" id="Calque_1"
-     x="0px" y="0px" width="16px" height="16px"
-     preserveAspectRatio="xMinYMin meet"
-     viewBox="1 1 15 15"
-     enable-background="new 0 0 16 16"
-     xml:space="preserve">
-  <g>
-    <rect x="4" y="4" width="8" height="1"/>
-    <rect x="4" y="6" width="8" height="1"/>
-    <rect x="4" y="8" width="8" height="1"/>
-    <rect x="4" y="10" width="8" height="1"/>
-    <path d="M2,2v11h4.171L8,13H14V2H2z M13,12h-2.172H5.171H3V3h10V12z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+  <g transform="matrix(1 0 0 -1 0 850)">
+   <path fill="currentColor"
+d="M0 29v71q0 15 11 25t25 11h786q15 0 25 -11t11 -25v-71q0 -15 -11 -25t-25 -11h-786q-15 0 -25 11t-11 25zM0 315v71q0 15 11 25t25 11h786q15 0 25 -11t11 -25v-71q0 -15 -11 -25t-25 -11h-786q-15 0 -25 11t-11 25zM0 601v71q0 15 11 25t25 11h786q15 0 25 -11t11 -25
+v-71q0 -15 -11 -25t-25 -11h-786q-15 0 -25 11t-11 25z" />
   </g>
 </svg>

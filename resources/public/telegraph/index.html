@@ -27,7 +27,9 @@
     <div id="query-container">
       <select id="source" tooltip="true"
               title="Data source to use for queries."></select>
-      <span id="help" tooltip="true" title="Tooltips enabled.">?</span>
+      <span id="help" tooltip="true" title="Tooltips enabled.">
+        <img class="icon faded" src="/telegraph/images/help.svg">
+      </span>
 
       <textarea id="query" tooltip="true"
                 title="Lamina query to add to graph."></textarea>
@@ -37,20 +39,30 @@
 
         <div id="type" class="line-plus-bar-options multi-options btn-group" data-toggle="buttons-radio"
              tooltip="true" title="Type of graph to use for drawing the results of this query.">
-          <button id="line" type="button" class="btn active">Line</button>
-          <button id="area" type="button" class="btn multi-options">Area</button>
-          <button id="bar"  type="button" class="btn">Bar</button>
+          <button id="line" type="button" class="btn active">
+            <img class="icon control" src="/telegraph/images/chart-line.svg">
+          </button>
+          <button id="area" type="button" class="btn multi-options">
+            <img class="icon control" src="/telegraph/images/chart-area.svg">
+          </button>
+          <button id="bar" type="button" class="btn">
+            <img class="icon control" src="/telegraph/images/chart-bar.svg">
+          </button>
         </div>
 
         <div id="axis" class="multi-options btn-group" data-toggle="buttons-radio"
              tooltip="true" title="Axis to use for drawing the results of this query.">
-          <button id="left"  type="button" class="btn active">&#x21E4;</button>
-          <button id="right" type="button" class="btn">&#x21E5;</button>
+          <button id="left"  type="button" class="btn active">
+            <span class="control heavy">&#x21E4;</span>
+          </button>
+          <button id="right" type="button" class="btn">
+            <span class="control heavy">&#x21E5;</span>
+          </button>
         </div>
 
         <div class="buttons">
           <button id="add" class="btn" tooltip="true" title="Add this query to the graph.">
-            <strong>+</strong>
+            <span class="control heavy">+</span>
           </button>
         </div>
       </div>
@@ -79,17 +91,18 @@
         <div class="table-options btn-group" data-toggle="buttons-checkbox">
           <button id="invert" type="button" class="btn" tooltip="true"
                   title="Swap the columns and rows in the results table.">
-            &#x23CE;</button>
+            <img class="icon control" src="/telegraph/images/swap.svg">
+          </button>
           <button id="summarize" type="button" class="btn" tooltip="true"
                   title="Add a summary line to the table that sums all results for a given timepoint.">
-            &Sigma;
+            <span class="control">&nbsp;&Sigma;&nbsp;</span>
           </button>
         </div>
 
         <span class="chart-options visible-options">
           <button id="align" type="button" class="btn" tooltip="true"
                   title="Align the query timeframe to the period.">
-            &#x23D8;
+            <span class="control heavy">&#x23D8;</span>
           </button>
         </span>
 
@@ -103,13 +116,13 @@
 
   <div id="graph-container">
     <span id="load">
-      <img class="icon" src="/telegraph/images/list.svg">
+      <img class="icon faded" src="/telegraph/images/list.svg">
     </span>
 
     <div id="alerts"></div>
     <div id="graph-header">
       <span id="refresh-graph">
-        <img class="icon" src="/telegraph/images/refresh.svg">
+        <img class="icon faded" src="/telegraph/images/refresh.svg">
       </span>
 
       <div id="graph-title" class="dropdown">

@@ -36,7 +36,7 @@ function targetCells(target) {
   var chart = $("#chart").val();
 
   if (chart == "multiChart") {
-    cells.push({text: target.type});
+    cells.push({html: $("<img/>", {class: "icon", src: "/telegraph/images/chart-" + target.type + ".svg"})});
     cells.push({html: (target.axis == "right" ? "&#x21E5;" : "&#x21E4;")});
   } else if (chart == "linePlusBarChart") {
     cells.push({text: target.type});
@@ -296,6 +296,10 @@ $(document).ready(function() {
       return false;
     }
   });
+
+  window.onbeforeunload = function() {
+    if (isChanged) return "Unsaved changes will be lost.";
+  };
 
   $("#rename").click(function() {
     renaming = true;

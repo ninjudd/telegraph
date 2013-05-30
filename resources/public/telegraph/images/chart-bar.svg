@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+  <g transform="matrix(1 0 0 -1 0 850)">
+   <path fill="currentColor"
+d="M750 800q22 0 36 -15t14 -35v-850h-200v850q0 50 40 50h110zM450 500q22 0 36 -15t14 -35v-550h-200v550q0 50 40 50h110zM150 200q22 0 36 -15t14 -35v-250h-200v250q0 50 40 50h110z" />
+  </g>
+</svg>

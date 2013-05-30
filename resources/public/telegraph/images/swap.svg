@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+  <g transform="matrix(1 0 0 -1 0 850)">
+   <path fill="currentColor"
+d="M799 351h112v-56q0 -69 -49 -119t-119 -50h-391v-111l-223 168l223 167v-112h391q23 0 39 16t16 40v56zM130 407v-56h-112v56q0 70 49 119t119 49h390v111l223 -166l-223 -168v111h-390q-24 0 -40 -16t-16 -39v-1z" />
+  </g>
+</svg>
