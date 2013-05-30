@@ -61,6 +61,8 @@
                title="Interval from now to use as the start of the graph time period.">
         <input type="text" id="until" class="interval" placeholder="0h" tooltip="true"
                title="Interval from now to use as the end of the graph time period.">
+        <input type="text" id="period" class="interval" placeholder="15m" tooltip="true"
+               title="Period interval to use for all periodic query operators.">
         <select id="chart" tooltip="true" title="Chart type to use for graphing the query results.">
           <option value="lineChart">line</option>
           <option value="stackedAreaChart">stacked area</option>
@@ -80,6 +82,14 @@
                   title="Add a summary line to the table that sums all results for a given timepoint.">
             Summarize</button>
         </div>
+
+        <span class="chart-options">
+          <button id="align" type="button" class="btn" tooltip="true"
+                  title="Align the query timeframe to the period.">
+            Align
+          </button>
+        </span>
+
 
         <textarea id="variables" placeholder="macro variables"></textarea>
         <div class="buttons">

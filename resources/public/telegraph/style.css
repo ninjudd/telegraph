@@ -88,6 +88,10 @@ body * {
   display: none;
 }
 
+.chart-options {
+  display: none;
+}
+
 .visible-options {
   display: inline-block;
 }
@@ -104,14 +108,9 @@ body * {
   width: 100%;
 }
 
-#from {
+.interval {
   font-family: monospace;
-  width: 60px;
-}
-
-#until {
-  font-family: monospace;
-  width: 60px;
+  width: 50px;
 }
 
 #refresh {

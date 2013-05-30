@@ -66,8 +66,9 @@ function redraw(name) {
 
   var chart = $("#chart").val();
 
-  $(".table-options, .multi-options, .line-plus-bar-options").removeClass("visible-options");
+  $(".table-options, .chart-options, .multi-options, .line-plus-bar-options").removeClass("visible-options");
   if (chart == "table")            $(".table-options").addClass("visible-options");
+  if (chart != "table")            $(".chart-options").addClass("visible-options");
   if (chart == "multiChart")       $(".multi-options").addClass("visible-options");
   if (chart == "linePlusBarChart") $(".line-plus-bar-options").addClass("visible-options");
 };
@@ -131,9 +132,11 @@ function load(name) {
       if (name != null) pushHistory(telegraph.name);
       $("#from").val(telegraph.from);
       $("#until").val(telegraph.until);
+      $("#period").val(telegraph.period);
       $("#refresh").val(telegraph.refresh);
       $("#chart").val(telegraph.chart);
       $("#variables").val(JSON.stringify(telegraph.variables));
+      flipClass("active", $("#align"),     telegraph.align);
       flipClass("active", $("#invert"),    telegraph.invert);
       flipClass("active", $("#summarize"), telegraph.summarize);
 
@@ -198,6 +201,11 @@ $(document).ready(function() {
     redraw();
   });
 
+  $("#period").change(function() {
+    telegraph.period = $(this).val();
+    redraw();
+  });
+
   $("#refresh").change(function() {
     telegraph.refresh = parseInt($(this).val());
     redraw();
@@ -207,6 +215,13 @@ $(document).ready(function() {
     telegraph.chart = $(this).val();
     redraw();
     targets.update();
+  });
+
+  $("#align").click(function(e) {
+    e.stopPropagation(); // Make sure the button is toggled before we check it.
+    $(this).toggleClass("active");
+    telegraph.align = $(this).hasClass("active");
+    redraw();
   });
 
   $("#invert").click(function(e) {

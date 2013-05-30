@@ -8,8 +8,10 @@ var Telegraph = function (opts) {
   this.targets   = opts.targets;
   this.variables = opts.variables;
   this.chart     = opts.chart;
-  this.summarize = opts.summarize;
+  this.period    = opts.period;
+  this.align     = opts.align;
   this.invert    = opts.invert;
+  this.summarize = opts.summarize;
   this.refresh   = opts.refresh;
   this.tickCount = opts.tickCount;
   this.scale     = opts.scale;
@@ -186,15 +188,21 @@ Telegraph.prototype.fetchData = function(targets, done) {
   });
 };
 
+Telegraph.defaultPeriod = "15m";
+
 Telegraph.prototype.getData = function(data, targets) {
   var self = this;
 
   if (targets.length == 0) return;
-
+  var period = this.period || Telegraph.defaultPeriod;
+  var align  = (this.align || this.chart == 'table') ? period : null;
+console.log(period, align)
   var opts = {
-    from:  this.from,
-    until: this.until,
-    shift: self.subVariables(targets[0].shift)
+    from:   this.from,
+    until:  this.until,
+    period: period,
+    align:  align,
+    shift:  self.subVariables(targets[0].shift),
   };
 
   var labels = [];
@@ -229,17 +237,19 @@ Telegraph.prototype.save = function(opts) {
   if (this.name) {
     var self = this;
     var data = {
-      name: this.name,
-      hash: this.hash,
-      chart: this.chart,
-      from: this.from,
-      until: this.until,
-      invert: this.invert,
+      name:      this.name,
+      hash:      this.hash,
+      chart:     this.chart,
+      from:      this.from,
+      until:     this.until,
+      period:    this.period,
+      align:     this.align,
+      invert:    this.invert,
       summarize: this.summarize,
-      refresh: this.refresh,
-      targets: this.targets,
+      refresh:   this.refresh,
+      targets:   this.targets,
       variables: this.variables,
-      force: opts.force
+      force:     opts.force
     };
 
     return $.ajax({
