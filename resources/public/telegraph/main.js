@@ -37,7 +37,7 @@ function targetCells(target) {
 
   if (chart == "multiChart") {
     cells.push({text: target.type});
-    cells.push({html: (target.axis == "right" ? "&rarr;" : "&larr;")});
+    cells.push({html: (target.axis == "right" ? "&#x21E5;" : "&#x21E4;")});
   } else if (chart == "linePlusBarChart") {
     cells.push({text: target.type});
   }
