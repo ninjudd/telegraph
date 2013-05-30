@@ -200,6 +200,15 @@ body * {
   cursor: pointer;
 }
 
+#help {
+  margin: 5px;
+  vertical-align: top;
+}
+
+#help:hover {
+  cursor: pointer;
+}
+
 #remove {
   padding: 5px;
   float: right;

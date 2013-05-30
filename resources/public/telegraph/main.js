@@ -373,15 +373,24 @@ $(document).ready(function() {
     $select.append('<option value=' + source + '>' + source + '</option>');
   });
 
-  $("#from").focus(function(e) { $(this).attr("placeholder", "-24h") });
-  $("#from").blur(function(e)  { $(this).attr("placeholder", "from") });
+  var elements = $("[tooltip=true]")
+  elements.tooltip({
+    delay: {show: 500},
+    placement: "bottom",
+    trigger: "hover",
+    container: "body"
+  }).tooltip("disable");
 
-  $("#until").focus(function(e) { $(this).attr("placeholder", "-0h") });
-  $("#until").blur(function(e)  { $(this).attr("placeholder", "until") });
-
-  $("#refresh").focus(function(e) { $(this).attr("placeholder", Telegraph.defaultRefresh) });
-  $("#refresh").blur(function(e)  { $(this).attr("placeholder", "refresh") });
-
-  $("#shift").focus(function(e) { $(this).attr("placeholder", "-0h") });
-  $("#shift").blur(function(e)  { $(this).attr("placeholder", "timeshift") });
+  var tooltipsEnabled = false;
+  $("#help").click(function() {
+    if (tooltipsEnabled) {
+      tooltipsEnabled = false;
+      elements.tooltip("disable");
+      $(this).tooltip("hide");
+    } else {
+      tooltipsEnabled = true;
+      elements.tooltip("enable");
+      $(this).tooltip("show");
+    }
+  });
 });

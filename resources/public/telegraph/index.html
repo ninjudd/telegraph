@@ -25,24 +25,31 @@
 <body>
   <div id="edit-container" class="clearfix">
     <div id="query-container">
-      <select id="source"></select>
-      <textarea id="query"></textarea>
-      <div id="query-options">
-        <input type="text" id="shift" placeholder="timeshift">
+      <select id="source" tooltip="true"
+              title="Data source to use for queries."></select>
+      <span id="help" tooltip="true" title="Tooltips enabled.">?</span>
 
-        <div id="type" class="line-plus-bar-options multi-options btn-group" data-toggle="buttons-radio">
+      <textarea id="query" tooltip="true"
+                title="Lamina query to add to graph."></textarea>
+      <div id="query-options">
+        <input type="text" id="shift" placeholder="timeshift" tooltip="true"
+               title="Shift results for this target by the given interval.">
+
+        <div id="type" class="line-plus-bar-options multi-options btn-group" data-toggle="buttons-radio"
+             tooltip="true" title="Type of graph to use for drawing the results of this query.">
           <button id="line" type="button" class="btn active">Line</button>
           <button id="area" type="button" class="btn multi-options">Area</button>
           <button id="bar"  type="button" class="btn">Bar</button>
         </div>
 
-        <div id="axis" class="multi-options btn-group" data-toggle="buttons-radio">
+        <div id="axis" class="multi-options btn-group" data-toggle="buttons-radio"
+             tooltip="true" title="Axis to use for drawing the results of this query.">
           <button id="left"  type="button" class="btn active">Left</button>
           <button id="right" type="button" class="btn">Right</button>
         </div>
 
         <div class="buttons">
-          <button id="add" class="btn">Add</span>
+          <button id="add" class="btn" tooltip="true" title="Add this query to the graph.">Add</span>
         </div>
       </div>
     </div>
@@ -50,9 +57,11 @@
     <div id="list-container">
       <div id="targets"></div>
       <div id="graph-options">
-        <input type="text" id="from" placeholder="from">
-        <input type="text" id="until" placeholder="until">
-        <select id="chart">
+        <input type="text" id="from" class="interval" placeholder="-24h" tooltip="true"
+               title="Interval from now to use as the start of the graph time period.">
+        <input type="text" id="until" class="interval" placeholder="0h" tooltip="true"
+               title="Interval from now to use as the end of the graph time period.">
+        <select id="chart" tooltip="true" title="Chart type to use for graphing the query results.">
           <option value="lineChart">line</option>
           <option value="stackedAreaChart">stacked area</option>
           <option value="multiBarChart">multi bar</option>
@@ -64,13 +73,18 @@
         </select>
 
         <div class="table-options btn-group" data-toggle="buttons-checkbox">
-          <button id="invert"    type="button" class="btn">Invert</button>
-          <button id="summarize" type="button" class="btn">Summarize</button>
+          <button id="invert" type="button" class="btn" tooltip="true"
+                  title="Swap the columns and rows in the results table.">
+            Invert</button>
+          <button id="summarize" type="button" class="btn" tooltip="true"
+                  title="Add a summary line to the table that sums all results for a given timepoint.">
+            Summarize</button>
         </div>
 
         <textarea id="variables" placeholder="macro variables"></textarea>
         <div class="buttons">
-          <input type="text" id="refresh" placeholder="refresh">
+          <input type="text" id="refresh" placeholder="refresh" tooltip="true"
+                 title="Auto-refresh interval in seconds.">
           <button id="save" class="btn" disabled>Save</button>
         </div>
       </div>
