@@ -11,6 +11,8 @@ var Telegraph = function (opts) {
   this.summarize = opts.summarize;
   this.invert    = opts.invert;
   this.refresh   = opts.refresh;
+  this.tickCount = opts.tickCount;
+  this.scale     = opts.scale;
   this.draws     = 0;
 };
 
@@ -43,17 +45,27 @@ Telegraph.prototype.draw = function(selector, done) {
   }
 };
 
+Telegraph.axisValues = function(axis, data) {
+  if (data) {
+    return _.pluck(data.values, axis);
+  } else {
+    return function(data) {
+      return _.pluck(data.values, axis);
+    };
+  }
+};
+
 Telegraph.prototype.tableItems = function(data) {
   var times = [""].concat(_.map(data[0].values, function (val) {
-    return Telegraph.formatTime(val.x);
+    return d3.time.format('%X')(new Date(val.x * 1000));
   }));
   var items = _.map(data, function (item) {
-    var values = _.map(item.values, function(val) { return val.y });
+    var values = Telegraph.axisValues("y", item);
     return [item.key].concat(values);
   });
 
   if (this.summarize) {
-    var rows = _.map(data, function(e) { return _.pluck(e.values, "y") });
+    var rows = _.map(data, Telegraph.axisValues("y"));
     var totals = _.map(_.zip.apply(_, rows), function (col) {
       return _.reduce(col, function(acc, num) {
         return acc + num;
@@ -77,9 +89,13 @@ Telegraph.prototype.tableDraw = function(selector, data) {
 
 Telegraph.prototype.nvDraw = function(selector, data) {
   var self = this;
-  $(selector).append("<svg><svg/>");
+  var container = $(selector)
+  var tickCount = this.tickCount || Math.floor(container.width() / 100);
+  var scale     = this.scale     || Telegraph.timeScale(data);
+
+  container.append("<svg><svg/>");
   this.svg = d3.select(selector).select("svg");
-  this.nvChart = Telegraph.makeChart(this.chart);
+  this.nvChart = Telegraph.makeChart(this.chart, scale, tickCount);
 
   nv.addGraph(function() {
     self.svg.datum(data)
@@ -100,28 +116,42 @@ Telegraph.prototype.subVariables = function(target) {
   }, target);
 };
 
-Telegraph.prototype.queryHasVariables = function(query) {
+Telegraph.queryHasVariables = function(query) {
   return query.match(/\$/);
 };
 
 Telegraph.prototype.hasVariables = function() {
   var self = this;
-  return _.some(this.targets, function(t) { return t && self.queryHasVariables(t.query) });
+  return _.some(this.targets, function(t) { return t && Telegraph.queryHasVariables(t.query) });
 };
 
-Telegraph.makeChart = function(chart) {
+Telegraph.timeScale = function(data) {
+  var xData = _.map(data, Telegraph.axisValues("x"));
+  var min = _.min(_.map(xData, function(x) { return _.min(x) })); 
+  var max = _.max(_.map(xData, function(x) { return _.max(x) })); 
+
+  var interval = max - min;
+  var scale = d3.time.scale();
+  scale.domain([new Date(min * 1000), new Date(max * 1000)]);
+  return scale;
+};
+
+Telegraph.makeChart = function(chart, scale, tickCount) {
   var nvChart = nv.models[chart]();
-  nvChart.xAxis.tickFormat(Telegraph.formatTime);
+  var ticks = _.map(scale.ticks(tickCount), function(d) { return d.getTime() / 1000 });
+  var timeFormat = scale.tickFormat(tickCount);
+
+  nvChart.xAxis.showMaxMin(false).tickValues(ticks).tickFormat(function(d, i) {
+    var fmt = (i == null) ? d3.time.format('%X %a %x') : timeFormat;
+    return fmt(new Date(d * 1000))
+  });
+
   nvChart.margin({left: 40, right: 30, bottom: 20, top: 20});
   if (nvChart.yAxis)  nvChart.yAxis.tickFormat(d3.format('d'));
   if (nvChart.yAxis1) nvChart.yAxis1.tickFormat(d3.format('d'));
   if (nvChart.yAxis2) nvChart.yAxis2.tickFormat(d3.format('d'));
   _.bindAll(nvChart);
   return nvChart;
-};
-
-Telegraph.formatTime = function(d) {
-  return d3.time.format('%X')(new Date(d * 1000))
 };
 
 Telegraph.prototype.update = function() {

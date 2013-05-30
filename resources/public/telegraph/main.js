@@ -185,7 +185,7 @@ $(document).ready(function() {
   });
 
   $("#refresh-graph").click(function() {
-    telegraph.update();
+    redraw();
   });
 
   $("#from").change(function() {
