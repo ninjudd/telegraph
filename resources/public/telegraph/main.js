@@ -78,12 +78,12 @@ function fillTarget(target) {
   $("#source").val(target.source);
   $("#shift").val(target.shift);
 
-  flipClass("active", $("#left"),  target.axis != "right");
-  flipClass("active", $("#right"), target.axis == "right");
+  flipClass("active", "#left",  target.axis != "right");
+  flipClass("active", "#right", target.axis == "right");
 
-  flipClass("active", $("#line"), target.type == "line");
-  flipClass("active", $("#bar"),  target.type == "bar");
-  flipClass("active", $("#area"), target.type == "area");
+  flipClass("active", "#line", target.type == "line");
+  flipClass("active", "#bar",  target.type == "bar");
+  flipClass("active", "#area", target.type == "area");
 };
 
 function display(selector, show) {
@@ -136,9 +136,9 @@ function load(name) {
       $("#refresh").val(telegraph.refresh);
       $("#chart").val(telegraph.chart);
       $("#variables").val(JSON.stringify(telegraph.variables));
-      flipClass("active", $("#align"),     telegraph.align);
-      flipClass("active", $("#invert"),    telegraph.invert);
-      flipClass("active", $("#summarize"), telegraph.summarize);
+      flipClass("active", "#align",     telegraph.align);
+      flipClass("active", "#invert",    telegraph.invert);
+      flipClass("active", "#summarize", telegraph.summarize);
 
       targets.replace(telegraph.targets);
     },
