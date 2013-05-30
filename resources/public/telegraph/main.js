@@ -171,7 +171,6 @@ function flipClass(classString, selector, state) {
 };
 
 function activeId(selector) {
-console.log($(selector).find(".active").length)
   return $(selector).find(".active")[0].id;
 };
 
