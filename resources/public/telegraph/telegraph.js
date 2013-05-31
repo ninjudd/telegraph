@@ -71,9 +71,13 @@ Telegraph.axisValues = function(axis, data) {
 };
 
 Telegraph.prototype.tableItems = function(data) {
-  var times = [""].concat(_.map(data[0].values, function (val) {
-    return d3.time.format('%X')(new Date(val.x * 1000));
+  var scale  = this.scale || Telegraph.timeScale(data);
+  var format = scale.tickFormat();
+
+  var times  = [""].concat(_.map(data[0].values, function (val) {
+    return format(new Date(val.x * 1000));
   }));
+
   var items = _.map(data, function (item) {
     var values = Telegraph.axisValues("y", item);
     return [item.key].concat(values);
@@ -153,11 +157,11 @@ Telegraph.timeScale = function(data) {
 
 Telegraph.makeChart = function(chart, scale, tickCount) {
   var nvChart = nv.models[chart]();
-  var ticks = _.map(scale.ticks(tickCount), function(d) { return d.getTime() / 1000 });
-  var timeFormat = scale.tickFormat(tickCount);
+  var ticks   = _.map(scale.ticks(tickCount), function(d) { return d.getTime() / 1000 });
+  var format  = scale.tickFormat(tickCount);
 
   nvChart.xAxis.showMaxMin(false).tickValues(ticks).tickFormat(function(d, i) {
-    var fmt = (i == null) ? d3.time.format('%X %a %x') : timeFormat;
+    var fmt = (i == null) ? d3.time.format('%X %a %x') : format;
     return fmt(new Date(d * 1000))
   });
 
