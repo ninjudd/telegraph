@@ -24,6 +24,8 @@ Telegraph.requiresMatchingCardinality = function(chart) {
   return _.contains(['table', 'stackedAreaChart', 'multiBarChart'], chart)
 };
 
+Telegraph.maxDataPoints = 5000;
+
 Telegraph.prototype.draw = function(selector, done, error) {
   var self = this;
   this.draws++;
@@ -34,9 +36,12 @@ Telegraph.prototype.draw = function(selector, done, error) {
   if (this.targets && this.targets.length > 0) {
     this.fetchData(this.targets, function(data) {
       var cardinality = Telegraph.cardinality(data);
-
+      var numDataPoints = _.max(cardinality.lengths);
       if (!cardinality.match && Telegraph.requiresMatchingCardinality(self.chart)) {
         if (error) error("Cardinality of data sets must match for this type of chart.");
+      } else if (numDataPoints > Telegraph.maxDataPoints) {
+        if (error) error("Too many data points. " + "Your query returns " +
+                         numDataPoints + ", but the maximum is " + Telegraph.maxDataPoints + ".");
       } else {
         if (self.chart == 'table') {
           self.tableDraw(selector, data);

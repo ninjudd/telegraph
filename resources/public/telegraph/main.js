@@ -118,7 +118,7 @@ function pushHistory(name) {
 function showAlert(text, type) {
   if (type) type = "alert-" + type;
   $("#alerts").append($("<div/>", {class: "alert fade in " + type, text: text}));
-  setTimeout(function() { $(".alert").alert('close'); }, 2000);
+  setTimeout(function() { $(".alert").alert('close'); }, 3000);
 };
 
 function hash() {
