@@ -183,7 +183,7 @@ body * {
 }
 
 .control {
-  -webkit-filter: opacity(0.6);
+  -webkit-filter: opacity(0.45);
 }
 
 .control:hover {
