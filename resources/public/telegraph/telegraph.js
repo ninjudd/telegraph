@@ -211,11 +211,12 @@ Telegraph.prototype.getData = function(data, targets) {
   var align  = (this.align || this.chart == 'table') ? period : null;
 
   var opts = {
-    from:   this.from,
-    until:  this.until,
-    period: period,
-    align:  align,
-    shift:  self.subVariables(targets[0].shift),
+    from:     this.from,
+    until:    this.until,
+    period:   period,
+    align:    align,
+    shift:    self.subVariables(targets[0].shift),
+    timezone: (new Date()).getTimezoneOffset() + "m",
   };
 
   var labels = [];
