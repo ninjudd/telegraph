@@ -142,8 +142,8 @@ Telegraph.prototype.hasVariables = function() {
 
 Telegraph.timeScale = function(data) {
   var xData = _.map(data, Telegraph.axisValues("x"));
-  var min = _.min(_.map(xData, function(x) { return _.min(x) })); 
-  var max = _.max(_.map(xData, function(x) { return _.max(x) })); 
+  var min = _.min(_.map(xData, function(x) { return _.min(x) }));
+  var max = _.max(_.map(xData, function(x) { return _.max(x) }));
 
   var interval = max - min;
   var scale = d3.time.scale();
@@ -209,7 +209,7 @@ Telegraph.prototype.getData = function(data, targets) {
   if (targets.length == 0) return;
   var period = this.period || Telegraph.defaultPeriod;
   var align  = (this.align || this.chart == 'table') ? period : null;
-console.log(period, align)
+
   var opts = {
     from:   this.from,
     until:  this.until,
