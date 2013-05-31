@@ -58,7 +58,9 @@ function markChanged(changed) {
 };
 
 function redraw(name) {
-  telegraph.draw("#graph", displayHeader);
+  telegraph.draw("#graph", displayHeader, function(error) {
+    showAlert(error, "error");
+  });
   telegraph.hasVariables() ? $("#variables").show() : $("#variables").hide();
 
   // Use draw count as a proxy for changes since we only redraw when a change is made.

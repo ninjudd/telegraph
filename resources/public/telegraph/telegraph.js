@@ -20,7 +20,11 @@ var Telegraph = function (opts) {
 
 Telegraph.baseUrls = {};
 
-Telegraph.prototype.draw = function(selector, done) {
+Telegraph.requiresMatchingCardinality = function(chart) {
+  return _.contains(['table', 'stackedAreaChart', 'multiBarChart'], chart)
+};
+
+Telegraph.prototype.draw = function(selector, done, error) {
   var self = this;
   this.draws++;
 
@@ -29,33 +33,36 @@ Telegraph.prototype.draw = function(selector, done) {
 
   if (this.targets && this.targets.length > 0) {
     this.fetchData(this.targets, function(data) {
-      // console.log(Telegraph.cardinality(data));
-      if (self.chart == 'table') {
-        self.tableDraw(selector, data);
+      var cardinality = Telegraph.cardinality(data);
+
+      if (!cardinality.match && Telegraph.requiresMatchingCardinality(self.chart)) {
+        if (error) error("Cardinality of data sets must match for this type of chart.");
       } else {
-        self.nvDraw(selector, data);
+        if (self.chart == 'table') {
+          self.tableDraw(selector, data);
+        } else {
+          self.nvDraw(selector, data);
+        }
+        var refresh = (self.refresh == null) ? Telegraph.defaultRefresh : self.refresh;
+        if (refresh) {
+          self.refreshInterval = setInterval(_.bind(self.update, self), refresh * 1000);
+        }
+        if (done) done();
       }
     });
-    if (done) done();
-
-    var refresh = this.refresh;
-    if (this.refresh == null) refresh = Telegraph.defaultRefresh;
-    if (refresh) {
-      this.refreshInterval = setInterval(_.bind(this.update, this), refresh * 1000);
-    }
   } else {
-    if (done) done();
+    if (error) error("No data available.");
   }
 };
 
 Telegraph.cardinality = function(data) {
-  var rows  = _.map(data, Telegraph.axisValues("y"));
-  var match = _.some(_.zip.apply(_, rows), function (times) {
-    return _.uniq(times).length != 1;
+  var rows  = _.map(data, Telegraph.axisValues("x"));
+  var match = _.every(_.zip.apply(_, rows), function (times) {
+    return _.uniq(times).length == 1;
   });
 
   return {
-    match: true,
+    match: match,
     lengths: _.pluck(rows, "length"),
   };
 };
