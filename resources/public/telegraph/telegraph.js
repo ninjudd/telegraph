@@ -29,6 +29,7 @@ Telegraph.prototype.draw = function(selector, done) {
 
   if (this.targets && this.targets.length > 0) {
     this.fetchData(this.targets, function(data) {
+      // console.log(Telegraph.cardinality(data));
       if (self.chart == 'table') {
         self.tableDraw(selector, data);
       } else {
@@ -45,6 +46,18 @@ Telegraph.prototype.draw = function(selector, done) {
   } else {
     if (done) done();
   }
+};
+
+Telegraph.cardinality = function(data) {
+  var rows  = _.map(data, Telegraph.axisValues("y"));
+  var match = _.some(_.zip.apply(_, rows), function (times) {
+    return _.uniq(times).length != 1;
+  });
+
+  return {
+    match: true,
+    lengths: _.pluck(rows, "length"),
+  };
 };
 
 Telegraph.axisValues = function(axis, data) {
