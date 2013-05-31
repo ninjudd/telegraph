@@ -97,9 +97,13 @@ Telegraph.prototype.tableItems = function(data) {
 };
 
 Telegraph.prototype.tableDraw = function(selector, data) {
+  var classes = "telegraph-table table table-striped";
+  classes += (this.summarize) ? " summary"  : "";
+  classes += (this.invert)    ? " inverted" : " standard";
+
   this.table = new Table(selector, {
     invert: this.invert,
-    class: "telegraph-table table table-striped" + (this.summarize ? " summary" : ""),
+    class: classes,
     items: this.tableItems(data)
   })
   _.bindAll(this.table);

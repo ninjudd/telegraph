@@ -10,6 +10,10 @@
   white-space: nowrap;
 }
 
-.telegraph-table.summary tr:last-child td {
+.telegraph-table.summary.standard tr:last-child td {
   border-top: double 3px #ccc;
+}
+
+.telegraph-table.summary.inverted tr td:last-child {
+  border-left: double 3px #ccc;
 }
