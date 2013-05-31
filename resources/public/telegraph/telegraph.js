@@ -99,7 +99,7 @@ Telegraph.prototype.tableItems = function(data) {
 Telegraph.prototype.tableDraw = function(selector, data) {
   this.table = new Table(selector, {
     invert: this.invert,
-    class: "telegraph-table table table-striped",
+    class: "telegraph-table table table-striped" + (this.summarize ? " summary" : ""),
     items: this.tableItems(data)
   })
   _.bindAll(this.table);

@@ -9,3 +9,7 @@
   border-right: double 3px #ccc;
   white-space: nowrap;
 }
+
+.telegraph-table.summary tr:last-child td {
+  border-top: double 3px #ccc;
+}
