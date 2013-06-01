@@ -174,17 +174,19 @@ Telegraph.timeScale = function(data) {
 Telegraph.makeChart = function(chart, scale, tickCount) {
   var nvChart = nv.models[chart]();
   var ticks   = _.map(scale.ticks(tickCount), function(d) { return d.getTime() / 1000 });
-  var format  = scale.tickFormat(tickCount);
-
-  nvChart.xAxis.showMaxMin(false).tickValues(ticks).tickFormat(function(d, i) {
-    var fmt = (i == null) ? d3.time.format('%X %a %x') : format;
+  var format  = function(d, i) {
+    var fmt = (i == null) ? d3.time.format('%X %a %x') : scale.tickFormat(tickCount);
     return fmt(new Date(d * 1000))
-  });
+  };
 
+  _.each([nvChart.xAxis, nvChart.x2Axis], function (axis) {
+    if (axis) axis.showMaxMin(false).tickValues(ticks).tickFormat(format);
+  });
+  _.each([nvChart.yAxis, nvChart.yAxis1, nvChart.yAxis2, nvChart.y2Axis], function (axis) {
+    if (axis) axis.tickFormat(d3.format('d'));
+  });
   nvChart.margin({left: 40, right: 30, bottom: 20, top: 20});
-  if (nvChart.yAxis)  nvChart.yAxis.tickFormat(d3.format('d'));
-  if (nvChart.yAxis1) nvChart.yAxis1.tickFormat(d3.format('d'));
-  if (nvChart.yAxis2) nvChart.yAxis2.tickFormat(d3.format('d'));
+
   _.bindAll(nvChart);
   return nvChart;
 };
