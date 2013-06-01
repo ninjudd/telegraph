@@ -33,12 +33,12 @@ function targetCells(target) {
     {class: "monospace", html: $("<a/>", {text: query}).click(_.partial(fillTarget, target))},
     {class: "monospace", text: shift}
   ]
-  var chart = $("#chart").val();
+  var chart = $("#chart").val() || "";
 
-  if (chart == "multiChart" || chart.match(/^linePlusBar/)) {
+  if (isMulti(chart) || isLinePlusBar(chart)) {
     cells.push({html: $("<img/>", {class: "icon", src: "/telegraph/images/chart-" + target.type + ".svg"})});
   }
-  if (chart == "multiChart") {
+  if (isMulti(chart)) {
     cells.push({html: (target.axis == "right" ? "&#x21E5;" : "&#x21E4;")});
   }
 
@@ -58,6 +58,18 @@ function markChanged(changed) {
   flipClass("disabled", $("#revert, #save").parent(), !changed);
 };
 
+function isTable(chart) {
+  return chart == "table";
+};
+
+function isMulti(chart) {
+  return chart == "multiChart";
+};
+
+function isLinePlusBar(chart) {
+  return chart && chart.match(/^linePlusBar/);
+};
+
 function redraw(name) {
   telegraph.draw("#graph", displayHeader, function(error) {
     showAlert(error, "error");
@@ -67,13 +79,12 @@ function redraw(name) {
   // Use draw count as a proxy for changes since we only redraw when a change is made.
   markChanged(telegraph.draws > 1);
 
-  var chart = $("#chart").val();
+  var chart = $("#chart").val() || "";
 
   $(".table-options, .chart-options, .multi-options, .line-plus-bar-options").removeClass("visible-options");
-  if (chart == "table")            $(".table-options").addClass("visible-options");
-  if (chart != "table")            $(".chart-options").addClass("visible-options");
-  if (chart == "multiChart")       $(".multi-options").addClass("visible-options");
-  if (chart.match(/^linePlusBar/)) $(".line-plus-bar-options").addClass("visible-options");
+  $(isTable(chart) ? ".table-options" : ".chart-options").addClass("visible-options");
+  if (isMulti(chart))       $(".multi-options").addClass("visible-options");
+  if (isLinePlusBar(chart)) $(".line-plus-bar-options").addClass("visible-options");
 };
 
 function fillTarget(target) {
