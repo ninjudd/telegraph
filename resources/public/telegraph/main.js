@@ -35,12 +35,13 @@ function targetCells(target) {
   ]
   var chart = $("#chart").val();
 
-  if (chart == "multiChart") {
+  if (chart == "multiChart" || chart.match(/^linePlusBar/)) {
     cells.push({html: $("<img/>", {class: "icon", src: "/telegraph/images/chart-" + target.type + ".svg"})});
-    cells.push({html: (target.axis == "right" ? "&#x21E5;" : "&#x21E4;")});
-  } else if (chart == "linePlusBarChart") {
-    cells.push({text: target.type});
   }
+  if (chart == "multiChart") {
+    cells.push({html: (target.axis == "right" ? "&#x21E5;" : "&#x21E4;")});
+  }
+
   return cells;
 };
 
@@ -72,7 +73,7 @@ function redraw(name) {
   if (chart == "table")            $(".table-options").addClass("visible-options");
   if (chart != "table")            $(".chart-options").addClass("visible-options");
   if (chart == "multiChart")       $(".multi-options").addClass("visible-options");
-  if (chart == "linePlusBarChart") $(".line-plus-bar-options").addClass("visible-options");
+  if (chart.match(/^linePlusBar/)) $(".line-plus-bar-options").addClass("visible-options");
 };
 
 function fillTarget(target) {
