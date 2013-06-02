@@ -394,14 +394,12 @@ $(document).ready(function() {
           var matches = _.filter(options, function(name) { return name.indexOf(request.term) >= 0 });
           response(matches);
         }
-      }).focus();
+      }).val("").focus();
 
       // Load typeahead asynchronously.
       Telegraph.list(function(names) {
         options = names;
       });
-
-      selectAll();
     } else {
       $(this).popover("hide");
     }
