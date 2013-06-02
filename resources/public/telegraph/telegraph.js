@@ -140,7 +140,7 @@ Telegraph.prototype.nvDraw = function(selector, data) {
   });
 
   nv.utils.windowResize(function() {
-    self.nvChart.update()
+    self.updateChart();
   });
 };
 
@@ -199,9 +199,13 @@ Telegraph.prototype.update = function() {
       self.table.update();
     } else {
       self.svg.datum(data);
-      self.nvChart.update();
+      self.updateChart();
     }
   });
+};
+
+Telegraph.prototype.updateChart = function() {
+  this.nvChart.update();
 };
 
 Telegraph.prototype.fetchData = function(targets, done) {

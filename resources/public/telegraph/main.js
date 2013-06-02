@@ -10,7 +10,8 @@ var targets = new Table("#targets", {
 _.bindAll(targets)
 
 load();
-$(window).on("hashchange", function () { load() });
+
+//======
 
 function targetCells(target) {
   var sub = $("#variables").is(":focus") ? _.identity : telegraph.subVariables;
@@ -48,7 +49,7 @@ function targetCells(target) {
 function displayHeader() {
   $("#name").text(telegraph.name || "untitled");
   flipClass("disabled", $("#rename").parent(), !telegraph.name);
-  $("#graph-header").css({display: telegraph.targets.length > 0 ? "block" : "none"});
+  $("#graph-header").toggle(telegraph.targets.length > 0);
 };
 
 var isChanged;
@@ -186,6 +187,19 @@ function flipClass(classString, selector, state) {
 
 function activeId(selector) {
   return $(selector).find(".active")[0].id;
+};
+
+function toggleEdit(show) {
+  var edit  = $("#edit-container");
+  var graph = $("#graph-container");
+
+  if (show) {
+    edit.show(500);
+    graph.css({top: "240px"});
+  } else {
+    edit.hide(250);
+    graph.css({top: 0});
+  }
 };
 
 $(document).ready(function() {
@@ -363,6 +377,11 @@ $(document).ready(function() {
     return false;
   });
 
+  $("#edit").click(function(e) {
+    toggleEdit(!$("#edit-container").is(":visible"));
+    setTimeout(function() { telegraph.updateChart() }, 500);
+  });
+
   var loadName = $("<input/>", {type: "text", id: "load-name", placeholder: "load graph"});
   $("#load").popover({
     placement: "right",
@@ -409,6 +428,12 @@ $(document).ready(function() {
       $(this).popover("hide");
     }
   });
+
+  $(window).on("hashchange", function () {
+    load();
+  });
+
+  toggleEdit(!window.location.hash);
 
   $("html").click(function() {
     $("#load").popover("hide");
