@@ -29,6 +29,8 @@ body * {
 
 #targets {
   margin-top: 5px;
+  overflow: scroll;
+  height: 165px;
 }
 
 .monospace {
