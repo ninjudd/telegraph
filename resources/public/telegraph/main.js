@@ -166,6 +166,18 @@ function load(name) {
   });
 };
 
+var graphNames = [];
+function loadForm() {
+  $("#load-form").modal('toggle').on('shown', function() {
+    $("#load-name").val("").focus();
+  });
+
+  // Load typeahead asynchronously.
+  Telegraph.list(function(names) {
+    graphNames = names;
+  });
+};
+
 function blurOnEnter(selector) {
   $(selector).keydown(function(e) {
     if(e.keyCode == 13) $(this).blur();
@@ -318,10 +330,14 @@ $(document).ready(function() {
   });
 
   $(document).bind('keydown', function(e) {
-    // Ctrl-s or Command-s
-    if (e.keyCode == 83 && (e.metaKey || e.ctrlKey)) {
-      save();
-      return false;
+    if (e.metaKey || e.ctrlKey) {
+      if (e.keyCode == 83) { // Ctrl-s or Command-s
+        save();
+        return false;
+      } else if (e.keyCode == 79) { // Ctrl-o or Command-o
+        loadForm();
+        return false;
+      }
     }
   });
 
@@ -382,51 +398,27 @@ $(document).ready(function() {
     setTimeout(function() { telegraph.updateChart() }, 500);
   });
 
-  var loadName = $("<input/>", {type: "text", id: "load-name", placeholder: "load graph"});
-  $("#load").popover({
-    placement: "right",
-    html: true,
-    content: loadName,
-    trigger: "manual"
+  $("#load-name").keydown(function(e) {
+    if (e.keyCode == 13) {
+      $(this).blur();
+      var name = $(this).val();
+      load(name);
+      $("#load-form").modal("toggle");
+    }
+  }).autocomplete({
+    minLength: 0,
+    source: function(request, response) {
+      var matches = _.filter(graphNames, function(name) { return name.indexOf(request.term) >= 0 });
+      response(matches);
+    },
+    select: function(e, ui) {
+      var name = ui.item.value;
+      load(name);
+    }
   });
 
   $("#load").click(function(e) {
-    e.stopPropagation();
-
-    if ($(this).next('div.popover:visible').length == 0) {
-      $(this).popover("show");
-
-      var options = [];
-      $("#load-name").keydown(function(e) {
-        if (e.keyCode == 13) {
-          $(this).blur();
-          var name = $(this).val();
-          load(name);
-        }
-      }).click(function(e) {
-        e.stopPropagation();
-      }).blur(function() {
-        $("#load").popover("toggle");
-      }).autocomplete({
-        minLength: 0,
-        source: function(request, response) {
-          var matches = _.filter(options, function(name) { return name.indexOf(request.term) >= 0 });
-          response(matches);
-        },
-        select: function(e, ui) {
-          var name = ui.item.value;
-          load(name);
-        }
-      }).val("").focus();
-
-      // Load typeahead asynchronously.
-      Telegraph.list(function(names) {
-        options = names;
-        $("#load-name").autocomplete("search", "")
-      });
-    } else {
-      $(this).popover("hide");
-    }
+    loadForm();
   });
 
   $(window).on("hashchange", function () {
