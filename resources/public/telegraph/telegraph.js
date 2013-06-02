@@ -56,7 +56,7 @@ Telegraph.prototype.draw = function(selector, done, error) {
       }
     });
   } else {
-    if (error) error("No data available.");
+    if (done) done();
   }
 };
 
