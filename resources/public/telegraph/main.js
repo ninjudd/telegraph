@@ -399,6 +399,7 @@ $(document).ready(function() {
       // Load typeahead asynchronously.
       Telegraph.list(function(names) {
         options = names;
+        $("#load-name").autocomplete("search", "")
       });
     } else {
       $(this).popover("hide");
