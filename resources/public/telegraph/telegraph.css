@@ -10,10 +10,18 @@
   white-space: nowrap;
 }
 
-.telegraph-table.summary.standard tr:last-child td {
+.telegraph-table.sum-cols.standard tr:last-child td {
   border-top: double 3px #ccc;
 }
 
-.telegraph-table.summary.inverted tr td:last-child {
+.telegraph-table.sum-cols.inverted tr td:last-child {
   border-left: double 3px #ccc;
+}
+
+.telegraph-table.sum-rows.standard tr td:last-child {
+  border-left: double 3px #ccc;
+}
+
+.telegraph-table.sum-rows.inverted tr:last-child td {
+  border-top: double 3px #ccc;
 }

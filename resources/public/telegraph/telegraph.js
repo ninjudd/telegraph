@@ -1,21 +1,22 @@
 var Telegraph = function (opts) {
   opts = opts || {chart: "lineChart"};
 
-  this.hash      = opts.hash;
-  this.name      = opts.name;
-  this.from      = opts.from;
-  this.until     = opts.until;
-  this.targets   = opts.targets;
-  this.variables = opts.variables;
-  this.chart     = opts.chart;
-  this.period    = opts.period;
-  this.align     = opts.align;
-  this.invert    = opts.invert;
-  this.summarize = opts.summarize;
-  this.refresh   = opts.refresh;
-  this.tickCount = opts.tickCount;
-  this.scale     = opts.scale;
-  this.draws     = 0;
+  this.hash       = opts.hash;
+  this.name       = opts.name;
+  this.from       = opts.from;
+  this.until      = opts.until;
+  this.targets    = opts.targets;
+  this.variables  = opts.variables;
+  this.chart      = opts.chart;
+  this.period     = opts.period;
+  this.align      = opts.align;
+  this.invert     = opts.invert;
+  this.sumCols    = opts.sumCols;
+  this.sumRows    = opts.sumRows;
+  this.refresh    = opts.refresh;
+  this.tickCount  = opts.tickCount;
+  this.scale      = opts.scale;
+  this.draws      = 0;
 };
 
 Telegraph.baseUrls = {};
@@ -95,7 +96,7 @@ Telegraph.prototype.tableItems = function(data) {
     return [item.key].concat(values);
   });
 
-  if (this.summarize) {
+  if (this.sumCols) {
     var rows = _.map(data, Telegraph.axisValues("y"));
     var totals = _.map(_.zip.apply(_, rows), function (col) {
       return _.reduce(col, function(acc, num) {
@@ -105,13 +106,30 @@ Telegraph.prototype.tableItems = function(data) {
     items.push(["total"].concat(totals));
   }
 
+  if (this.sumRows) {
+    var rows = _.map(data, Telegraph.axisValues("y"));
+    var total = 0;
+    _.each(rows, function (row, i) {
+      var sum = _.reduce(row, function(acc, num) {
+        return acc + num;
+      }, 0);
+      items[i].push(sum);
+      total += sum;
+    });
+    if (this.sumCols) {
+      _.last(items).push(total);
+    }
+    times.push("total");
+  }
+
   return [times].concat(items);
 };
 
 Telegraph.prototype.tableDraw = function(selector, data) {
   var classes = "telegraph-table table table-striped";
-  classes += (this.summarize) ? " summary"  : "";
-  classes += (this.invert)    ? " inverted" : " standard";
+  classes += (this.invert)  ? " inverted"   : " standard";
+  classes += (this.sumCols) ? " sum-cols"   : "";
+  classes += (this.sumRows) ? " sum-rows" : "";
 
   this.table = new Table(selector, {
     invert: this.invert,
@@ -205,7 +223,7 @@ Telegraph.prototype.update = function() {
 };
 
 Telegraph.prototype.updateChart = function() {
-  this.nvChart.update();
+  if (this.nvChart) this.nvChart.update();
 };
 
 Telegraph.prototype.fetchData = function(targets, done) {
@@ -285,7 +303,8 @@ Telegraph.prototype.save = function(opts) {
       period:    this.period,
       align:     this.align,
       invert:    this.invert,
-      summarize: this.summarize,
+      sumCols:   this.sumCols,
+      sumRows:   this.sumRows,
       refresh:   this.refresh,
       targets:   this.targets,
       variables: this.variables,

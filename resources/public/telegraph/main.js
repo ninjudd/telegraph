@@ -153,9 +153,10 @@ function load(name) {
       $("#refresh").val(telegraph.refresh);
       $("#chart").val(telegraph.chart);
       $("#variables").val(JSON.stringify(telegraph.variables));
-      flipClass("active", "#align",     telegraph.align);
-      flipClass("active", "#invert",    telegraph.invert);
-      flipClass("active", "#summarize", telegraph.summarize);
+      flipClass("active", "#align",    telegraph.align);
+      flipClass("active", "#invert",   telegraph.invert);
+      flipClass("active", "#sum-cols", telegraph.sumCols);
+      flipClass("active", "#sum-rows", telegraph.sumRows);
 
       targets.replace(telegraph.targets);
     },
@@ -272,12 +273,20 @@ $(document).ready(function() {
     redraw();
   });
 
-  $("#summarize").click(function(e) {
+  $("#sum-cols").click(function(e) {
     e.stopPropagation(e); // Make sure the button is toggled before we check it.
     $(this).toggleClass("active");
-    telegraph.summarize = $(this).hasClass("active");
+    telegraph.sumCols = $(this).hasClass("active");
     redraw();
   });
+
+  $("#sum-rows").click(function(e) {
+    e.stopPropagation(e); // Make sure the button is toggled before we check it.
+    $(this).toggleClass("active");
+    telegraph.sumRows = $(this).hasClass("active");
+    redraw();
+  });
+
 
   $("#variables").change(function() {
     var variables = $("#variables").val();
