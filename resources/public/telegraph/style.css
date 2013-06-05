@@ -282,3 +282,22 @@ select, input[type="text"] {
   z-index: 1051;
 }
 
+.attribution {
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+  font-size: 10px;
+  color: #ccc;
+}
+
+.attribution a {
+  color: #ccc;
+}
+
+.attribution:hover {
+  color: #999;
+}
+
+.attribution:hover a {
+  color: #999;
+}
