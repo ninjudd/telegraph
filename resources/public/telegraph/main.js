@@ -116,9 +116,13 @@ function save(force) {
       markChanged(false);
       displayHeader();
     },
-    error: function(error) {
-      if (confirm(error + " Would you like to overwrite?")) {
-        save(true);
+    error: function(message) {
+      if (message) {
+        if (confirm(error + " Would you like to overwrite?")) {
+          save(true);
+        }
+      } else {
+        showAlert("save failed", "error");
       }
     }
   });

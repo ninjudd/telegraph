@@ -326,7 +326,7 @@ Telegraph.prototype.save = function(opts) {
         if (opts.success) opts.success(results);
       },
       error: function(results) {
-        var response = JSON.parse(results.responseText);
+        var response = results.responseText ? JSON.parse(results.responseText) : {};
         if (opts.error) opts.error(response.error);
       }
     });
