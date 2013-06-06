@@ -162,8 +162,8 @@ Telegraph.prototype.nvDraw = function(selector, data) {
   });
 };
 
-Telegraph.prototype.subVariables = function(target) {
-  return _.reduce(this.variables, function (target, value, key) {
+Telegraph.prototype.subVariables = function(target, variables) {
+  return _.reduce(variables, function (target, value, key) {
     var pattern = new RegExp("\\$" + key, 'g');
     return target.replace(pattern, value);
   }, target);
@@ -236,8 +236,14 @@ Telegraph.prototype.fetchData = function(targets, done) {
     return [target.source, target.shift]
   });
 
+  if (this.variables) {
+    try {
+      var variables = JSON.parse(this.variables);
+    } catch (err) {}
+  }
+
   var promises = _.map(targetGroups, function(targets) {
-    return self.getData(data, targets);
+    return self.getData(data, targets, variables);
   });
 
   $.when.apply($, promises).always(function (e) {
@@ -247,7 +253,7 @@ Telegraph.prototype.fetchData = function(targets, done) {
 
 Telegraph.defaultPeriod = "15m";
 
-Telegraph.prototype.getData = function(data, targets) {
+Telegraph.prototype.getData = function(data, targets, variables) {
   var self = this;
 
   if (targets.length == 0) return;
@@ -259,14 +265,14 @@ Telegraph.prototype.getData = function(data, targets) {
     until:    this.until,
     period:   period,
     align:    align,
-    shift:    self.subVariables(targets[0].shift),
+    shift:    self.subVariables(targets[0].shift, variables),
     timezone: (new Date()).getTimezoneOffset() + "m",
   };
 
   var labels = [];
   var url = Telegraph.baseUrls[targets[0].source] + "?" + _.compact(_.map(targets, function(t, i) {
-    var query = self.subVariables(t.query);
-    labels[i] = self.subVariables(t.label);
+    var query = self.subVariables(t.query, variables);
+    labels[i] = self.subVariables(t.label, variables);
     return "target=" + encodeURIComponent(query);
   })).join('&');
 

@@ -152,7 +152,7 @@ function load(name) {
       $("#period").val(telegraph.period);
       $("#refresh").val(telegraph.refresh);
       $("#chart").val(telegraph.chart);
-      $("#variables").val(JSON.stringify(telegraph.variables));
+      $("#variables").val(telegraph.variables);
       flipClass("active", "#align",    telegraph.align);
       flipClass("active", "#invert",   telegraph.invert);
       flipClass("active", "#sum-cols", telegraph.sumCols);
@@ -289,8 +289,7 @@ $(document).ready(function() {
 
 
   $("#variables").change(function() {
-    var variables = $("#variables").val();
-    telegraph.variables = variables ? JSON.parse(variables) : null
+    telegraph.variables = $("#variables").val();
     redraw();
     targets.update();
   });
