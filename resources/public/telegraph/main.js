@@ -53,7 +53,7 @@ function targetCells(target) {
 function displayHeader() {
   $("#name").text(telegraph.name || "untitled");
   flipClass("disabled", $("#rename").parent(), !telegraph.name);
-  $("#graph-header").toggle(telegraph.targets.length > 0);
+  $("#graph-header").toggle(!!telegraph.name || telegraph.targets.length > 0);
 };
 
 var isChanged;
