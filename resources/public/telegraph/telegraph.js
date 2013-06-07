@@ -7,6 +7,7 @@ var Telegraph = function (opts) {
   this.until      = opts.until;
   this.targets    = opts.targets;
   this.variables  = opts.variables;
+  this.transform  = opts.transform;
   this.chart      = opts.chart;
   this.period     = opts.period;
   this.align      = opts.align;
@@ -35,7 +36,7 @@ Telegraph.prototype.draw = function(selector, done, error) {
   if (this.refreshInterval) clearInterval(this.refreshInterval);
 
   if (this.targets && this.targets.length > 0) {
-    this.fetchData(this.targets, function(data) {
+    this.fetchData(function(data) {
       var cardinality = Telegraph.cardinality(data);
       var numDataPoints = _.max(cardinality.lengths);
       if (!cardinality.match && Telegraph.requiresMatchingCardinality(self.chart)) {
@@ -211,7 +212,8 @@ Telegraph.makeChart = function(chart, scale, tickCount) {
 
 Telegraph.prototype.update = function() {
   var self = this;
-  this.fetchData(this.targets, function(data) {
+
+  this.fetchData(function(data) {
     if (self.chart == 'table') {
       self.table.items = self.tableItems(data);
       self.table.update();
@@ -226,12 +228,12 @@ Telegraph.prototype.updateChart = function() {
   if (this.nvChart) this.nvChart.update();
 };
 
-Telegraph.prototype.fetchData = function(targets, done) {
+Telegraph.prototype.fetchData = function(done) {
   var self = this;
   var data = [];
 
   targets = _.compact(targets);
-  var targetGroups = _.groupBy(targets, function(target, index) {
+  var targetGroups = _.groupBy(this.targets, function(target, index) {
     target.index = index;
     return [target.source, target.shift]
   });
@@ -241,19 +243,24 @@ Telegraph.prototype.fetchData = function(targets, done) {
       var variables = JSON.parse(this.variables);
     } catch (err) {}
   }
+  if (!_.isArray(variables)) variables = [variables]
 
-  var promises = _.map(targetGroups, function(targets) {
-    return self.getData(data, targets, variables);
+  var promises = [];
+  _.each(targetGroups, function(targets) {
+    _.each(variables, function(vars, i) {
+      data[i] = [];
+      promises.push(self.getData(data[i], targets, vars, self.transform));
+    });
   });
 
   $.when.apply($, promises).always(function (e) {
-    done(data);
+    done(data[0]);
   });
 };
 
 Telegraph.defaultPeriod = "15m";
 
-Telegraph.prototype.getData = function(data, targets, variables) {
+Telegraph.prototype.getData = function(data, targets, variables, transform) {
   var self = this;
 
   if (targets.length == 0) return;
@@ -271,7 +278,7 @@ Telegraph.prototype.getData = function(data, targets, variables) {
 
   var labels = [];
   var url = Telegraph.baseUrls[targets[0].source] + "?" + _.compact(_.map(targets, function(t, i) {
-    var query = self.subVariables(t.query, variables);
+    var query = self.subVariables(t.query, variables) + (transform || "");
     labels[i] = self.subVariables(t.label, variables);
     return "target=" + encodeURIComponent(query);
   })).join('&');
@@ -314,6 +321,7 @@ Telegraph.prototype.save = function(opts) {
       refresh:   this.refresh,
       targets:   this.targets,
       variables: this.variables,
+      transform: this.transform,
       force:     opts.force
     };
 

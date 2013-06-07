@@ -112,10 +112,9 @@
           </button>
         </span>
 
-        <textarea id="variables" placeholder="macro variables"></textarea>
-
-        <input type="text" id="refresh" placeholder="refresh" tooltip="true"
-               title="Auto-refresh interval in seconds.">
+        <span id="graph-advanced">
+          <img class="toolbar icon faded" src="/telegraph/images/cog-alt.svg">
+        </span>
       </div>
     </div>
   </div>
@@ -165,9 +164,35 @@
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
       <h4>Load saved graph</h4>
     </div>
-    <input id="load-name" type="text">
+    <div class="modal-body">
+      <input id="load-name" type="text">
+    </div>
     <div class="modal-footer">
-      <button class="btn btn-primary">Load</button>
+      <button id="load-submit" class="btn btn-primary">Load</button>
+    </div>
+  </div>
+
+  <div id="graph-advanced-form" class="modal hide fade" tabindex="-1" role="dialog">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h4>Advanced options</h4>
+    </div>
+    <div class="modal-body">
+      <div>
+        <label for="variables">Auto-refresh interval:</label>
+        <input type="text" id="refresh" placeholder="30" tooltip="true">
+      </div>
+      <div>
+        <label for="variables">Macro variables:</label>
+        <textarea id="variables" placeholder='{"field":"value"}'></textarea>
+      </div>
+      <div>
+        <label for="transform">Transform:</label>
+        <textarea id="transform"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="advanced-submit" class="btn btn-primary">Done</button>
     </div>
   </div>
 

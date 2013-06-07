@@ -158,6 +158,7 @@ function load(name) {
       $("#refresh").val(telegraph.refresh);
       $("#chart").val(telegraph.chart);
       $("#variables").val(telegraph.variables);
+      $("#transform").val(telegraph.transform);
       flipClass("active", "#align",    telegraph.align);
       flipClass("active", "#invert",   telegraph.invert);
       flipClass("active", "#sum-cols", telegraph.sumCols);
@@ -170,6 +171,12 @@ function load(name) {
       if (!telegraph) load("");
     }
   });
+};
+
+function loadSubmit() {
+  var name = $("#load-name").val();
+  load(name);
+  $("#load-form").modal("toggle");
 };
 
 var graphNames = [];
@@ -292,21 +299,15 @@ $(document).ready(function() {
     redraw();
   });
 
-
   $("#variables").change(function() {
     telegraph.variables = $("#variables").val();
     redraw();
     targets.update();
   });
 
-  $("#variables").focus(function() {
-    $(this).css({height: "78px"});
-    targets.update();
-  });
-
-  $("#variables").blur(function() {
-    $(this).css({height: "21px"});
-    targets.update();
+  $("#transform").change(function() {
+    telegraph.transform = $("#transform").val();
+    redraw();
   });
 
   var renaming;
@@ -411,12 +412,13 @@ $(document).ready(function() {
     setTimeout(function() { telegraph.updateChart() }, 500);
   });
 
+  $("#load-submit").click(function(e) {
+    loadSubmit();
+  });
+
   $("#load-name").keydown(function(e) {
     if (e.keyCode == 13) {
-      $(this).blur();
-      var name = $(this).val();
-      load(name);
-      $("#load-form").modal("toggle");
+      loadSubmit();
     }
   }).autocomplete({
     minLength: 0,
@@ -434,15 +436,19 @@ $(document).ready(function() {
     loadForm();
   });
 
+  $("#graph-advanced").click(function(e) {
+    $("#graph-advanced-form").modal("toggle");
+  });
+
+  $("#advanced-submit").click(function(e) {
+    $("#graph-advanced-form").modal("toggle");
+  });
+
   $(window).on("hashchange", function () {
     load();
   });
 
   toggleEdit(!window.location.hash);
-
-  $("html").click(function() {
-    $("#load").popover("hide");
-  });
 
   var $select = $("#source");
   _.each(telegraphSources, function (source) {
