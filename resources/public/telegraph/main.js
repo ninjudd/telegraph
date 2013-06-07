@@ -22,6 +22,9 @@ function targetCells(target) {
 
   var labelField = $("<span/>", {text: target.label, contenteditable: true})
   blurOnEnter(labelField);
+  labelField.click(function(e) {
+    $(this).focus();
+  });
   labelField.blur(function(e) {
     var newLabel = $(this).text();
     if (newLabel != target.label) {
