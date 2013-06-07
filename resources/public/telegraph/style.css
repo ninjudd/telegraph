@@ -116,6 +116,10 @@ body * {
   width: 50px;
 }
 
+#load, #edit {
+  display: inline-block;
+}
+
 #graph-advanced {
   vertical-align: top;
 }
