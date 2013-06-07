@@ -230,8 +230,8 @@ Telegraph.prototype.fetchData = function(done) {
   var self = this;
   var data = [];
 
-  var targets = _.compact(targets);
-  var targetGroups = _.groupBy(this.targets, function(target, index) {
+  var targets = _.compact(this.targets);
+  var targetGroups = _.groupBy(targets, function(target, index) {
     target.index = index;
     return [target.source, target.shift]
   });
@@ -246,7 +246,7 @@ Telegraph.prototype.fetchData = function(done) {
   var promises = [];
   _.each(targetGroups, function(targets) {
     _.each(variables, function(vars, i) {
-      data[i] = [];
+      data[i] = data[i] || [];
       promises.push(self.getData(data[i], targets, vars, self.transform));
     });
   });
