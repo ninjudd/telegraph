@@ -130,10 +130,13 @@ body * {
   width: 20px;
 }
 
+#macro-variables {
+  display: none;
+}
+
 #variables {
   width: 300px;
   height: 100px;
-  display: none;
   font-family: monospace;
 }
 

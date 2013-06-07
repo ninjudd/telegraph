@@ -77,7 +77,7 @@ function redraw(unchanged) {
   telegraph.draw("#graph", displayHeader, function(error) {
     showAlert(error, "error");
   });
-  telegraph.hasVariables() ? $("#variables").show() : $("#variables").hide();
+  $("#macro-variables").toggle(telegraph.hasVariables());
 
   // Use draw count as a proxy for changes since we only redraw when a change is made.
   if (!unchanged) draws++;
