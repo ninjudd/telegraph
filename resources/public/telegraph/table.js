@@ -5,6 +5,7 @@ var Table = function (selector, opts) {
   this.toCells   = opts.toCells || Table.defaultCells;
   this.change    = opts.change;
   this.invert    = opts.invert;
+  this.sortable  = opts.sortable;
   this.class     = opts.class;
   this.items     = opts.items || [];
   this.itemCount = 0;
@@ -27,11 +28,15 @@ Table.defaultCells = function (item) {
   })
 };
 
+Table.prototype.table = function(subSelector) {
+  return $(this.selector).find("table " + subSelector);
+};
+
 Table.prototype.add = function(item) {
   item.id = this.itemCount++;
   this.items.push(item);
-  this.change(this);
   this.update();
+  this.change(this);
 
   return item.id;
 };
@@ -42,14 +47,14 @@ Table.prototype.replace = function(items) {
   _.each(this.items, function(item) {
     item.id = self.itemCount++;
   });
-  this.change(this);
   this.update();
+  this.change(this);
 };
 
 Table.prototype.remove = function(id) {
   this.items = _.reject(this.items, function(item) { return item.id == id });
-  this.change(this);
   this.update();
+  this.change(this);
 };
 
 Table.prototype.update = function() {
@@ -69,10 +74,28 @@ Table.prototype.update = function() {
   });
 
   var table = $("<table/>", {class: this.class});
-  _.each(cells, function(row) {
-    var tr = $("<tr/>")
+  _.each(cells, function(row, i) {
+    var tr = $("<tr/>", {id: i})
     _.each(row, function(cell) { tr.append($("<td/>", cell)) });
     table.append(tr);
   });
+
+  if (this.sortable) {
+    table.find("tbody").sortable({
+      // Keep table cells from collapsing when reordering.
+      // http://www.foliotek.com/devblog/make-table-rows-sortable-using-jquery-ui-sortable
+      helper: function(e, ui) {
+        ui.children().each(function() { $(this).width($(this).width()) });
+        return ui;
+      },
+      update: function( event, ui ) {
+        var order = $(this).sortable('toArray');
+        self.replace(_.map(order, function(i) {
+          return self.items[i]
+        }));
+      }
+    });
+  }
+
   $(this.selector).html("").append(table);
 };
