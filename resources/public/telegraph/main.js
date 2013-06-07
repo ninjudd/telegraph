@@ -35,7 +35,7 @@ function targetCells(target) {
 
   var cells = [
     {html: labelField},
-    {class: "monospace", html: $("<a/>", {text: query}).click(_.partial(fillTarget, target))},
+    {class: "monospace", html: $("<a/>", {href: "#", text: query}).click(_.partial(fillTarget, target))},
     {class: "monospace", text: shift}
   ]
   var chart = $("#chart").val() || "";
@@ -105,6 +105,8 @@ function fillTarget(target) {
   flipClass("active", "#line", target.type == "line");
   flipClass("active", "#bar",  target.type == "bar");
   flipClass("active", "#area", target.type == "area");
+
+  return false;
 };
 
 function display(selector, show) {
