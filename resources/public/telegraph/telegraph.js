@@ -230,7 +230,7 @@ Telegraph.prototype.fetchData = function(done) {
   var self = this;
   var data = [];
 
-  targets = _.compact(targets);
+  var targets = _.compact(targets);
   var targetGroups = _.groupBy(this.targets, function(target, index) {
     target.index = index;
     return [target.source, target.shift]
