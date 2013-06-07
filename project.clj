@@ -1,4 +1,4 @@
-(defproject org.flatland/telegraph "0.2.14"
+(defproject org.flatland/telegraph "0.2.15"
   :description "Make beautiful dashboards for telemetry and turntable."
   :url "http://github.com/flatland/telegraph"
   :license {:name "Eclipse Public License"
