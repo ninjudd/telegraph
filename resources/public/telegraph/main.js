@@ -72,14 +72,16 @@ function isLinePlusBar(chart) {
   return chart && chart.match(/^linePlusBar/);
 };
 
-function redraw(name) {
+var draws;
+function redraw(unchanged) {
   telegraph.draw("#graph", displayHeader, function(error) {
     showAlert(error, "error");
   });
   telegraph.hasVariables() ? $("#variables").show() : $("#variables").hide();
 
   // Use draw count as a proxy for changes since we only redraw when a change is made.
-  markChanged(telegraph.draws > 1);
+  if (!unchanged) draws++;
+  markChanged(draws > 1);
 
   var chart = $("#chart").val() || "";
 
@@ -144,6 +146,7 @@ function hash() {
 };
 
 function load(name) {
+  draws = 0;
   Telegraph.load({
     refresh: 3000,
     name: name == null ? hash() : name,
@@ -242,7 +245,7 @@ $(document).ready(function() {
   });
 
   $("#refresh-graph").click(function() {
-    redraw();
+    redraw(true);
   });
 
   $("#from").change(function() {

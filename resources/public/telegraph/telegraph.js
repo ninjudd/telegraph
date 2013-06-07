@@ -17,7 +17,6 @@ var Telegraph = function (opts) {
   this.refresh    = opts.refresh;
   this.tickCount  = opts.tickCount;
   this.scale      = opts.scale;
-  this.draws      = 0;
 };
 
 Telegraph.baseUrls = {};
@@ -30,7 +29,6 @@ Telegraph.maxDataPoints = 5000;
 
 Telegraph.prototype.draw = function(selector, done, error) {
   var self = this;
-  this.draws++;
 
   $(selector).empty();
   if (this.refreshInterval) clearInterval(this.refreshInterval);
