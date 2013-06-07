@@ -88,6 +88,7 @@ Table.prototype.update = function() {
         ui.children().each(function() { $(this).width($(this).width()) });
         return ui;
       },
+      cancel: '[contenteditable]',
       update: function( event, ui ) {
         var order = $(this).sortable('toArray');
         self.replace(_.map(order, function(i) {
