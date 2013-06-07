@@ -150,7 +150,6 @@ function hash() {
 function load(name) {
   draws = 0;
   Telegraph.load({
-    refresh: 3000,
     name: name == null ? hash() : name,
     success: function(t) {
       telegraph = t;
@@ -264,6 +263,8 @@ $(document).ready(function() {
     telegraph.period = $(this).val();
     redraw();
   });
+
+  $("#refresh").attr({placeholder: Telegraph.defaultRefresh});
 
   $("#refresh").change(function() {
     telegraph.refresh = parseInt($(this).val());
