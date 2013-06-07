@@ -3,8 +3,8 @@ var targets = new Table("#targets", {
   class: "table table-striped",
   toCells: Table.deletable(targetCells),
   sortable: true,
-  change: function(targets) {
-    telegraph.targets = targets.items;
+  change: function() {
+    telegraph.targets = this.items;
     redraw();
   }
 });

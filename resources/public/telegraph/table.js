@@ -36,7 +36,7 @@ Table.prototype.add = function(item) {
   item.id = this.itemCount++;
   this.items.push(item);
   this.update();
-  this.change(this);
+  this.change();
 
   return item.id;
 };
@@ -44,17 +44,17 @@ Table.prototype.add = function(item) {
 Table.prototype.replace = function(items) {
   var self = this;
   this.items = items || [];
-  _.each(this.items, function(item) {
+  _.each(items, function(item) {
     item.id = self.itemCount++;
   });
   this.update();
-  this.change(this);
+  this.change();
 };
 
 Table.prototype.remove = function(id) {
   this.items = _.reject(this.items, function(item) { return item.id == id });
   this.update();
-  this.change(this);
+  this.change();
 };
 
 Table.prototype.update = function() {
