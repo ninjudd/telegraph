@@ -15,7 +15,7 @@ Table.deletable = function(toCells) {
   return function(item) {
     var self = this;
     var cells = toCells(item);
-    var removeLink = $("<span/>", {id: "remove", html: "&times;"})
+    var removeLink = $("<div/>", {html: "&times;"}).css({cursor: "pointer"});
     removeLink.on("click", function() { self.remove(item.id) });
     cells.push({html: removeLink});
     return cells;

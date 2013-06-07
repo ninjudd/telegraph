@@ -28,6 +28,7 @@ body * {
 }
 
 #targets {
+  padding-right: 10px;
   margin-top: 5px;
   overflow: scroll;
   height: 165px;
@@ -252,15 +253,6 @@ select, input[type="text"] {
 }
 
 #help:hover {
-  cursor: pointer;
-}
-
-#remove {
-  padding: 5px;
-  float: right;
-}
-
-#remove:hover {
   cursor: pointer;
 }
 
