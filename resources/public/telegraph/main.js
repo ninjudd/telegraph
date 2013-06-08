@@ -431,10 +431,6 @@ $(document).ready(function() {
     source: function(request, response) {
       var matches = _.filter(graphNames, function(name) { return name.indexOf(request.term) >= 0 });
       response(matches);
-    },
-    select: function(e, ui) {
-      var name = ui.item.value;
-      load(name);
     }
   });
 
