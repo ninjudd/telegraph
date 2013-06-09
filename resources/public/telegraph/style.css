@@ -69,6 +69,7 @@ body * {
   width: 100%;
   height: 140px;
   font-family: monospace;
+  position: relative;
 }
 
 #shift {
