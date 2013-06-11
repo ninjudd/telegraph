@@ -271,7 +271,7 @@ Telegraph.prototype.getData = function(data, targets, variables, transform) {
     period:   period,
     align:    align,
     shift:    self.subVariables(targets[0].shift, variables),
-    timezone: (new Date()).getTimezoneOffset() + "m",
+    timezone: - (new Date()).getTimezoneOffset() + "m",
   };
 
   var labels = [];
