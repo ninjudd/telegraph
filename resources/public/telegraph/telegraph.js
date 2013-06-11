@@ -263,7 +263,7 @@ Telegraph.prototype.getData = function(data, targets, variables, transform) {
 
   if (targets.length == 0) return;
   var period = this.period || Telegraph.defaultPeriod;
-  var align  = (this.align || this.chart == 'table') ? period : null;
+  var align  = this.chart == 'table' ? 'start' : this.align;
 
   var opts = {
     from:     this.from,
