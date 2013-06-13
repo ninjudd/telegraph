@@ -31,7 +31,7 @@ Telegraph.prototype.draw = function(selector, done, error) {
   var self = this;
 
   $(selector).empty();
-  if (this.refreshInterval) clearInterval(this.refreshInterval);
+  this.clearRefresh();
 
   if (this.targets && this.targets.length > 0) {
     this.fetchData(function(data) {
@@ -59,6 +59,11 @@ Telegraph.prototype.draw = function(selector, done, error) {
     if (done) done();
   }
 };
+
+Telegraph.prototype.clearRefresh = function() {
+  if (this.refreshInterval) clearInterval(this.refreshInterval);
+};
+
 
 Telegraph.cardinality = function(data) {
   var rows  = _.map(data, Telegraph.axisValues("x"));

@@ -149,6 +149,7 @@ function hash() {
 
 function load(name) {
   draws = 0;
+  if (telegraph) telegraph.clearRefresh();
   Telegraph.load({
     name: name == null ? hash() : name,
     success: function(t) {
