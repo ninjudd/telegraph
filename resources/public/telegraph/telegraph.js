@@ -142,6 +142,26 @@ Telegraph.prototype.tableDraw = function(selector, data) {
   })
   _.bindAll(this.table);
   this.table.update();
+
+  var link = $("<span/>", {class: "dropdown-toggle", "data-toggle": "dropdown", html: "&#x25BE;"});
+  var menu = $("<ul/>", {id: "table-menu", class: "dropdown-menu", role: "menu"});
+  menu.append($("<li/>").append(this.csvLink(this.name, data)));
+  var cell = $(selector).find("table tr:first-child td:first-child")
+  cell.append($("<div/>", {class: "dropdown"}).append(menu, link));
+};
+
+Telegraph.prototype.csvData = function(data) {
+  var rows = _.pluck(data, "values");
+  var lines = _.map(_.zip.apply(_, rows), function (col) {
+    return [col[0].x].concat(_.pluck(col, "y")).join(",");
+  })
+  var fields = ["time"].concat(_.pluck(data, "key"));
+  return [fields].concat(lines).join("\n");
+};
+
+Telegraph.prototype.csvLink = function(name, data) {
+  var url = "data:application/csv;charset=utf-8," + encodeURIComponent(this.csvData(data));
+  return $("<a/>", {download: name + ".csv", href: url, text: "Download CSV"});
 };
 
 Telegraph.prototype.nvDraw = function(selector, data) {
