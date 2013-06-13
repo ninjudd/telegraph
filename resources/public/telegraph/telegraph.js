@@ -166,11 +166,11 @@ Telegraph.prototype.csvLink = function(name, data) {
 
 Telegraph.prototype.nvDraw = function(selector, data) {
   var self = this;
-  var container = $(selector)
-  var tickCount = this.tickCount || Math.floor(container.width() / 100);
-  var scale     = this.scale     || Telegraph.timeScale(data);
+  var $container = $(selector)
+  var tickCount  = this.tickCount || Math.floor($container.width() / 100);
+  var scale      = this.scale     || Telegraph.timeScale(data);
 
-  container.append("<svg><svg/>");
+  $container.append("<svg><svg/>");
   this.svg = d3.select(selector).select("svg");
   this.nvChart = Telegraph.makeChart(this.chart, scale, tickCount);
 
