@@ -77,7 +77,6 @@ function redraw(unchanged) {
   telegraph.draw("#graph", displayHeader, function(error) {
     showAlert(error, "error");
   });
-  $("#macro-variables").toggle(telegraph.hasVariables());
 
   // Use draw count as a proxy for changes since we only redraw when a change is made.
   if (!unchanged) draws++;
@@ -163,7 +162,6 @@ function load(name) {
       $("#refresh").val(telegraph.refresh);
       $("#chart").val(telegraph.chart);
       $("#variables").val(telegraph.variables);
-      $("#transform").val(telegraph.transform);
       flipClass("active", "#align",    telegraph.align);
       flipClass("active", "#invert",   telegraph.invert);
       flipClass("active", "#sum-cols", telegraph.sumCols);
@@ -310,11 +308,6 @@ $(document).ready(function() {
     telegraph.variables = $("#variables").val();
     redraw();
     targets.update();
-  });
-
-  $("#transform").change(function() {
-    telegraph.transform = $("#transform").val();
-    redraw();
   });
 
   var renaming;

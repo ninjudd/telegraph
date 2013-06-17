@@ -7,7 +7,6 @@ var Telegraph = function (opts) {
   this.until      = opts.until;
   this.targets    = opts.targets;
   this.variables  = opts.variables;
-  this.transform  = opts.transform;
   this.chart      = opts.chart;
   this.period     = opts.period;
   this.align      = opts.align;
@@ -34,7 +33,7 @@ Telegraph.prototype.draw = function(selector, done, error) {
   this.clearRefresh();
 
   if (this.targets && this.targets.length > 0) {
-    this.fetchData(function(data) {
+    this.fetchData(function(data, vars) {
       var cardinality = Telegraph.cardinality(data);
       var numDataPoints = _.max(cardinality.lengths);
       if (!cardinality.match && Telegraph.requiresMatchingCardinality(self.chart)) {
@@ -44,7 +43,7 @@ Telegraph.prototype.draw = function(selector, done, error) {
                          numDataPoints + ", but the maximum is " + Telegraph.maxDataPoints + ".");
       } else {
         if (self.chart == 'table') {
-          self.tableDraw(selector, data);
+          self.tableDraw(selector, data, vars);
         } else {
           self.nvDraw(selector, data);
         }
@@ -87,17 +86,19 @@ Telegraph.axisValues = function(axis, data) {
   }
 };
 
-Telegraph.prototype.tableItems = function(data) {
-  var scale  = this.scale || Telegraph.timeScale(data);
-  var format = scale.tickFormat();
+Telegraph.prototype.tableItems = function(data, format) {
+  var scale      = this.scale || Telegraph.timeScale(data);
+  var formatTime = scale.tickFormat();
+  var formatVal  = format ? function(val) { return _.str.sprintf(format, val) } : _.identity;
+  var formatVals = format ? function(vals) { return _.map(vals, formatVal) } : _.identity;
 
   var times  = [""].concat(_.map(data[0].values, function (val) {
-    return format(new Date(val.x * 1000));
+    return formatTime(new Date(val.x * 1000));
   }));
 
   var items = _.map(data, function (item) {
     var values = Telegraph.axisValues("y", item);
-    return [item.key].concat(values);
+    return [item.key].concat(formatVals(values));
   });
 
   if (this.sumCols) {
@@ -107,7 +108,7 @@ Telegraph.prototype.tableItems = function(data) {
         return acc + num;
       }, 0);
     });
-    items.push(["total"].concat(totals));
+    items.push(["total"].concat(formatVals(totals)));
   }
 
   if (this.sumRows) {
@@ -117,11 +118,11 @@ Telegraph.prototype.tableItems = function(data) {
       var sum = _.reduce(row, function(acc, num) {
         return acc + num;
       }, 0);
-      items[i].push(sum);
+      items[i].push(formatVal(sum));
       total += sum;
     });
     if (this.sumCols) {
-      _.last(items).push(total);
+      _.last(items).push(formatVal(total));
     }
     times.push("total");
   }
@@ -129,7 +130,7 @@ Telegraph.prototype.tableItems = function(data) {
   return [times].concat(items);
 };
 
-Telegraph.prototype.tableDraw = function(selector, data) {
+Telegraph.prototype.tableDraw = function(selector, data, vars) {
   var classes = "telegraph-table table table-striped";
   classes += (this.invert)  ? " inverted"   : " standard";
   classes += (this.sumCols) ? " sum-cols"   : "";
@@ -138,7 +139,7 @@ Telegraph.prototype.tableDraw = function(selector, data) {
   this.table = new Table(selector, {
     invert: this.invert,
     class: classes,
-    items: this.tableItems(data)
+    items: this.tableItems(data, vars._format)
   })
   _.bindAll(this.table);
   this.table.update();
@@ -236,9 +237,9 @@ Telegraph.makeChart = function(chart, scale, tickCount) {
 Telegraph.prototype.update = function() {
   var self = this;
 
-  this.fetchData(function(data) {
+  this.fetchData(function(data, vars) {
     if (self.chart == 'table') {
-      self.table.items = self.tableItems(data);
+      self.table.items = self.tableItems(data, vars._format);
       self.table.update();
     } else {
       self.svg.datum(data);
@@ -263,8 +264,10 @@ Telegraph.prototype.fetchData = function(done) {
 
   if (this.variables) {
     try {
-      var variables = JSON.parse(this.variables);
+      variables = JSON.parse(this.variables);
     } catch (err) {}
+  } else {
+    variables = {};
   }
   if (!_.isArray(variables)) variables = [variables]
 
@@ -272,18 +275,18 @@ Telegraph.prototype.fetchData = function(done) {
   _.each(targetGroups, function(targets) {
     _.each(variables, function(vars, i) {
       data[i] = data[i] || [];
-      promises.push(self.getData(data[i], targets, vars, self.transform));
+      promises.push(self.getData(data[i], targets, vars));
     });
   });
 
   $.when.apply($, promises).always(function (e) {
-    done(data[0]);
+    done(data[0], variables[0]);
   });
 };
 
 Telegraph.defaultPeriod = "15m";
 
-Telegraph.prototype.getData = function(data, targets, variables, transform) {
+Telegraph.prototype.getData = function(data, targets, variables) {
   var self = this;
 
   if (targets.length == 0) return;
@@ -301,7 +304,7 @@ Telegraph.prototype.getData = function(data, targets, variables, transform) {
 
   var labels = [];
   var url = Telegraph.baseUrls[targets[0].source] + "?" + _.compact(_.map(targets, function(t, i) {
-    var query = self.subVariables(t.query, variables) + (transform || "");
+    var query = self.subVariables(t.query, variables) + (variables._transform || "");
     labels[i] = self.subVariables(t.label, variables);
     return "target=" + encodeURIComponent(query);
   })).join('&');
@@ -344,7 +347,6 @@ Telegraph.prototype.save = function(opts) {
       refresh:   this.refresh,
       targets:   this.targets,
       variables: this.variables,
-      transform: this.transform,
       force:     opts.force
     };
 

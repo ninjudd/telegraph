@@ -132,10 +132,6 @@ body * {
   width: 20px;
 }
 
-#macro-variables {
-  display: none;
-}
-
 #variables {
   width: 300px;
   height: 100px;
