@@ -194,8 +194,8 @@ Telegraph.prototype.tableDraw = function(selector, data) {
 
   var link = $("<span/>", {class: "dropdown-toggle", "data-toggle": "dropdown", html: "&#x25BE;"});
   var menu = $("<ul/>", {id: "table-menu", class: "dropdown-menu", role: "menu"});
-  _.each(this.vars, function(vars, i) {
-    var suffix = i == 0 ? "" : i + 1;
+  _.each(this.vars, function(v, i) {
+    var suffix = v._label || (i == 0 ? "" : i + 1);
     var name = self.name;
     name += suffix ? " - " + suffix : "";
     menu.append($("<li/>").append(self.csvLink(name, data, i)));
@@ -218,7 +218,7 @@ Telegraph.prototype.csvData = function(data, index) {
 
 Telegraph.prototype.csvLink = function(name, data, index) {
   var url = "data:application/csv;charset=utf-8," + encodeURIComponent(this.csvData(data, index));
-  return $("<a/>", {download: name + ".csv", href: url, text: "Download " + name});
+  return $("<a/>", {download: name + ".csv", href: url, text: "Export: " + name});
 };
 
 Telegraph.prototype.nvDraw = function(selector, data) {
