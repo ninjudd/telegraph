@@ -4,7 +4,6 @@ var Table = function (selector, opts) {
   this.selector  = selector
   this.toCells   = opts.toCells || Table.defaultCells;
   this.change    = opts.change;
-  this.invert    = opts.invert;
   this.sortable  = opts.sortable;
   this.class     = opts.class;
   this.items     = opts.items || [];
@@ -58,21 +57,7 @@ Table.prototype.remove = function(id) {
 };
 
 Table.prototype.update = function() {
-  var self = this;
-
-  var cells = []
-  _.each(this.items, function(item, i) {
-    _.each(self.toCells(item), function(cell, j) {
-      if (self.invert) {
-        cells[j] = cells[j] || [];
-        cells[j][i] = cell;
-      } else {
-        cells[i] = cells[i] || []
-        cells[i][j] = cell;
-      }
-    });
-  });
-
+  var cells = _.map(this.items, this.toCells);
   var table = $("<table/>", {class: this.class});
   _.each(cells, function(row, i) {
     var tr = $("<tr/>", {id: i})

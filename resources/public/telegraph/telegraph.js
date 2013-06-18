@@ -6,7 +6,6 @@ var Telegraph = function (opts) {
   this.from       = opts.from;
   this.until      = opts.until;
   this.targets    = opts.targets;
-  this.variables  = opts.variables;
   this.chart      = opts.chart;
   this.period     = opts.period;
   this.align      = opts.align;
@@ -16,6 +15,16 @@ var Telegraph = function (opts) {
   this.refresh    = opts.refresh;
   this.tickCount  = opts.tickCount;
   this.scale      = opts.scale;
+  this.variables  = opts.variables;
+
+  if (this.variables) {
+    try {
+      this.vars = JSON.parse(this.variables);
+    } catch (err) {}
+  } else {
+    this.vars = {};
+  }
+  if (!_.isArray(this.vars)) this.vars = [this.vars];
 };
 
 Telegraph.baseUrls = {};
@@ -33,7 +42,7 @@ Telegraph.prototype.draw = function(selector, done, error) {
   this.clearRefresh();
 
   if (this.targets && this.targets.length > 0) {
-    this.fetchData(function(data, vars) {
+    this.fetchData(function(data) {
       var cardinality = Telegraph.cardinality(data);
       var numDataPoints = _.max(cardinality.lengths);
       if (!cardinality.match && Telegraph.requiresMatchingCardinality(self.chart)) {
@@ -43,7 +52,7 @@ Telegraph.prototype.draw = function(selector, done, error) {
                          numDataPoints + ", but the maximum is " + Telegraph.maxDataPoints + ".");
       } else {
         if (self.chart == 'table') {
-          self.tableDraw(selector, data, vars);
+          self.tableDraw(selector, data);
         } else {
           self.nvDraw(selector, data);
         }
@@ -63,106 +72,118 @@ Telegraph.prototype.clearRefresh = function() {
   if (this.refreshInterval) clearInterval(this.refreshInterval);
 };
 
+Telegraph.timeVals = function(data) {
+  return _.mapcat(data, function(datum) {
+    return _.map(datum.results, function(results) {
+      return _.pluck(results, "x");
+    });
+  });
+};
 
 Telegraph.cardinality = function(data) {
-  var rows  = _.map(data, Telegraph.axisValues("x"));
-  var match = _.every(_.zip.apply(_, rows), function (times) {
+  var timeVals = this.timeVals(data);
+  var match = _.every(_.zip.apply(_, timeVals), function (times) {
     return _.uniq(times).length == 1;
   });
 
   return {
     match: match,
-    lengths: _.pluck(rows, "length"),
+    lengths: _.pluck(timeVals, "length"),
   };
 };
 
-Telegraph.axisValues = function(axis, data) {
-  if (data) {
-    return _.pluck(data.values, axis);
-  } else {
-    return function(data) {
-      return _.pluck(data.values, axis);
-    };
-  }
+_.add = function (a, b) {
+  return a + b;
 };
 
-Telegraph.prototype.tableItems = function(data, format) {
+_.pointwise = function(colls, f, context) {
+  return _.map(_.zip.apply(_, colls), function(a) {
+    return _.reduce(_.rest(a), f, _.first(a));
+  });
+};
+
+Telegraph.prototype.tableItems = function(data) {
+  var format;
+
   var scale      = this.scale || Telegraph.timeScale(data);
   var formatTime = scale.tickFormat();
   var formatVal  = format ? function(val) { return _.str.sprintf(format, val) } : _.identity;
   var formatVals = format ? function(vals) { return _.map(vals, formatVal) } : _.identity;
 
-  var times  = [""].concat(_.map(data[0].values, function (val) {
+  var times = [""].concat(_.map(data[0].values, function (val) {
     return formatTime(new Date(val.x * 1000));
   }));
 
-  var items = _.map(data, function (item) {
-    var values = Telegraph.axisValues("y", item);
-    return [item.key].concat(formatVals(values));
+  var rows = _.map(data, function (datum) {
+    return _.map(_.zip.apply(_, _.pluck(datum.results, "values")), function(vals) {
+      return _.pluck(vals, "y")
+    });
   });
 
-  if (this.sumCols) {
-    var rows = _.map(data, Telegraph.axisValues("y"));
-    var totals = _.map(_.zip.apply(_, rows), function (col) {
-      return _.reduce(col, function(acc, num) {
-        return acc + num;
-      }, 0);
-    });
-    items.push(["total"].concat(formatVals(totals)));
-  }
+  var items = _.map(data, function (datum, i) { return [datum.key].concat(rows[i]) });
 
   if (this.sumRows) {
-    var rows = _.map(data, Telegraph.axisValues("y"));
-    var total = 0;
     _.each(rows, function (row, i) {
-      var sum = _.reduce(row, function(acc, num) {
-        return acc + num;
-      }, 0);
-      items[i].push(formatVal(sum));
-      total += sum;
+      items[i].push(_.pointwise(row, _.add));
     });
-    if (this.sumCols) {
-      _.last(items).push(formatVal(total));
-    }
     times.push("total");
+  }
+
+  if (this.sumCols) {
+    var totals = _.pointwise(rows, function (a, b) {
+      return _.pointwise([a, b], _.add);
+    });
+    if (this.sumRows) totals.push(_.pointwise(totals, _.add));
+    items.push(["total"].concat(totals));
   }
 
   return [times].concat(items);
 };
 
-Telegraph.prototype.tableDraw = function(selector, data, vars) {
+Telegraph.prototype.tableDraw = function(selector, data) {
+  var self = this;
   var classes = "telegraph-table table table-striped";
   classes += (this.invert)  ? " inverted"   : " standard";
   classes += (this.sumCols) ? " sum-cols"   : "";
   classes += (this.sumRows) ? " sum-rows" : "";
 
+  var items = this.tableItems(data);
+  if (self.invert) items = _.zip.apply(_, items);
+
   this.table = new Table(selector, {
-    invert: this.invert,
     class: classes,
-    items: this.tableItems(data, vars._format)
+    items: items,
   })
   _.bindAll(this.table);
   this.table.update();
 
   var link = $("<span/>", {class: "dropdown-toggle", "data-toggle": "dropdown", html: "&#x25BE;"});
   var menu = $("<ul/>", {id: "table-menu", class: "dropdown-menu", role: "menu"});
-  menu.append($("<li/>").append(this.csvLink(this.name, data)));
+  _.each(this.vars, function(vars, i) {
+    var suffix = i == 0 ? "" : i + 1;
+    var name = self.name;
+    name += suffix ? " - " + suffix : "";
+    menu.append($("<li/>").append(self.csvLink(name, data, i)));
+  });
+
   var cell = $(selector).find("table tr:first-child td:first-child")
   cell.append($("<div/>", {class: "dropdown"}).append(menu, link));
 };
 
-Telegraph.prototype.csvData = function(data) {
-  var rows = _.pluck(data, "values");
+Telegraph.prototype.csvData = function(data, index) {
+  var rows = _.map(data, function(datum) {
+    return datum.results[index].values;
+  });
   var lines = _.map(_.zip.apply(_, rows), function (col) {
     return [col[0].x].concat(_.pluck(col, "y")).join(",");
-  })
+  });
   var fields = ["time"].concat(_.pluck(data, "key"));
   return [fields].concat(lines).join("\n");
 };
 
-Telegraph.prototype.csvLink = function(name, data) {
-  var url = "data:application/csv;charset=utf-8," + encodeURIComponent(this.csvData(data));
-  return $("<a/>", {download: name + ".csv", href: url, text: "Download CSV"});
+Telegraph.prototype.csvLink = function(name, data, index) {
+  var url = "data:application/csv;charset=utf-8," + encodeURIComponent(this.csvData(data, index));
+  return $("<a/>", {download: name + ".csv", href: url, text: "Download " + name});
 };
 
 Telegraph.prototype.nvDraw = function(selector, data) {
@@ -204,9 +225,9 @@ Telegraph.prototype.hasVariables = function() {
 };
 
 Telegraph.timeScale = function(data) {
-  var xData = _.map(data, Telegraph.axisValues("x"));
-  var min = _.min(_.map(xData, function(x) { return _.min(x) }));
-  var max = _.max(_.map(xData, function(x) { return _.max(x) }));
+  var timeVals = this.timeVals(data);
+  var min = _.min(_.map(timeVals, function(x) { return _.min(x) }));
+  var max = _.max(_.map(timeVals, function(x) { return _.max(x) }));
 
   var interval = max - min;
   var scale = d3.time.scale();
@@ -237,9 +258,9 @@ Telegraph.makeChart = function(chart, scale, tickCount) {
 Telegraph.prototype.update = function() {
   var self = this;
 
-  this.fetchData(function(data, vars) {
+  this.fetchData(function(data) {
     if (self.chart == 'table') {
-      self.table.items = self.tableItems(data, vars._format);
+      self.table.items = self.tableItems(data);
       self.table.update();
     } else {
       self.svg.datum(data);
@@ -255,58 +276,50 @@ Telegraph.prototype.updateChart = function() {
 Telegraph.prototype.fetchData = function(done) {
   var self = this;
   var data = [];
+  var count = 0;
 
-  var targets = _.compact(this.targets);
-  var targetGroups = _.groupBy(targets, function(target, index) {
-    target.index = index;
-    return [target.source, target.shift]
-  });
-
-  if (this.variables) {
-    try {
-      variables = JSON.parse(this.variables);
-    } catch (err) {}
-  } else {
-    variables = {};
-  }
-  if (!_.isArray(variables)) variables = [variables]
-
-  var promises = [];
-  _.each(targetGroups, function(targets) {
-    _.each(variables, function(vars, i) {
-      data[i] = data[i] || [];
-      promises.push(self.getData(data[i], targets, vars));
+  var targets = _.mapcat(_.compact(this.targets), function (target, targetNum) {
+    return _.mapcat(self.vars, function(vars, varNum) {
+      return {
+        source:    self.subVariables(target.source, vars),
+        query:     self.subVariables(target.query, vars) + (vars._transform || ""),
+        label:     self.subVariables(target.label, vars),
+        shift:     self.subVariables(target.shift, vars),
+        targetNum: targetNum,
+        varNum:    varNum,
+        index:     count++,
+        base:      target,
+        vars:      vars,
+      };
     });
   });
 
+  var promises = [];
+  _.each(_.groupBy(targets, function(t) { return [t.source, t.shift] }), function(targets) {
+    promises.push(self.getData(data, targets));
+  });
+
   $.when.apply($, promises).always(function (e) {
-    done(data[0], variables[0]);
+    done(data);
   });
 };
 
 Telegraph.defaultPeriod = "15m";
 
-Telegraph.prototype.getData = function(data, targets, variables) {
-  var self = this;
-
+Telegraph.prototype.getData = function(data, targets) {
   if (targets.length == 0) return;
-  var period = this.period || Telegraph.defaultPeriod;
-  var align  = this.chart == 'table' ? 'start' : this.align;
 
   var opts = {
     from:     this.from,
     until:    this.until,
-    period:   period,
-    align:    align,
-    shift:    self.subVariables(targets[0].shift, variables),
+    period:   this.period || Telegraph.defaultPeriod,
+    align:    this.chart == 'table' ? 'start' : this.align,
+    shift:    targets[0].shift,
     timezone: - (new Date()).getTimezoneOffset() + "m",
   };
 
-  var labels = [];
   var url = Telegraph.baseUrls[targets[0].source] + "?" + _.compact(_.map(targets, function(t, i) {
-    var query = self.subVariables(t.query, variables) + (variables._transform || "");
-    labels[i] = self.subVariables(t.label, variables);
-    return "target=" + encodeURIComponent(query);
+    return "target=" + encodeURIComponent(t.query);
   })).join('&');
 
   return $.ajax({
@@ -318,13 +331,21 @@ Telegraph.prototype.getData = function(data, targets, variables) {
           return { x: d[1] || 0, y: d[0] || 0 }
         });
         var target = targets[i];
-        data[target.index] = {
-          key:    labels[i],
-          values: datapoints,
-          bar:    target.type == 'bar',
-          type:   target.type,
-          yAxis:  target.axis == 'right' ? 2 : 1,
+        var item = data[target.targetNum] || {
+          bar:     target.base.type == 'bar',
+          type:    target.base.type,
+          yAxis:   target.base.axis == 'right' ? 2 : 1,
+          results: [],
         };
+        if (target.varNum == 0) {
+          item.key    = target.label;
+          item.values = datapoints;
+        }
+        item.results[target.varNum] = {
+          vars:   target.vars,
+          values: datapoints,
+        };
+        data[target.targetNum] = item;
       });
     }
   });
