@@ -178,14 +178,13 @@ Telegraph.prototype.tableCells = function (item, i) {
 };
 
 Telegraph.prototype.tableDraw = function(selector, data) {
-  var self = this;
   var classes = "telegraph-table table table-striped";
   classes += (this.invert)  ? " inverted"   : " standard";
   classes += (this.sumCols) ? " sum-cols"   : "";
   classes += (this.sumRows) ? " sum-rows" : "";
 
   var items = this.tableItems(data);
-  if (self.invert) items = _.zip.apply(_, items);
+  if (this.invert) items = _.zip.apply(_, items);
 
   this.table = new Table(selector, {
     toCells: this.tableCells,
@@ -194,7 +193,11 @@ Telegraph.prototype.tableDraw = function(selector, data) {
   })
   _.bindAll(this.table);
   this.table.update();
+  this.addTableDropdown(data);
+};
 
+Telegraph.prototype.addTableDropdown = function(data) {
+  var self = this;
   var link = $("<span/>", {class: "dropdown-toggle", "data-toggle": "dropdown", html: "&#x25BE;"});
   var menu = $("<ul/>", {id: "table-menu", class: "dropdown-menu", role: "menu"});
   _.each(this.vars, function(v, i) {
@@ -204,7 +207,7 @@ Telegraph.prototype.tableDraw = function(selector, data) {
     menu.append($("<li/>").append(self.csvLink(name, data, i)));
   });
 
-  var cell = $(selector).find("table tr:first-child td:first-child")
+  var cell = $(this.table.selector).find("table tr:first-child td:first-child")
   cell.append($("<div/>", {class: "dropdown"}).append(menu, link));
 };
 
@@ -300,6 +303,7 @@ Telegraph.prototype.update = function() {
     if (self.chart == 'table') {
       self.table.items = self.tableItems(data);
       self.table.update();
+      self.addTableDropdown(data);
     } else {
       self.svg.datum(data);
       self.updateChart();
