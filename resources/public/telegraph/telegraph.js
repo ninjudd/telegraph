@@ -155,7 +155,9 @@ Telegraph.prototype.tableCells = function (item, i) {
   var length  = item.length;
 
   return _.mapcat(item, function(val, j) {
-    var css = {borderLeft: (j == length - 1 || j == 1) ? "double 3px #ccc" : "solid 1px #ddd"};
+    var css = (j == 0) ?
+        {} :
+        {borderLeft: (j == length - 1 || j == 1) ? "double 3px #ccc" : "solid 1px #ddd"};
     if (_.isArray(val)) {
       return _.map(val, function(v, k) {
         var cell = {text: v, title: self.vars[k]._label};
