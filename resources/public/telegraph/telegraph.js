@@ -108,7 +108,6 @@ Telegraph.prototype.tableItems = function(data) {
   var scale      = this.scale || Telegraph.timeScale(data);
   var formatTime = scale.tickFormat();
   var formatVal  = function(val) {
-console.log(val)
     return _.map(val, function(v, i) {
       var format = self.vars[i]._format;
       return format ? _.str.sprintf(format, v) : v;
@@ -150,13 +149,16 @@ console.log(val)
 };
 
 Telegraph.prototype.tableCells = function (item, i) {
+  var self = this;
+
   var colSpan = this.vars.length;
   var length  = item.length;
+
   return _.mapcat(item, function(val, j) {
     var css = {borderLeft: (j == length - 1 || j == 1) ? "double 3px #ccc" : "solid 1px #ddd"};
     if (_.isArray(val)) {
       return _.map(val, function(v, k) {
-        var cell = {text: v};
+        var cell = {text: v, title: self.vars[k]._label};
         if (k == 0) cell.css = css;
         return cell;
       });
@@ -167,7 +169,7 @@ Telegraph.prototype.tableCells = function (item, i) {
         colSpan: (i == 0 && j > 0 && colSpan > 1) ? colSpan : null,
       }];
     }
-  })
+  });
 };
 
 Telegraph.prototype.tableDraw = function(selector, data) {
@@ -182,8 +184,8 @@ Telegraph.prototype.tableDraw = function(selector, data) {
 
   this.table = new Table(selector, {
     toCells: this.tableCells,
-    class: classes,
-    items: items,
+    class:  classes,
+    items:  items,
   })
   _.bindAll(this.table);
   this.table.update();

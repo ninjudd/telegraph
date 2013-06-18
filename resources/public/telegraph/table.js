@@ -2,7 +2,7 @@ var Table = function (selector, opts) {
   opts = opts || {};
 
   this.selector  = selector
-  this.toCells   = opts.toCells || Table.defaultCells;
+  this.toRows    = opts.toRows || Table.rowBuilder(opts.toCells || Table.defaultCells);
   this.change    = opts.change;
   this.sortable  = opts.sortable;
   this.class     = opts.class;
@@ -26,6 +26,21 @@ Table.defaultCells = function (item, i) {
     return {text: val};
   })
 };
+
+Table.makeRow = function(cells, i) {
+  var tr = $("<tr/>", {id: i});
+  _.each(cells, function(cell) {
+    tr.append($("<td/>", cell));
+  });
+  return tr;
+};
+
+Table.rowBuilder = function(toCells) {
+  return function(item, i) {
+    return [Table.makeRow(toCells(item, i), i)];
+  };
+};
+
 
 Table.prototype.table = function(subSelector) {
   return $(this.selector).find("table " + subSelector);
@@ -57,13 +72,9 @@ Table.prototype.remove = function(id) {
 };
 
 Table.prototype.update = function() {
-  var cells = _.map(this.items, this.toCells);
+  var self = this;
   var table = $("<table/>", {class: this.class});
-  _.each(cells, function(row, i) {
-    var tr = $("<tr/>", {id: i})
-    _.each(row, function(cell) { tr.append($("<td/>", cell)) });
-    table.append(tr);
-  });
+  table.append.apply(table, _.mapcat(this.items, this.toRows));
 
   if (this.sortable) {
     table.find("tbody").sortable({
