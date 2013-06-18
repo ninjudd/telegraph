@@ -163,7 +163,7 @@ Telegraph.prototype.tableCells = function (item, i) {
         {borderLeft: (j == length - 1 || j == 1) ? "double 3px #ccc" : "solid 1px #ddd"};
     if (_.isArray(val)) {
       return _.map(val, function(v, k) {
-        var cell = {text: v, title: self.vars[k]._label};
+        var cell = {text: v, title: self.vars[k]._label || JSON.stringify(self.vars[k], null, "  ")};
         if (k == 0) cell.css = css;
         return cell;
       });
