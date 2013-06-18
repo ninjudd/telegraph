@@ -140,6 +140,27 @@ Telegraph.prototype.tableItems = function(data) {
   return [times].concat(items);
 };
 
+Telegraph.prototype.tableCells = function (item, i) {
+  var colSpan = this.vars.length;
+  var length  = item.length;
+  return _.mapcat(item, function(val, j) {
+    var css = {borderLeft: (j == length - 1 || j == 1) ? "double 3px #ccc" : "solid 1px #ddd"};
+    if (_.isArray(val)) {
+      return _.map(val, function(v, k) {
+        var cell = {text: v};
+        if (k == 0) cell.css = css;
+        return cell;
+      });
+    } else {
+      return [{
+        text: val,
+        css: css,
+        colSpan: (i == 0 && j > 0 && colSpan > 1) ? colSpan : null,
+      }];
+    }
+  })
+};
+
 Telegraph.prototype.tableDraw = function(selector, data) {
   var self = this;
   var classes = "telegraph-table table table-striped";
@@ -151,6 +172,7 @@ Telegraph.prototype.tableDraw = function(selector, data) {
   if (self.invert) items = _.zip.apply(_, items);
 
   this.table = new Table(selector, {
+    toCells: this.tableCells,
     class: classes,
     items: items,
   })

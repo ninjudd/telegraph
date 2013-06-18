@@ -21,7 +21,7 @@ Table.deletable = function(toCells) {
   };
 };
 
-Table.defaultCells = function (item) {
+Table.defaultCells = function (item, i) {
   return _.map(item, function(val) {
     return {text: val};
   })

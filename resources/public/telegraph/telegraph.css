@@ -14,14 +14,6 @@
   border-top: double 3px #ccc;
 }
 
-.telegraph-table.sum-cols.inverted tr td:last-child {
-  border-left: double 3px #ccc;
-}
-
-.telegraph-table.sum-rows.standard tr td:last-child {
-  border-left: double 3px #ccc;
-}
-
 .telegraph-table.sum-rows.inverted tr:last-child td {
   border-top: double 3px #ccc;
 }
