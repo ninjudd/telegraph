@@ -1,11 +1,17 @@
+.telegraph-table td {
+  text-align: right;
+}
+
 .telegraph-table tr:first-child td {
   font-weight: bold;
+  text-align: center;
   border-bottom: double 3px #ccc;
   white-space: nowrap;
 }
 
 .telegraph-table tr td:first-child {
   font-weight: bold;
+  text-align: left;
   border-right: double 3px #ccc;
   white-space: nowrap;
 }
