@@ -15,11 +15,6 @@ load();
 //======
 
 function targetCells(target) {
-  var sub = $("#variables").is(":focus") ? _.identity : telegraph.subVariables;
-
-  var query = sub(target.query);
-  var shift = sub(target.shift);
-
   var labelField = $("<span/>", {text: target.label, contenteditable: true})
   blurOnEnter(labelField);
   labelField.blur(function(e) {
@@ -30,10 +25,13 @@ function targetCells(target) {
     }
   });
 
+  var queryLink = $("<a/>", {href: "#", title: target.source, text: target.query});
+  queryLink.click(_.partial(fillTarget, target));
+
   var cells = [
     {html: labelField},
-    {class: "monospace", html: $("<a/>", {href: "#", text: query}).click(_.partial(fillTarget, target))},
-    {class: "monospace", text: shift}
+    {class: "monospace", html: queryLink},
+    {class: "monospace", text: target.shift},
   ]
   var chart = $("#chart").val() || "";
 
