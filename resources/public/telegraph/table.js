@@ -37,7 +37,7 @@ Table.makeRow = function(cells, i) {
 
 Table.rowBuilder = function(toCells) {
   return function(item, i) {
-    return [Table.makeRow(toCells(item, i), i)];
+    return [Table.makeRow(toCells.call(this, item, i), i)];
   };
 };
 
