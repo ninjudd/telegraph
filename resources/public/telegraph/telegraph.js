@@ -16,15 +16,6 @@ var Telegraph = function (opts) {
   this.tickCount  = opts.tickCount;
   this.scale      = opts.scale;
   this.variables  = opts.variables;
-
-  if (this.variables) {
-    try {
-      this.vars = JSON.parse(this.variables);
-    } catch (err) {}
-  } else {
-    this.vars = {};
-  }
-  if (!_.isArray(this.vars)) this.vars = [this.vars];
 };
 
 Telegraph.baseUrls = {};
@@ -37,6 +28,15 @@ Telegraph.maxDataPoints = 5000;
 
 Telegraph.prototype.draw = function(selector, done, error) {
   var self = this;
+
+  if (this.variables) {
+    try {
+      this.vars = JSON.parse(this.variables);
+    } catch (err) {}
+  } else {
+    this.vars = {};
+  }
+  if (!_.isArray(this.vars)) this.vars = [this.vars];
 
   $(selector).empty();
   this.clearRefresh();
@@ -103,28 +103,36 @@ _.pointwise = function(colls, f, context) {
 };
 
 Telegraph.prototype.tableItems = function(data) {
-  var format;
+  var self = this;
 
   var scale      = this.scale || Telegraph.timeScale(data);
   var formatTime = scale.tickFormat();
-  var formatVal  = format ? function(val) { return _.str.sprintf(format, val) } : _.identity;
-  var formatVals = format ? function(vals) { return _.map(vals, formatVal) } : _.identity;
+  var formatVal  = function(val) {
+console.log(val)
+    return _.map(val, function(v, i) {
+      var format = self.vars[i]._format;
+      return format ? _.str.sprintf(format, v) : v;
+    });
+  };
 
   var times = [""].concat(_.map(data[0].values, function (val) {
     return formatTime(new Date(val.x * 1000));
   }));
 
   var rows = _.map(data, function (datum) {
-    return _.map(_.zip.apply(_, _.pluck(datum.results, "values")), function(vals) {
+    return _.map(_.zip.apply(_, datum.results), function(vals) {
       return _.pluck(vals, "y")
     });
   });
 
-  var items = _.map(data, function (datum, i) { return [datum.key].concat(rows[i]) });
+  var items = _.map(data, function (datum, i) {
+    return [datum.key].concat(_.map(rows[i], formatVal));
+  });
 
   if (this.sumRows) {
     _.each(rows, function (row, i) {
-      items[i].push(_.pointwise(row, _.add));
+      var total = _.pointwise(row, _.add);
+      items[i].push(formatVal(total));
     });
     times.push("total");
   }
@@ -133,8 +141,9 @@ Telegraph.prototype.tableItems = function(data) {
     var totals = _.pointwise(rows, function (a, b) {
       return _.pointwise([a, b], _.add);
     });
-    if (this.sumRows) totals.push(_.pointwise(totals, _.add));
-    items.push(["total"].concat(totals));
+    var grandTotal = _.pointwise(totals, _.add);
+    items.push(["total"].concat(_.map(totals, formatVal)));
+    if (this.sumRows) _.last(items).push(formatVal(grandTotal));
   }
 
   return [times].concat(items);
@@ -194,7 +203,7 @@ Telegraph.prototype.tableDraw = function(selector, data) {
 
 Telegraph.prototype.csvData = function(data, index) {
   var rows = _.map(data, function(datum) {
-    return datum.results[index].values;
+    return datum.results[index];
   });
   var lines = _.map(_.zip.apply(_, rows), function (col) {
     return [col[0].x].concat(_.pluck(col, "y")).join(",");
@@ -311,7 +320,6 @@ Telegraph.prototype.fetchData = function(done) {
         varNum:    varNum,
         index:     count++,
         base:      target,
-        vars:      vars,
       };
     });
   });
@@ -363,10 +371,7 @@ Telegraph.prototype.getData = function(data, targets) {
           item.key    = target.label;
           item.values = datapoints;
         }
-        item.results[target.varNum] = {
-          vars:   target.vars,
-          values: datapoints,
-        };
+        item.results[target.varNum] = datapoints;
         data[target.targetNum] = item;
       });
     }
