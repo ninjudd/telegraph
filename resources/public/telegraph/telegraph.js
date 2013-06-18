@@ -32,7 +32,10 @@ Telegraph.prototype.draw = function(selector, done, error) {
   if (this.variables) {
     try {
       this.vars = JSON.parse(this.variables);
-    } catch (err) {}
+    } catch (e) {
+      if (error) error("Error parsing JSON for macro varibles; " + e);
+      return;
+    }
   } else {
     this.vars = {};
   }
