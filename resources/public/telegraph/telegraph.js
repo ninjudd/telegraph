@@ -13,9 +13,10 @@ var Telegraph = function (opts) {
   this.sumCols    = opts.sumCols;
   this.sumRows    = opts.sumRows;
   this.refresh    = opts.refresh;
+  this.variables  = opts.variables;
+
   this.tickCount  = opts.tickCount;
   this.scale      = opts.scale;
-  this.variables  = opts.variables;
 };
 
 Telegraph.baseUrls = {};

@@ -416,9 +416,7 @@ $(document).ready(function() {
   });
 
   $("#load-name").keydown(function(e) {
-    if (e.keyCode == 13) {
-      loadSubmit();
-    }
+    if (e.keyCode == 13) loadSubmit();
   }).autocomplete({
     minLength: 0,
     source: function(request, response) {
