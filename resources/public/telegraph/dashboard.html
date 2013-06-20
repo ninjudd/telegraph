@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<title>Telegraph Graph Editor</title>
+
+<head>
+  <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/nvd3/0.9/nv.d3.css">
+  <link rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+  <link rel="stylesheet" type="text/css" href="/telegraph/style.css">
+  <link rel="stylesheet" type="text/css" href="/telegraph/telegraph.css">
+  <link rel="stylesheet" type="text/css" href="/telegraph/custom.css">
+
+  <script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
+  <script src="//code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.string/2.3.0/underscore.string.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/underscore-contrib/0.1.4/underscore-contrib.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/d3/2.10.0/d3.v2.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nvd3/0.9/nv.d3.js"></script>
+
+  <script src="/telegraph/telegraph.js"></script>
+  <script src="/telegraph/table.js"></script>
+  <script src="/telegraph/config.js"></script>
+  <script src="/telegraph/dashboard.js"></script>
+</head>
+
+<body>
+  <div id="dashboard-container">
+    <div id="toolbar">
+      <span id="load">
+        <img class="toolbar icon faded" src="/telegraph/images/list.svg">
+      </span>
+      <span id="add-graph">
+        <img class="toolbar icon faded" src="/telegraph/images/chart-line.svg">
+      </span>
+    </div>
+
+    <div id="alerts"></div>
+    <div id="dashboard-header">
+      <span id="refresh-graph">
+        <img class="icon faded" src="/telegraph/images/refresh.svg">
+      </span>
+      <div id="dashboard-title" class="dropdown">
+        <span id="dashboard-name" class="dropdown-toggle" data-toggle="dropdown">
+          <img class="icon" src="/telegraph/images/graph.svg">
+          <span id="name"></span>
+          <span id="edited" tooltip="true"
+                title="This document has unsaved changes. You can save using this dropdown menu, or with Command-s or Control-s.">
+            &mdash; edited
+          </span>
+        </span>
+        <ul id="dashboard-menu" class="dropdown-menu" role="menu">
+          <li><a id="rename"    href="#">Rename</a></li>
+          <li><a id="duplicate" href="#">Duplicate</a></li>
+          <li><a id="save"      href="#">Save</a></li>
+
+          <li class="divider"></li>
+          <li><a id="revert"    href="#">Revert</a></li>
+          <li><a id="close"     href="#">Close</a></li>
+          <li><a id="delete"    href="#">Delete</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="dashboard"></div>
+  </div>
+
+  <div id="load-form" class="modal hide fade" tabindex="-1" role="dialog">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h4>Load saved dashboard</h4>
+    </div>
+    <div class="modal-body">
+      <input id="load-name" type="text">
+    </div>
+    <div class="modal-footer">
+      <button id="load-submit" class="btn btn-primary">Load</button>
+    </div>
+  </div>
+
+  <div id="add-graph-form" class="modal hide fade" tabindex="-1" role="dialog">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h4>Add graph</h4>
+    </div>
+    <div class="modal-body">
+      <div>
+        <input id="graph-name" type="text">
+        <input type="text" id="from" class="interval" placeholder="-24h" tooltip="true"
+               title="Interval from now to use as the start of the graph time period.">
+        <input type="text" id="until" class="interval" placeholder="0h" tooltip="true"
+               title="Interval from now to use as the end of the graph time period.">
+        <input type="text" id="period" class="interval" placeholder="15m" tooltip="true"
+               title="Period interval to use for all periodic query operators.">
+      </div>
+      <div>
+        <select id="chart" tooltip="true" title="Chart type to use for graphing the query results.">
+          <option value="lineChart">line</option>
+          <option value="stackedAreaChart">stacked area</option>
+          <option value="multiBarChart">multi bar</option>
+          <option value="linePlusBarChart">line/bar</option>
+          <option value="multiChart">multi</option>
+          <option value="lineWithFocusChart">line with focus</option>
+          <option value="linePlusBarWithFocusChart">line/bar with focus</option>
+          <option value="cumulativeLineChart">cumulative line</option>
+          <option value="table">table</option>
+        </select>
+
+        <div class="table-options btn-group" data-toggle="buttons-checkbox">
+          <button id="invert" type="button" class="btn" tooltip="true"
+                  title="Swap the columns and rows in the results table.">
+            <img class="icon control" src="/telegraph/images/swap.svg">
+          </button>
+          <button id="sum-cols" type="button" class="btn" tooltip="true"
+                  title="Add a summary line to the table that sums all results for a given target.">
+            <span class="control">&Sigma;&darr;</span>
+          </button>
+          <button id="sum-rows" type="button" class="btn" tooltip="true"
+                  title="Add a summary line to the table that sums all results for a given timepoint.">
+            <span class="control">&Sigma;&rarr;</span>
+          </button>
+        </div>
+
+        <span class="chart-options visible-options">
+          <button id="align" type="button" class="btn" tooltip="true"
+                  title="Align the query timeframe to the period.">
+            <span class="control heavy">
+              <img class="toolbar icon faded" src="/telegraph/images/align.svg">
+            </span>
+          </button>
+        </span>
+      </div>
+      <div>
+        <label for="variables">Macro variables:</label>
+        <textarea id="variables" placeholder='{"field":"value"}'></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="add-graph-submit" class="btn btn-primary">Add</button>
+    </div>
+  </div>
+
+  <div class="attribution">
+    Entypo pictograms by Daniel Bruce &mdash; <a href="http://entypo.com">entypo.com</a>;
+    Font Awesome by Dave Gandy &mdash; <a href="http://fontawesome.io">fontawesome.io</a>
+  </div>
+</body>

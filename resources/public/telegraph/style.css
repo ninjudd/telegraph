@@ -148,8 +148,12 @@ body * {
   font-family: monospace;
 }
 
-
 #graph-header {
+  display: none;
+  text-align: center;
+}
+
+#dashboard-header {
   display: none;
   text-align: center;
 }

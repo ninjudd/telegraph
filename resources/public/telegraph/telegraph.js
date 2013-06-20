@@ -478,3 +478,18 @@ Telegraph.list = function(process) {
     }
   });
 };
+
+Telegraph.dashboard = function (graphs) {
+  this.graphs = graphs;
+};
+
+Telegraph.dashboard.prototype.draw = function (selector, css) {
+  $(selector).empty();
+  _.each(this.graphs, function(graph, i) {
+    var id = "dashboard-" + i;
+    $(selector).append($("<div/>", {id: id, css: css || {}}));
+    Telegraph.load(graph.name, graph.overrides).then(function(telegraph) {
+      telegraph.draw("#" + id);
+    });
+  });
+};
