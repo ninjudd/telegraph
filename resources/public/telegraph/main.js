@@ -147,9 +147,11 @@ function hash() {
 function load(name) {
   draws = 0;
   if (telegraph) telegraph.clearRefresh();
-  Telegraph.load({
-    name: name == null ? hash() : name,
-    success: function(t) {
+  name = name == null ? hash() : name;
+  if (!name) return;
+
+  Telegraph.load(name).then(function(t) {
+    if (t) {
       telegraph = t;
       _.bindAll(telegraph);
 
@@ -166,8 +168,7 @@ function load(name) {
       flipClass("active", "#sum-rows", telegraph.sumRows);
 
       targets.replace(telegraph.targets);
-    },
-    error: function(name) {
+    } else {
       showAlert("no such graph: " + name);
       if (!telegraph) load("");
     }
