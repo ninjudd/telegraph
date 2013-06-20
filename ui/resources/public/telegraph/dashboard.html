@@ -86,16 +86,17 @@
     </div>
     <div class="modal-body">
       <div>
-        <input id="graph-name" type="text">
+        <input id="add-graph-name" type="text" placeholder="graph name">
+      </div>
+      <div>
         <input type="text" id="from" class="interval" placeholder="-24h" tooltip="true"
                title="Interval from now to use as the start of the graph time period.">
         <input type="text" id="until" class="interval" placeholder="0h" tooltip="true"
                title="Interval from now to use as the end of the graph time period.">
         <input type="text" id="period" class="interval" placeholder="15m" tooltip="true"
                title="Period interval to use for all periodic query operators.">
-      </div>
-      <div>
         <select id="chart" tooltip="true" title="Chart type to use for graphing the query results.">
+          <option value="">default</option>
           <option value="lineChart">line</option>
           <option value="stackedAreaChart">stacked area</option>
           <option value="multiBarChart">multi bar</option>
@@ -122,7 +123,7 @@
           </button>
         </div>
 
-        <span class="chart-options visible-options">
+        <span class="chart-options">
           <button id="align" type="button" class="btn" tooltip="true"
                   title="Align the query timeframe to the period.">
             <span class="control heavy">
@@ -137,6 +138,9 @@
       </div>
     </div>
     <div class="modal-footer">
+      <span id="graph-help" tooltip="true" title="Tooltips disabled.">
+        <img class="icon faded" src="/telegraph/images/help.svg">
+      </span>
       <button id="add-graph-submit" class="btn btn-primary">Add</button>
     </div>
   </div>

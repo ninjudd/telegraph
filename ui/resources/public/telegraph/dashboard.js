@@ -15,7 +15,7 @@ function loadForm() {
 var graphNames = [];
 function addGraphForm() {
   $("#add-graph-form").modal('toggle').on('shown', function() {
-    $("#graph-name").val("").focus();
+    $("#add-graph-name").val("").focus();
   });
 
   // Load typeahead asynchronously.
@@ -43,7 +43,7 @@ $(document).ready(function() {
     addGraphForm();
   });
 
-  $("#graph-name").keydown(function(e) {
+  $("#add-graph-name").keydown(function(e) {
     if (e.keyCode == 13) {
       $("#variables").focus();
       return false;
@@ -58,7 +58,7 @@ $(document).ready(function() {
 
   $("#add-graph-submit").click(function(e) {
     dashboard.graphs.push({
-      name:      $("#graph-name").val(),
+      name:      $("#add-graph-name").val(),
       from:      $("#from").val(),
       until:     $("#until").val(),
       period:    $("#period").val(),

@@ -132,6 +132,10 @@ body * {
   width: 20px;
 }
 
+#add-graph-name {
+  font-family: monospace;
+}
+
 #variables {
   width: 300px;
   height: 100px;
@@ -141,10 +145,10 @@ body * {
 #transform {
   width: 300px;
   font-family: monospace;
-};
+}
 
 #chart {
-  width: 200px;
+  width: 150px;
   font-family: monospace;
 }
 
@@ -258,6 +262,15 @@ select, input[type="text"] {
 }
 
 #help:hover {
+  cursor: pointer;
+}
+
+#graph-help {
+  float: left;
+  vertical-align: top;
+}
+
+#graph-help:hover {
   cursor: pointer;
 }
 
