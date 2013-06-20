@@ -188,7 +188,7 @@ Telegraph.prototype.tableDraw = function(selector, data) {
   if (this.invert) items = _.zip.apply(_, items);
 
   this.table = new Table(selector, {
-    toCells: this.tableCells,
+    toCells: _.bind(this.tableCells, this),
     class:  classes,
     items:  items,
   })
