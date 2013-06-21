@@ -387,7 +387,7 @@ $(document).ready(function() {
   $("#delete").click(function() {
     $("#graph-menu").dropdown("toggle");
     if (confirm("Graph " + telegraph.id + " will be permanently deleted. Are you sure?")) {
-      telegraph.delete().done(function() {
+      telegraph.destroy().done(function() {
         showAlert("Deleted graph " + telegraph.id, "success");
         load("");
       }).fail(function(error) {
