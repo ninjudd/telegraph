@@ -4,7 +4,7 @@ var targets = new Table("#targets", {
   toCells: Table.deletable(targetCells),
   sortable: true,
   change: function() {
-    telegraph.targets = this.items;
+    telegraph.attrs.targets = this.items;
     redraw();
   }
 });
@@ -48,7 +48,7 @@ function targetCells(target) {
 function displayHeader() {
   $("#name").text(telegraph.id || "untitled");
   flipClass("disabled", $("#rename").parent(), !telegraph.id);
-  $("#graph-header").toggle(!!telegraph.id || telegraph.targets.length > 0);
+  $("#graph-header").toggle(!!telegraph.id || telegraph.attrs.targets.length > 0);
 };
 
 var isChanged;
@@ -152,18 +152,18 @@ function load(name) {
       _.bindAll(telegraph);
 
       if (name != null) pushHistory(telegraph.id);
-      $("#from").val(telegraph.from);
-      $("#until").val(telegraph.until);
-      $("#period").val(telegraph.period);
-      $("#refresh").val(telegraph.refresh);
-      $("#chart").val(telegraph.chart);
-      $("#variables").val(telegraph.variables);
-      flipClass("active", "#align",    telegraph.align);
-      flipClass("active", "#invert",   telegraph.invert);
-      flipClass("active", "#sum-cols", telegraph.sumCols);
-      flipClass("active", "#sum-rows", telegraph.sumRows);
+      $("#from"     ).val(telegraph.attrs.from);
+      $("#until"    ).val(telegraph.attrs.until);
+      $("#period"   ).val(telegraph.attrs.period);
+      $("#refresh"  ).val(telegraph.attrs.refresh);
+      $("#chart"    ).val(telegraph.attrs.chart);
+      $("#variables").val(telegraph.attrs.variables);
+      flipClass("active", "#align",    telegraph.attrs.align);
+      flipClass("active", "#invert",   telegraph.attrs.invert);
+      flipClass("active", "#sum-cols", telegraph.attrs.sumCols);
+      flipClass("active", "#sum-rows", telegraph.attrs.sumRows);
 
-      targets.replace(telegraph.targets);
+      targets.replace(telegraph.attrs.targets);
     } else {
       showAlert("no such graph: " + name);
       if (!telegraph) load("");
@@ -245,29 +245,29 @@ $(document).ready(function() {
   });
 
   $("#from").change(function() {
-    telegraph.from = $(this).val();
+    telegraph.attrs.from = $(this).val();
     redraw();
   });
 
   $("#until").change(function() {
-    telegraph.until = $(this).val();
+    telegraph.attrs.until = $(this).val();
     redraw();
   });
 
   $("#period").change(function() {
-    telegraph.period = $(this).val();
+    telegraph.attrs.period = $(this).val();
     redraw();
   });
 
   $("#refresh").attr({placeholder: Telegraph.defaultRefresh});
 
   $("#refresh").change(function() {
-    telegraph.refresh = parseInt($(this).val());
+    telegraph.attrs.refresh = parseInt($(this).val());
     redraw();
   });
 
   $("#chart").change(function() {
-    telegraph.chart = $(this).val();
+    telegraph.attrs.chart = $(this).val();
     redraw();
     targets.update();
   });
@@ -275,33 +275,33 @@ $(document).ready(function() {
   $("#align").click(function(e) {
     e.stopPropagation(); // Make sure the button is toggled before we check it.
     $(this).toggleClass("active");
-    telegraph.align = $(this).hasClass("active");
+    telegraph.attrs.align = $(this).hasClass("active");
     redraw();
   });
 
   $("#invert").click(function(e) {
     e.stopPropagation(); // Make sure the button is toggled before we check it.
     $(this).toggleClass("active");
-    telegraph.invert = $(this).hasClass("active");
+    telegraph.attrs.invert = $(this).hasClass("active");
     redraw();
   });
 
   $("#sum-cols").click(function(e) {
     e.stopPropagation(e); // Make sure the button is toggled before we check it.
     $(this).toggleClass("active");
-    telegraph.sumCols = $(this).hasClass("active");
+    telegraph.attrs.sumCols = $(this).hasClass("active");
     redraw();
   });
 
   $("#sum-rows").click(function(e) {
     e.stopPropagation(e); // Make sure the button is toggled before we check it.
     $(this).toggleClass("active");
-    telegraph.sumRows = $(this).hasClass("active");
+    telegraph.attrs.sumRows = $(this).hasClass("active");
     redraw();
   });
 
   $("#variables").change(function() {
-    telegraph.variables = $("#variables").val();
+    telegraph.attrs.variables = $("#variables").val();
     redraw();
     targets.update();
   });
@@ -323,7 +323,7 @@ $(document).ready(function() {
     } else {  // duplicate
       telegraph.id = name;
       pushHistory(telegraph.id);
-      telegraph.hash = null;
+      telegraph.attrs.hash = null;
     }
     $(this).attr({contenteditable: false});
   });
