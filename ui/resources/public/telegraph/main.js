@@ -46,9 +46,9 @@ function targetCells(target) {
 };
 
 function displayHeader() {
-  $("#name").text(telegraph.name || "untitled");
-  flipClass("disabled", $("#rename").parent(), !telegraph.name);
-  $("#graph-header").toggle(!!telegraph.name || telegraph.targets.length > 0);
+  $("#name").text(telegraph.id || "untitled");
+  flipClass("disabled", $("#rename").parent(), !telegraph.id);
+  $("#graph-header").toggle(!!telegraph.id || telegraph.targets.length > 0);
 };
 
 var isChanged;
@@ -72,7 +72,7 @@ function isLinePlusBar(chart) {
 
 var draws;
 function redraw(unchanged) {
-  telegraph.draw("#graph", displayHeader, function(error) {
+  telegraph.draw("#graph").done(displayHeader).fail(function(error) {
     showAlert(error, "error");
   });
 
@@ -108,24 +108,20 @@ function display(selector, show) {
 };
 
 function save(force) {
-  telegraph.name = telegraph.name || prompt("Save graph as:");
+  telegraph.id = telegraph.id || prompt("Save graph as:");
 
-  telegraph.save({
-    force: force,
-    success: function(results) {
-      showAlert(results.name + " saved", "success");
-      pushHistory(telegraph.name);
-      markChanged(false);
-      displayHeader();
-    },
-    error: function(message) {
-      if (message) {
-        if (confirm(error + " Would you like to overwrite?")) {
-          save(true);
-        }
-      } else {
-        showAlert("save failed", "error");
+  telegraph.save({force: force}).done(function(results) {
+    showAlert(telegraph.id + " saved", "success");
+    pushHistory(telegraph.id);
+    markChanged(false);
+    displayHeader();
+  }).fail(function(response) {
+    if (response.error) {
+      if (confirm(response.error + " Would you like to overwrite?")) {
+        save(true);
       }
+    } else {
+      showAlert("save failed", "error");
     }
   });
 };
@@ -155,7 +151,7 @@ function load(name) {
       telegraph = t;
       _.bindAll(telegraph);
 
-      if (name != null) pushHistory(telegraph.name);
+      if (name != null) pushHistory(telegraph.id);
       $("#from").val(telegraph.from);
       $("#until").val(telegraph.until);
       $("#period").val(telegraph.period);
@@ -179,6 +175,7 @@ function loadSubmit() {
   var name = $("#load-name").val();
   load(name);
   $("#load-form").modal("toggle");
+  $("#load-name").autocomplete("close");
 };
 
 var graphNames = [];
@@ -204,7 +201,7 @@ function selectAll() {
 };
 
 function confirmRevert() {
-  return !isChanged || confirm("All unsaved changes to " + telegraph.name + " will be lost. Are you sure?");
+  return !isChanged || confirm("All unsaved changes to " + telegraph.id + " will be lost. Are you sure?");
 };
 
 function flipClass(classString, selector, state) {
@@ -314,21 +311,18 @@ $(document).ready(function() {
     var self = this;
     var name = $(this).text();
     if (renaming) {  // rename
-      telegraph.rename({
-        name: name,
-        success: function(from) {
-          showAlert("Renamed " + from + " to " + name, "success");
-          pushHistory(telegraph.name);
-        },
-        error: function(error) {
-          showAlert(error);
-          $(self).text(telegraph.name);
-        }
+      var from = telegraph.id;
+      telegraph.rename(name).done(function() {
+        showAlert("Renamed " + from + " to " + name, "success");
+        pushHistory(name);
+      }).fail(function(response) {
+        showAlert(response.error);
+        $(self).text(telegraph.id);
       });
       renaming = false;
     } else {  // duplicate
-      telegraph.name = name;
-      pushHistory(telegraph.name);
+      telegraph.id = name;
+      pushHistory(telegraph.id);
       telegraph.hash = null;
     }
     $(this).attr({contenteditable: false});
@@ -368,7 +362,7 @@ $(document).ready(function() {
 
   $("#duplicate").click(function() {
     $("#graph-menu").dropdown("toggle");
-    $("#name").attr({contenteditable: true}).text(telegraph.name + " copy").focus();
+    $("#name").attr({contenteditable: true}).text(telegraph.id + " copy").focus();
     markChanged(true);
     document.execCommand("selectAll",false,null);
     return false;
@@ -377,7 +371,7 @@ $(document).ready(function() {
   $("#revert").click(function() {
     $("#graph-menu").dropdown("toggle");
     if (confirmRevert()) {
-      load(telegraph.name);
+      load(telegraph.id);
       return false;
     }
   });
@@ -392,15 +386,12 @@ $(document).ready(function() {
 
   $("#delete").click(function() {
     $("#graph-menu").dropdown("toggle");
-    if (confirm("Graph " + telegraph.name + " will be permanently deleted. Are you sure?")) {
-      telegraph.delete({
-        success: function() {
-          showAlert("Deleted graph " + telegraph.name, "success");
-          load("");
-        },
-        error: function(error) {
-          showAlert(error, "error");
-        }
+    if (confirm("Graph " + telegraph.id + " will be permanently deleted. Are you sure?")) {
+      telegraph.delete().done(function() {
+        showAlert("Deleted graph " + telegraph.id, "success");
+        load("");
+      }).fail(function(error) {
+        showAlert(error, "error");
       });
     }
     return false;
@@ -408,7 +399,7 @@ $(document).ready(function() {
 
   $("#edit").click(function(e) {
     toggleEdit(!$("#edit-container").is(":visible"));
-    setTimeout(function() { telegraph.updateChart() }, 500);
+    if (telegraph) setTimeout(function() { telegraph.updateChart() }, 500);
   });
 
   $("#load-submit").click(function(e) {

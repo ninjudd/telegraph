@@ -1,8 +1,8 @@
 var Telegraph = function (opts) {
   opts = opts || {chart: "lineChart"};
 
+  this.id         = opts.id;
   this.hash       = opts.hash;
-  this.name       = opts.name;
   this.from       = opts.from;
   this.until      = opts.until;
   this.targets    = opts.targets;
@@ -19,6 +19,24 @@ var Telegraph = function (opts) {
   this.scale      = opts.scale;
 };
 
+Telegraph.http = function(method, path, data) {
+  var opts = opts || {};
+
+  return $.ajax({
+    url: '/' + _.map(path, encodeURIComponent).join('/'),
+    dataType: 'json',
+    contentType: 'application/json',
+    data: JSON.stringify(data),
+    type: method.toUpperCase()
+  }).then(null, function(results) {
+    return results.responseText ? JSON.parse(results.responseText) : {};
+  });
+};
+
+Telegraph.prototype.http = function(method, opts) {
+  return Telegraph.http(method, ['graphs', this.id], opts);
+};
+
 Telegraph.baseUrls = {};
 
 Telegraph.requiresMatchingCardinality = function(chart) {
@@ -27,49 +45,51 @@ Telegraph.requiresMatchingCardinality = function(chart) {
 
 Telegraph.maxDataPoints = 5000;
 
-Telegraph.prototype.draw = function(selector, done, error) {
+Telegraph.prototype.draw = function(selector) {
   var self = this;
 
-  if (this.variables) {
-    try {
-      this.vars = JSON.parse(this.variables);
-    } catch (e) {
-      if (error) error("Error parsing JSON for macro varibles; " + e);
-      return;
-    }
-  } else {
-    this.vars = {};
-  }
-  if (!_.isArray(this.vars)) this.vars = [this.vars];
-
-  $(selector).empty();
-  this.clearRefresh();
-
-  if (this.targets && this.targets.length > 0) {
-    this.fetchData(function(data) {
-      var cardinality = Telegraph.cardinality(data);
-      var numDataPoints = _.max(cardinality.lengths);
-      if (!cardinality.match && Telegraph.requiresMatchingCardinality(self.chart)) {
-        if (error) error("Cardinality of data sets must match for this type of chart.");
-      } else if (numDataPoints > Telegraph.maxDataPoints) {
-        if (error) error("Too many data points. " + "Your query returns " +
-                         numDataPoints + ", but the maximum is " + Telegraph.maxDataPoints + ".");
-      } else {
-        if (self.chart == 'table') {
-          self.tableDraw(selector, data);
-        } else {
-          self.nvDraw(selector, data);
-        }
-        var refresh = (self.refresh == null) ? Telegraph.defaultRefresh : self.refresh;
-        if (refresh) {
-          self.refreshInterval = setInterval(_.bind(self.update, self), refresh * 1000);
-        }
-        if (done) done();
+  return jQuery.Deferred(function (promise) {
+    if (self.variables) {
+      try {
+        self.vars = JSON.parse(self.variables);
+      } catch (e) {
+        promise.reject("Error parsing JSON for macro varibles; " + e);
+        return;
       }
-    });
-  } else {
-    if (done) done();
-  }
+    } else {
+      self.vars = {};
+    }
+    if (!_.isArray(self.vars)) self.vars = [self.vars];
+
+    $(selector).empty();
+    self.clearRefresh();
+
+    if (self.targets && self.targets.length > 0) {
+      self.fetchData().done(function(data) {
+        var cardinality = Telegraph.cardinality(data);
+        var numDataPoints = _.max(cardinality.lengths);
+        if (!cardinality.match && Telegraph.requiresMatchingCardinality(self.chart)) {
+          promise.reject("Cardinality of data sets must match for this type of chart.");
+        } else if (numDataPoints > Telegraph.maxDataPoints) {
+          promise.reject("Too many data points. " + "Your query returns " +
+                         numDataPoints + ", but the maximum is " + Telegraph.maxDataPoints + ".");
+        } else {
+          if (self.chart == 'table') {
+            self.tableDraw(selector, data);
+          } else {
+            self.nvDraw(selector, data);
+          }
+          var refresh = (self.refresh == null) ? Telegraph.defaultRefresh : self.refresh;
+          if (refresh) {
+            self.refreshInterval = setInterval(_.bind(self.update, self), refresh * 1000);
+          }
+          promise.resolve();
+        }
+      });
+    } else {
+      promise.resolve();
+    }
+  });
 };
 
 Telegraph.prototype.clearRefresh = function() {
@@ -203,7 +223,7 @@ Telegraph.prototype.addTableDropdown = function(data) {
   var menu = $("<ul/>", {id: "table-menu", class: "dropdown-menu", role: "menu"});
   _.each(this.vars, function(v, i) {
     var suffix = v._label || (i == 0 ? "" : i + 1);
-    var name = self.name;
+    var name = self.id;
     name += suffix ? " - " + suffix : "";
     menu.append($("<li/>").append(self.csvLink(name, data, i)));
   });
@@ -316,8 +336,9 @@ Telegraph.prototype.updateChart = function() {
   if (this.nvChart) this.nvChart.update();
 };
 
-Telegraph.prototype.fetchData = function(done) {
+Telegraph.prototype.fetchData = function() {
   var self = this;
+
   var data = [];
   var count = 0;
 
@@ -341,8 +362,8 @@ Telegraph.prototype.fetchData = function(done) {
     promises.push(self.getData(data, targets));
   });
 
-  $.when.apply($, promises).always(function (e) {
-    done(data);
+  return $.when.apply($, promises).then(function() {
+    return data;
   });
 };
 
@@ -366,35 +387,33 @@ Telegraph.prototype.getData = function(data, targets) {
 
   return $.ajax({
     url: url,
-    data: opts,
-    success: function(results) {
-      _.each(results, function(val, i) {
-        var datapoints = _.map(val.datapoints, function(d) {
-          return { x: d[1] || 0, y: d[0] || 0 }
-        });
-        var target = targets[i];
-        var item = data[target.targetNum] || {
-          bar:     target.base.type == 'bar',
-          type:    target.base.type,
-          yAxis:   target.base.axis == 'right' ? 2 : 1,
-          results: [],
-        };
-        if (target.varNum == 0) {
-          item.key    = target.label;
-          item.values = datapoints;
-        }
-        item.results[target.varNum] = datapoints;
-        data[target.targetNum] = item;
+    data: opts
+  }).done(function(results) {
+    _.each(results, function(val, i) {
+      var datapoints = _.map(val.datapoints, function(d) {
+        return { x: d[1] || 0, y: d[0] || 0 }
       });
-    }
+      var target = targets[i];
+      var item = data[target.targetNum] || {
+        bar:     target.base.type == 'bar',
+        type:    target.base.type,
+        yAxis:   target.base.axis == 'right' ? 2 : 1,
+        results: [],
+      };
+      if (target.varNum == 0) {
+        item.key    = target.label;
+        item.values = datapoints;
+      }
+      item.results[target.varNum] = datapoints;
+      data[target.targetNum] = item;
+    });
   });
 };
 
 Telegraph.prototype.save = function(opts) {
-  if (this.name) {
+  if (this.id) {
     var self = this;
     var data = {
-      name:      this.name,
       hash:      this.hash,
       chart:     this.chart,
       from:      this.from,
@@ -410,72 +429,36 @@ Telegraph.prototype.save = function(opts) {
       force:     opts.force
     };
 
-    return $.ajax({
-      url: "/graph/save",
-      data: JSON.stringify(data),
-      type: "POST",
-      success: function(results) {
-        self.hash = results.hash;
-        if (opts.success) opts.success(results);
-      },
-      error: function(results) {
-        var response = results.responseText ? JSON.parse(results.responseText) : {};
-        if (opts.error) opts.error(response.error);
-      }
+    return this.http('put', data).done(function(results) {
+      self.hash = results.hash;
     });
   }
 };
 
-Telegraph.prototype.rename = function(opts) {
+Telegraph.prototype.rename = function(id) {
   var self = this;
-  var from = this.name;
-  return $.ajax({
-    url: "/graph/rename",
-    data: JSON.stringify({from: self.name, to: opts.name}),
-    type: "POST",
-    success: function(results) {
-      self.name = opts.name;
-      if (opts.success) opts.success(from);
-    },
-    error: function(results) {
-      var response = JSON.parse(results.responseText);
-      if (opts.error) opts.error(response.error);
-    }
+  return this.http('patch', {id: id}).done(function() {
+    self.id = id;
   });
 };
 
 Telegraph.prototype.delete = function(opts) {
   var self = this;
-  return $.ajax({
-    url: "/graph/delete",
-    data: JSON.stringify({name: self.name}),
-    type: "POST",
-    success: function(results) {
-      if (opts.success) opts.success();
-    },
-    error: function(results) {
-      var response = JSON.parse(results.responseText);
-      if (opts.error) opts.error(response.error);
-    }
-  });
+  return this.http('delete', opts);
 };
 
 Telegraph.load = function(name, overrides) {
-  return $.ajax({
-    url: "/graph/load?name=" + encodeURIComponent(name),
-  }).then(function (results) {
+  return Telegraph.http('get', ['graphs', name]).then(function (results) {
     if (results) {
+      console.log(results)
       return new Telegraph(_.extend(results, overrides));
     }
   });
 };
 
 Telegraph.list = function(process) {
-  $.ajax({
-    url: "/graph/list",
-    success: function(results) {
-      process(results);
-    }
+  Telegraph.http('get', ['graphs']).done(function(results) {
+    process(results);
   });
 };
 
@@ -488,7 +471,7 @@ Telegraph.dashboard.prototype.draw = function (selector, css) {
   _.each(this.graphs, function(graph, i) {
     var id = "dashboard-" + i;
     $(selector).append($("<div/>", {id: id, css: css || {}}));
-    Telegraph.load(graph.name, graph.overrides).then(function(telegraph) {
+    Telegraph.load(graph.id, graph.overrides).then(function(telegraph) {
       telegraph.draw("#" + id);
     });
   });
