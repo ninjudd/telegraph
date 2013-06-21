@@ -185,7 +185,7 @@ function loadForm() {
   });
 
   // Load typeahead asynchronously.
-  Telegraph.list(function(names) {
+  Telegraph.list().done(function(names) {
     graphNames = names;
   });
 };

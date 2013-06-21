@@ -1,33 +1,7 @@
-var Telegraph = function (attrs) {
-  attrs = attrs || {chart: "lineChart"};
-
-  this.id    = attrs.id;
-  this.attrs = attrs;
+var Telegraph = function() {
+  this.attrs = {chart: "lineChart"};
 };
-
-Telegraph.http = function(method, path, data) {
-  var opts = opts || {};
-
-  return $.ajax({
-    url: '/' + _.map(path, encodeURIComponent).join('/'),
-    dataType: 'json',
-    contentType: 'application/json',
-    data: JSON.stringify(data),
-    type: method.toUpperCase()
-  }).then(null, function(results) {
-    return results.responseText ? JSON.parse(results.responseText) : {};
-  });
-};
-
-Telegraph.prototype.http = function(method, opts) {
-  return Telegraph.http(method, ['graphs', this.id], opts);
-};
-
-Telegraph.baseUrls = {};
-
-Telegraph.requiresMatchingCardinality = function(chart) {
-  return _.contains(['table', 'stackedAreaChart', 'multiBarChart'], chart)
-};
+Resting(Telegraph, {baseUrl: "/graphs"});
 
 Telegraph.maxDataPoints = 5000;
 
@@ -54,7 +28,7 @@ Telegraph.prototype.draw = function(selector) {
       self.fetchData().done(function(data) {
         var cardinality = Telegraph.cardinality(data);
         var numDataPoints = _.max(cardinality.lengths);
-        if (!cardinality.match && Telegraph.requiresMatchingCardinality(self.attrs.chart)) {
+        if (!cardinality.match && self.requiresMatchingCardinality()) {
           promise.reject("Cardinality of data sets must match for this type of chart.");
         } else if (numDataPoints > Telegraph.maxDataPoints) {
           promise.reject("Too many data points. " + "Your query returns " +
@@ -76,6 +50,10 @@ Telegraph.prototype.draw = function(selector) {
       promise.resolve();
     }
   });
+};
+
+Telegraph.prototype.requiresMatchingCardinality = function() {
+  return _.contains(['table', 'stackedAreaChart', 'multiBarChart'], this.attrs.chart);
 };
 
 Telegraph.prototype.clearRefresh = function() {
@@ -353,6 +331,7 @@ Telegraph.prototype.fetchData = function() {
   });
 };
 
+Telegraph.baseUrls = {};
 Telegraph.defaultPeriod = "15m";
 
 Telegraph.prototype.getData = function(data, targets) {
@@ -396,49 +375,12 @@ Telegraph.prototype.getData = function(data, targets) {
   });
 };
 
-Telegraph.prototype.save = function(opts) {
-  if (this.id) {
-    var self = this;
-    var data = _.extend(this.attrs, {force: opts.force});
-    return this.http('put', data).done(function(results) {
-      self.attrs.hash = results.hash;
-    });
-  }
-};
+Telegraph.Dashboard = function () {};
+Resting(Telegraph.Dashboard, {baseUrl: "/dashboards"});
 
-Telegraph.prototype.rename = function(id) {
-  var self = this;
-  return this.http('patch', {id: id}).done(function() {
-    self.id = id;
-  });
-};
-
-Telegraph.prototype.delete = function(opts) {
-  var self = this;
-  return this.http('delete', opts);
-};
-
-Telegraph.load = function(name, overrides) {
-  return Telegraph.http('get', ['graphs', name]).then(function (results) {
-    if (results) {
-      return new Telegraph(_.extend(results, overrides));
-    }
-  });
-};
-
-Telegraph.list = function(process) {
-  Telegraph.http('get', ['graphs']).done(function(results) {
-    process(results);
-  });
-};
-
-Telegraph.dashboard = function (graphs) {
-  this.graphs = graphs;
-};
-
-Telegraph.dashboard.prototype.draw = function (selector, css) {
+Telegraph.Dashboard.prototype.draw = function (selector, css) {
   $(selector).empty();
-  _.each(this.graphs, function(graph, i) {
+  _.each(this.attrs.graphs, function(graph, i) {
     var id = "dashboard-" + i;
     $(selector).append($("<div/>", {id: id, css: css || {}}));
     Telegraph.load(graph.id, graph.overrides).then(function(telegraph) {
