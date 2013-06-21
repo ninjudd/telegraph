@@ -390,8 +390,8 @@ $(document).ready(function() {
       telegraph.destroy().done(function() {
         showAlert("Deleted graph " + telegraph.id, "success");
         load("");
-      }).fail(function(error) {
-        showAlert(error, "error");
+      }).fail(function(response) {
+        showAlert(response.error, "error");
       });
     }
     return false;
