@@ -1,3 +1,5 @@
+var docType = Telegraph;
+
 var Table = function (selector, opts) {
   opts = opts || {};
 

@@ -1,5 +1,8 @@
 var Telegraph = function() {
-  this.attrs = {chart: "lineChart"};
+  this.attrs = {
+    chart:   "lineChart",
+    targets: []
+  };
 };
 Resting(Telegraph, {baseUrl: "/graphs"});
 
@@ -51,6 +54,10 @@ Telegraph.prototype.draw = function(selector) {
     }
   });
 };
+
+Telegraph.prototype.isEmpty = function () {
+  return this.attrs.targets.length == 0;
+}
 
 Telegraph.prototype.requiresMatchingCardinality = function() {
   return _.contains(['table', 'stackedAreaChart', 'multiBarChart'], this.attrs.chart);
@@ -116,7 +123,7 @@ Telegraph.prototype.tableItems = function(data) {
     return [datum.key].concat(_.map(rows[i], formatVal));
   });
 
-  if (this.attrs.sumRows) {
+  if (this.attrs.sum_rows) {
     _.each(rows, function (row, i) {
       var total = _.pointwise(row, _.add);
       items[i].push(formatVal(total));
@@ -124,13 +131,13 @@ Telegraph.prototype.tableItems = function(data) {
     times.push("total");
   }
 
-  if (this.attrs.sumCols) {
+  if (this.attrs.sum_cols) {
     var totals = _.pointwise(rows, function (a, b) {
       return _.pointwise([a, b], _.add);
     });
     var grandTotal = _.pointwise(totals, _.add);
     items.push(["total"].concat(_.map(totals, formatVal)));
-    if (this.attrs.sumRows) _.last(items).push(formatVal(grandTotal));
+    if (this.attrs.sum_rows) _.last(items).push(formatVal(grandTotal));
   }
 
   return [times].concat(items);
@@ -165,8 +172,8 @@ Telegraph.prototype.tableCells = function (item, i) {
 Telegraph.prototype.tableDraw = function(selector, data) {
   var classes = "telegraph-table table table-striped";
   classes += (this.attrs.invert)  ? " inverted"   : " standard";
-  classes += (this.attrs.sumCols) ? " sum-cols"   : "";
-  classes += (this.attrs.sumRows) ? " sum-rows" : "";
+  classes += (this.attrs.sum_cols) ? " sum-cols"   : "";
+  classes += (this.attrs.sum_rows) ? " sum-rows" : "";
 
   var items = this.tableItems(data);
   if (this.attrs.invert) items = _.zip.apply(_, items);
@@ -321,12 +328,10 @@ Telegraph.prototype.fetchData = function() {
     });
   });
 
-  var promises = [];
-  _.each(_.groupBy(targets, function(t) { return [t.source, t.shift] }), function(targets) {
-    promises.push(self.getData(data, targets));
-  });
-
-  return $.when.apply($, promises).then(function() {
+  var groups = _.groupBy(targets, function(t) { return [t.source, t.shift] });
+  return $.when.apply($, _.map(groups, function(targets) {
+    return self.getData(data, targets);
+  })).then(function() {
     return data;
   });
 };
@@ -375,16 +380,28 @@ Telegraph.prototype.getData = function(data, targets) {
   });
 };
 
-Telegraph.Dashboard = function () {};
+Telegraph.Dashboard = function () {
+  this.attrs = {graphs: []};
+};
 Resting(Telegraph.Dashboard, {baseUrl: "/dashboards"});
 
 Telegraph.Dashboard.prototype.draw = function (selector, css) {
   $(selector).empty();
-  _.each(this.attrs.graphs, function(graph, i) {
-    var id = "dashboard-" + i;
+
+  return $.when.apply($, _.map(this.attrs.graphs, function(graph, i) {
+    var id = "graph-" + i;
     $(selector).append($("<div/>", {id: id, css: css || {}}));
-    Telegraph.load(graph.id, graph.overrides).then(function(telegraph) {
+    return Telegraph.load(graph.id, graph.overrides).then(function(telegraph) {
       telegraph.draw("#" + id);
     });
-  });
+  }));
+};
+
+Telegraph.Dashboard.prototype.isEmpty = function () {
+  console.log(this.attrs.graphs.length)
+  return this.attrs.graphs.length == 0;
+}
+
+Telegraph.Dashboard.prototype.clearRefresh = function () {
+  _.each(this.attrs.graphs, Telegraph.prototype.clearRefresh.call);
 };

@@ -1,10 +1,9 @@
-var telegraph;
 var targets = new Table("#targets", {
   class: "table table-striped",
   toCells: Table.deletable(targetCells),
   sortable: true,
   change: function() {
-    telegraph.attrs.targets = this.items;
+    doc.attrs.targets = this.items;
     redraw();
   }
 });
@@ -21,7 +20,7 @@ function targetCells(target) {
     var newLabel = $(this).text();
     if (newLabel != target.label) {
       target.label = newLabel;
-      redraw();
+      redraw;
     }
   });
 
@@ -59,7 +58,9 @@ function isLinePlusBar(chart) {
 
 var draws;
 function redraw(unchanged) {
-  telegraph.draw("#graph").done(displayHeader).fail(function(error) {
+  doc.draw("#graph").done(function() {
+    displayHeader();
+  }).fail(function(error) {
     showAlert(error, "error");
   });
 
@@ -90,61 +91,19 @@ function fillTarget(target) {
   return false;
 };
 
-function save(force) {
-  telegraph.id = telegraph.id || prompt("Save graph as:");
-
-  telegraph.save({force: force}).done(function(results) {
-    showAlert(telegraph.id + " saved", "success");
-    pushHistory(telegraph.id);
-    markChanged(false);
-    displayHeader();
-  }).fail(function(response) {
-    if (response.error) {
-      if (confirm(response.error + " Would you like to overwrite?")) {
-        save(true);
-      }
-    } else {
-      showAlert("save failed", "error");
-    }
-  });
-};
-
-function load(name) {
-  draws = 0;
-  if (telegraph) telegraph.clearRefresh();
-  name = name == null ? hash() : name;
-  if (name == null) return;
-
-  Telegraph.load(name).then(function(t) {
-    if (t) {
-      telegraph = t;
-      _.bindAll(telegraph);
-
-      if (name != null) pushHistory(telegraph.id);
-      $("#from"     ).val(telegraph.attrs.from);
-      $("#until"    ).val(telegraph.attrs.until);
-      $("#period"   ).val(telegraph.attrs.period);
-      $("#refresh"  ).val(telegraph.attrs.refresh);
-      $("#chart"    ).val(telegraph.attrs.chart);
-      $("#variables").val(telegraph.attrs.variables);
-      flipClass("active", "#align",    telegraph.attrs.align);
-      flipClass("active", "#invert",   telegraph.attrs.invert);
-      flipClass("active", "#sum-cols", telegraph.attrs.sumCols);
-      flipClass("active", "#sum-rows", telegraph.attrs.sumRows);
-
-      targets.replace(telegraph.attrs.targets);
-    } else {
-      showAlert("no such graph: " + name);
-      if (!telegraph) load("");
-    }
-  });
-};
-
-function loadSubmit() {
-  var name = $("#load-name").val();
-  load(name);
-  $("#load-form").modal("toggle");
-  $("#load-name").autocomplete("close");
+function afterLoad() {
+  $("#from"     ).val(doc.attrs.from);
+  $("#until"    ).val(doc.attrs.until);
+  $("#period"   ).val(doc.attrs.period);
+  $("#refresh"  ).val(doc.attrs.refresh);
+  $("#chart"    ).val(doc.attrs.chart);
+  $("#variables").val(doc.attrs.variables);
+  flipClass("active", "#align",    doc.attrs.align);
+  flipClass("active", "#invert",   doc.attrs.invert);
+  flipClass("active", "#sum-cols", doc.attrs.sum_cols);
+  flipClass("active", "#sum-rows", doc.attrs.sum_rows);
+  
+  targets.replace(doc.attrs.targets);
 };
 
 var graphNames = [];
@@ -160,7 +119,7 @@ function loadForm() {
 };
 
 function confirmRevert() {
-  return !isChanged || confirm("All unsaved changes to " + telegraph.id + " will be lost. Are you sure?");
+  return !isChanged || confirm("All unsaved changes to " + doc.id + " will be lost. Are you sure?");
 };
 
 function activeId(selector) {
@@ -194,34 +153,34 @@ $(document).ready(function() {
     });
   });
 
-  $("#refresh-graph").click(function() {
+  $("#refresh-document").click(function() {
     redraw(true);
   });
 
   $("#from").change(function() {
-    telegraph.attrs.from = $(this).val();
+    doc.attrs.from = $(this).val();
     redraw();
   });
 
   $("#until").change(function() {
-    telegraph.attrs.until = $(this).val();
+    doc.attrs.until = $(this).val();
     redraw();
   });
 
   $("#period").change(function() {
-    telegraph.attrs.period = $(this).val();
+    doc.attrs.period = $(this).val();
     redraw();
   });
 
   $("#refresh").attr({placeholder: Telegraph.defaultRefresh});
 
   $("#refresh").change(function() {
-    telegraph.attrs.refresh = parseInt($(this).val());
+    doc.attrs.refresh = parseInt($(this).val());
     redraw();
   });
 
   $("#chart").change(function() {
-    telegraph.attrs.chart = $(this).val();
+    doc.attrs.chart = $(this).val();
     redraw();
     targets.update();
   });
@@ -229,35 +188,34 @@ $(document).ready(function() {
   $("#align").click(function(e) {
     e.stopPropagation(); // Make sure the button is toggled before we check it.
     $(this).toggleClass("active");
-    telegraph.attrs.align = $(this).hasClass("active");
+    doc.attrs.align = $(this).hasClass("active");
     redraw();
   });
 
   $("#invert").click(function(e) {
     e.stopPropagation(); // Make sure the button is toggled before we check it.
     $(this).toggleClass("active");
-    telegraph.attrs.invert = $(this).hasClass("active");
+    doc.attrs.invert = $(this).hasClass("active");
     redraw();
   });
 
   $("#sum-cols").click(function(e) {
     e.stopPropagation(e); // Make sure the button is toggled before we check it.
     $(this).toggleClass("active");
-    telegraph.attrs.sumCols = $(this).hasClass("active");
+    doc.attrs.sum_cols = $(this).hasClass("active");
     redraw();
   });
 
   $("#sum-rows").click(function(e) {
     e.stopPropagation(e); // Make sure the button is toggled before we check it.
     $(this).toggleClass("active");
-    telegraph.attrs.sumRows = $(this).hasClass("active");
+    doc.attrs.sum_rows = $(this).hasClass("active");
     redraw();
   });
 
   $("#variables").change(function() {
-    telegraph.attrs.variables = $("#variables").val();
+    doc.attrs.variables = $("#variables").val();
     redraw();
-    targets.update();
   });
 
   var renaming;
@@ -265,30 +223,24 @@ $(document).ready(function() {
     var self = this;
     var name = $(this).text();
     if (renaming) {  // rename
-      var from = telegraph.id;
-      telegraph.rename(name).done(function() {
+      var from = doc.id;
+      doc.rename(name).done(function() {
         showAlert("Renamed " + from + " to " + name, "success");
         pushHistory(name);
       }).fail(function(response) {
         showAlert(response.error);
-        $(self).text(telegraph.id);
+        $(self).text(doc.id);
       });
       renaming = false;
     } else {  // duplicate
-      telegraph.id = name;
-      pushHistory(telegraph.id);
-      telegraph.attrs.hash = null;
+      doc.id = name;
+      pushHistory(doc.id);
+      doc.attrs.hash = null;
     }
     $(this).attr({contenteditable: false});
   });
 
   blurOnEnter("#name");
-
-  $("#save").click(function() {
-    $("#graph-menu").dropdown("toggle");
-    save();
-    return false;
-  });
 
   $(document).bind('keydown', function(e) {
     if (e.metaKey || e.ctrlKey) {
@@ -306,54 +258,9 @@ $(document).ready(function() {
     if (isChanged) return "Unsaved changes will be lost.";
   };
 
-  $("#rename").click(function() {
-    renaming = true;
-    $("#graph-menu").dropdown("toggle");
-    $("#name").attr({contenteditable: true}).focus();
-    selectAll();
-    return false;
-  });
-
-  $("#duplicate").click(function() {
-    $("#graph-menu").dropdown("toggle");
-    $("#name").attr({contenteditable: true}).text(telegraph.id + " copy").focus();
-    markChanged(true);
-    document.execCommand("selectAll",false,null);
-    return false;
-  });
-
-  $("#revert").click(function() {
-    $("#graph-menu").dropdown("toggle");
-    if (confirmRevert()) {
-      load(telegraph.id);
-      return false;
-    }
-  });
-
-  $("#close").click(function() {
-    $("#graph-menu").dropdown("toggle");
-    if (confirmRevert()) {
-      load("");
-      return false;
-    }
-  });
-
-  $("#delete").click(function() {
-    $("#graph-menu").dropdown("toggle");
-    if (confirm("Graph " + telegraph.id + " will be permanently deleted. Are you sure?")) {
-      telegraph.destroy().done(function() {
-        showAlert("Deleted graph " + telegraph.id, "success");
-        load("");
-      }).fail(function(response) {
-        showAlert(response.error, "error");
-      });
-    }
-    return false;
-  });
-
   $("#edit").click(function(e) {
     toggleEdit(!$("#edit-container").is(":visible"));
-    if (telegraph) setTimeout(function() { telegraph.updateChart() }, 500);
+    if (doc) setTimeout(function() { doc.updateChart() }, 500);
   });
 
   $("#load-submit").click(function(e) {

@@ -152,33 +152,37 @@ body * {
   font-family: monospace;
 }
 
-#graph-header {
+#document-header {
   display: none;
   text-align: center;
 }
 
-#dashboard-header {
-  display: none;
-  text-align: center;
-}
-
-#graph-title {
+#document-title {
   text-align: left;
   margin-top: 10px;
   display: inline-block;
 }
 
-#graph-name:hover {
+#document-name:hover {
   cursor: pointer;
 }
 
-#graph-name:after {
+#document-name:after {
   content: "\25BE";
   opacity: 0;
 }
 
-#graph-name:hover:after {
+#document-name:hover:after {
   opacity: 1;
+}
+
+#refresh-document {
+  float: right;
+  margin: 10px;
+}
+
+#refresh-document:hover {
+  cursor: pointer;
 }
 
 #name br {
@@ -236,15 +240,6 @@ select, input[type="text"] {
   left: 0;
   right: 0;
   text-align: center;
-}
-
-#refresh-graph {
-  float: right;
-  margin: 10px;
-}
-
-#refresh-graph:hover {
-  cursor: pointer;
 }
 
 #toolbar {

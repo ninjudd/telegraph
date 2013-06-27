@@ -19,9 +19,11 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/d3/2.10.0/d3.v2.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/nvd3/0.9/nv.d3.js"></script>
 
+  <script src="/resting.js"></script>
   <script src="/telegraph.js"></script>
   <script src="/telegraph/table.js"></script>
   <script src="/telegraph/config.js"></script>
+  <script src="/telegraph/helpers.js"></script>
   <script src="/telegraph/dashboard.js"></script>
 </head>
 
@@ -37,12 +39,12 @@
     </div>
 
     <div id="alerts"></div>
-    <div id="dashboard-header">
-      <span id="refresh-graph">
+    <div id="document-header">
+      <span id="refresh-document">
         <img class="icon faded" src="/telegraph/images/refresh.svg">
       </span>
-      <div id="dashboard-title" class="dropdown">
-        <span id="dashboard-name" class="dropdown-toggle" data-toggle="dropdown">
+      <div id="document-title" class="dropdown">
+        <span id="document-name" class="dropdown-toggle" data-toggle="dropdown">
           <img class="icon" src="/telegraph/images/graph.svg">
           <span id="name"></span>
           <span id="edited" tooltip="true"
@@ -50,7 +52,7 @@
             &mdash; edited
           </span>
         </span>
-        <ul id="dashboard-menu" class="dropdown-menu" role="menu">
+        <ul id="document-menu" class="dropdown-menu" role="menu">
           <li><a id="rename"    href="#">Rename</a></li>
           <li><a id="duplicate" href="#">Duplicate</a></li>
           <li><a id="save"      href="#">Save</a></li>
@@ -113,11 +115,11 @@
                   title="Swap the columns and rows in the results table.">
             <img class="icon control" src="/telegraph/images/swap.svg">
           </button>
-          <button id="sum-cols" type="button" class="btn" tooltip="true"
+          <button id="sum_cols" type="button" class="btn" tooltip="true"
                   title="Add a summary line to the table that sums all results for a given target.">
             <span class="control">&Sigma;&darr;</span>
           </button>
-          <button id="sum-rows" type="button" class="btn" tooltip="true"
+          <button id="sum_rows" type="button" class="btn" tooltip="true"
                   title="Add a summary line to the table that sums all results for a given timepoint.">
             <span class="control">&Sigma;&rarr;</span>
           </button>

@@ -1,4 +1,6 @@
-var dashboard = new Telegraph.dashboard([]);
+var docType = Telegraph.Dashboard;
+
+load();
 
 var dashboardNames = [];
 function loadForm() {
@@ -22,6 +24,19 @@ function addGraphForm() {
   Telegraph.list(function(names) {
     graphNames = names;
   });
+};
+
+var draws;
+function redraw(unchanged) {
+  doc.draw("#dashboard").done(function() {
+    displayHeader();
+  }).fail(function(error) {
+    showAlert(error, "error");
+  });
+
+  // Use draw count as a proxy for changes since we only redraw when a change is made.
+  if (!unchanged) draws++;
+  markChanged(draws > 1);
 };
 
 $(document).ready(function() {
@@ -57,21 +72,28 @@ $(document).ready(function() {
   });
 
   $("#add-graph-submit").click(function(e) {
-    dashboard.graphs.push({
-      name:      $("#add-graph-name").val(),
-      from:      $("#from").val(),
-      until:     $("#until").val(),
-      period:    $("#period").val(),
-      chart:     $("#chart").val(),
-      variables: $("#variables").val(),
-      sumRows:   $("#sum-rows").hasClass("active"),
-      sumCols:   $("#sum-cols").hasClass("active"),
-      invert:    $("#invert").hasClass("active"),
-      align:     $("#align").hasClass("active"),
-    });
+    var overrides = {};
 
-    dashboard.draw("#dashboard");
+    _.each(["from", "until", "period", "variables", "chart"], function (key) {
+      var val = $("#" + key).val();
+      if (val != "") overrides[key] = val;
+    });
+    if (overrides.chart) {
+      _.each(["sum_rows", "sum_cols", "invert", "align"], function (key) {
+        overrides[key] = $("#" + key).hasClass("active");
+      });
+    }
+
+    var opts = {
+      id: $("#add-graph-name").val(),
+      overrides: overrides,
+    };
+
+    dashboard.attrs.graphs.push(opts);
+    redraw();
 
     $("#add-graph-form").modal("toggle");
   });
+
+  initMenu(dashboard);
 });

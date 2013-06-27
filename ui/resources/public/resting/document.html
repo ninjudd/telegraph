@@ -1,0 +1,51 @@
+<div id="document-toolbar">
+  <span id="document-load">
+    <img class="toolbar icon faded" src="/telegraph/images/list.svg">
+  </span>
+  <span id="document-edit">
+    <img class="toolbar icon faded" src="/telegraph/images/cog.svg">
+  </span>
+</div>
+
+<div id="document-alerts"></div>
+<div id="document-header">
+  <span id="document-refresh">
+    <img class="icon faded" src="/telegraph/images/refresh.svg">
+  </span>
+  <div id="document-title" class="dropdown">
+    <span id="document-name" class="dropdown-toggle" data-toggle="dropdown">
+      <img class="icon" src="/telegraph/images/graph.svg">
+      <span id="name"></span>
+      <span id="edited" tooltip="true"
+            title="This document has unsaved changes. You can save using this dropdown menu, or with Command-s or Control-s.">
+        &mdash; edited
+      </span>
+    </span>
+    <ul id="document-menu" class="dropdown-menu" role="menu">
+      <li><a id="rename"    href="#">Rename</a></li>
+      <li><a id="duplicate" href="#">Duplicate</a></li>
+      <li><a id="save"      href="#">Save</a></li>
+
+      <li class="divider"></li>
+      <li><a id="revert"    href="#">Revert</a></li>
+      <li><a id="close"     href="#">Close</a></li>
+      <li><a id="delete"    href="#">Delete</a></li>
+    </ul>
+  </div>
+</div>
+
+<div id="document-body" class="chart"></div>
+</div>
+
+<div id="load-form" class="modal hide fade" tabindex="-1" role="dialog">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4>Load saved graph</h4>
+  </div>
+  <div class="modal-body">
+    <input id="load-name" type="text">
+  </div>
+  <div class="modal-footer">
+    <button id="load-submit" class="btn btn-primary">Load</button>
+  </div>
+</div>
