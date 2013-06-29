@@ -4,4 +4,10 @@ requirejs.config({
   },
 });
 
-requirejs(["document"]);
+requirejs(["resting"]);
+requirejs(["resting/document"]);
+requirejs(["telegraph"]);
+requirejs(["telegraph/table"]);
+requirejs(["telegraph/config"]);
+requirejs(["telegraph/helpers"]);
+requirejs(["telegraph/dashboard"]);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Telegraph Graph Editor</title>
+<title>Telegraph Dashboard Editor</title>
 
 <head>
   <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap.css">
@@ -19,67 +19,12 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/d3/2.10.0/d3.v2.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/nvd3/0.9/nv.d3.js"></script>
 
-  <script src="/resting.js"></script>
-  <script src="/telegraph.js"></script>
-  <script src="/telegraph/table.js"></script>
-  <script src="/telegraph/config.js"></script>
-  <script src="/telegraph/helpers.js"></script>
-  <script src="/telegraph/dashboard.js"></script>
+
+  <script data-main="/app.js" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.5/require.js"></script>
 </head>
 
 <body>
-  <div id="dashboard-container">
-    <div id="toolbar">
-      <span id="load">
-        <img class="toolbar icon faded" src="/telegraph/images/list.svg">
-      </span>
-      <span id="add-graph">
-        <img class="toolbar icon faded" src="/telegraph/images/chart-line.svg">
-      </span>
-    </div>
-
-    <div id="alerts"></div>
-    <div id="document-header">
-      <span id="refresh-document">
-        <img class="icon faded" src="/telegraph/images/refresh.svg">
-      </span>
-      <div id="document-title" class="dropdown">
-        <span id="document-name" class="dropdown-toggle" data-toggle="dropdown">
-          <img class="icon" src="/telegraph/images/graph.svg">
-          <span id="name"></span>
-          <span id="edited" tooltip="true"
-                title="This document has unsaved changes. You can save using this dropdown menu, or with Command-s or Control-s.">
-            &mdash; edited
-          </span>
-        </span>
-        <ul id="document-menu" class="dropdown-menu" role="menu">
-          <li><a id="rename"    href="#">Rename</a></li>
-          <li><a id="duplicate" href="#">Duplicate</a></li>
-          <li><a id="save"      href="#">Save</a></li>
-
-          <li class="divider"></li>
-          <li><a id="revert"    href="#">Revert</a></li>
-          <li><a id="close"     href="#">Close</a></li>
-          <li><a id="delete"    href="#">Delete</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div id="dashboard"></div>
-  </div>
-
-  <div id="load-form" class="modal hide fade" tabindex="-1" role="dialog">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-      <h4>Load saved dashboard</h4>
-    </div>
-    <div class="modal-body">
-      <input id="load-name" type="text">
-    </div>
-    <div class="modal-footer">
-      <button id="load-submit" class="btn btn-primary">Load</button>
-    </div>
-  </div>
+  <div id="dashboard-container"></div>
 
   <div id="add-graph-form" class="modal hide fade" tabindex="-1" role="dialog">
     <div class="modal-header">
