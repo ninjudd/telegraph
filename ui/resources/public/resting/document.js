@@ -1,45 +1,47 @@
-define(["text!resting/document.html"], function(html) {
+define([
+  "text!resting/document.html", "underscore", "jquery_ui", "bootstrap"
+], function(html, _, $) {
 
-  var module = function(opts) {
-    this.resting  = opts.resting;
+  var Document = function(opts) {
+    this.type     = opts.type;
     this.selector = opts.selector;
     this.name     = opts.name;
     this.drawContainer();
   };
 
-  module.prototype.drawContainer = function() {
+  Document.prototype.drawContainer = function() {
     var container = $(this.selector);
     container.html(this.template({name: this.name}));
     this.registerEvents();
   };
 
-  module.prototype.registerEvents = function() {
+  Document.prototype.registerClick = function(functionName, selector) {
+    selector = selector || "#" + functionName;
+    this.$(selector).click(_.bind(this[functionName], this));
+  };
+
+  Document.prototype.registerEvents = function() {
     var self = this;
 
-    this.$("#document-load").click(this.showLoadForm);
-    this.$("#load-submit").click(this.submitLoadForm);
+    this.registerClick("showLoadForm", "#document-load");
+    this.registerClick("submitLoadForm", "#load-submit");
+    _.each(["save", "rename", "duplicate", "revert", "close", "destroy"], this.registerClick);
+
     this.$("#load-name").keydown(function(e) {
       if (e.keyCode == 13) self.submitLoadForm();
     }).autocomplete({
       minLength: 0,
-      source: self.autocomplete,
+      source: _.bind(this.autocomplete, this),
     });
-
-    this.$("#save").click(this.save);
-    this.$("#rename").click(this.rename);
-    this.$("#duplicate").click(this.duplicate);
-    this.$("#revert").click(this.revert);
-    this.$("#close").click(this.close);
-    this.$("#destroy").click(this.destroy);
   };
 
-  module.prototype.save = function() {
+  Document.prototype.save = function() {
     this.$("#document-menu").dropdown("toggle");
     this.save();
     return false;
   };
 
-  module.prototype.rename = function() {
+  Document.prototype.rename = function() {
     this.renaming = true;
     this.$("#document-menu").dropdown("toggle");
     this.$("#name").attr({contenteditable: true}).focus();
@@ -47,23 +49,23 @@ define(["text!resting/document.html"], function(html) {
     return false;
   };
 
-  module.prototype.duplicate = function() {
+  Document.prototype.duplicate = function() {
     this.$("#document-menu").dropdown("toggle");
-    this.$("#name").attr({contenteditable: true}).text(this.doc.id + " copy").focus();
+    this.$("#name").attr({contenteditable: true}).text(this.model.id + " copy").focus();
     this.markChanged(true);
     this.selectAll();
     return false;
   };
 
-  module.prototype.revert = function() {
+  Document.prototype.revert = function() {
     this.$("#document-menu").dropdown("toggle");
     if (this.confirmRevert()) {
-      this.load(this.doc.id);
+      this.load(this.model.id);
     }
     return false;
   };
 
-  module.prototype.close = function() {
+  Document.prototype.close = function() {
     this.$("#document-menu").dropdown("toggle");
     if (this.confirmRevert()) {
       this.load("");
@@ -71,12 +73,12 @@ define(["text!resting/document.html"], function(html) {
     return false;
   };
 
-  module.prototype.destroy = function() {
+  Document.prototype.destroy = function() {
     var self = this;
 
     this.$("#document-menu").dropdown("toggle");
-    if (confirm(this.doc.id + " will be permanently deleted. Are you sure?")) {
-      this.doc.destroy().done(function() {
+    if (confirm(this.model.id + " will be permanently deleted. Are you sure?")) {
+      this.model.destroy().done(function() {
         self.showAlert("Deleted " + doc.id, "success");
         self.load("");
       }).fail(function(response) {
@@ -86,60 +88,59 @@ define(["text!resting/document.html"], function(html) {
     return false;
   };
 
-  module.prototype.selectAll = function() {
+  Document.prototype.selectAll = function() {
     document.execCommand("selectAll", false, null);
   };
 
-  module.prototype.$ = function(selector) {
+  Document.prototype.$ = function(selector) {
     return $(this.selector).find(selector);
   };
 
-  module.prototype.draw = function(unchanged) {
-    if (this.doc) {
+  Document.prototype.draw = function(unchanged) {
+    if (this.model) {
       var self = this;
       var body = this.$("#document-body");
-      return this.doc.draw(body).done(function() {
+      return this.model.draw(body).done(function() {
         self.displayHeader();
         // Use draw count as a proxy for changes since we only redraw when a change is made.
-        if (!unchanged) this.draws++;
-        this.markChanged(this.draws > 1);
+        if (!unchanged) self.draws++;
+        self.markChanged(self.draws > 1);
+        if (self.afterDraw) self.afterDraw();
       }).fail(function(error) {
         self.showAlert(error, "error");
       });
     }
   };
 
-  module.prototype.template = _.template(html);
+  Document.prototype.template = _.template(html);
 
-  module.prototype.load = function(id) {
+  Document.prototype.load = function(id) {
     var self = this;
 
     this.draws = 0;
-    if (this.doc) doc.clearRefresh();
-
+    if (this.model) this.model.clearRefresh();
 console.log(this)
-console.log(this.resting)
-
-    this.resting.load(id).then(function(d) {
-      if (d) {
-        self.doc = d;
+    this.type.load(id).then(function(m) {
+      if (m) {
+        self.model = m;
         self.afterLoad();
       } else {
         self.showAlert("no such dashboard: " + name);
-        if (!doc) load("");
+        if (!self.model) load("");
       }
     });
   };
 
-  module.prototype.showLoadForm = function() {
+  Document.prototype.showLoadForm = function() {
     var $loadName = this.$("#load-name");
     this.$("#load-form").modal('toggle').on('shown', function() {
       $loadName.val("").focus();
     });
   };
 
-  module.prototype.autocomplete = function(request, response) {
-    this.resting.list().done( function(names) {
+  Document.prototype.autocomplete = function(request, response) {
+console.log(this)
+    this.type.list().done( function(names) {
       var matches = _.filter(names, function(name) {
         return name.indexOf(request.term) >= 0 
       });
@@ -147,23 +148,23 @@ console.log(this.resting)
     });
   };
 
-  module.prototype.submitLoadForm = function() {
+  Document.prototype.submitLoadForm = function() {
     var name = this.$("#load-name").autocomplete("close").val
     load(name);
     this.$("#load-form").modal("toggle");
   };
 
-  module.prototype.afterLoad = function() {
+  Document.prototype.afterLoad = function() {
     this.draw();
   };
 
-  module.prototype.save = function(opts) {
+  Document.prototype.save = function(opts) {
     var self = this;
 
-    this.doc.id = this.doc.id || prompt("Save as:");
+    this.model.id = this.model.id || prompt("Save as:");
 
-    this.doc.save(opts).done(function(results) {
-      self.showAlert(self.doc.id + " saved", "success");
+    this.model.save(opts).done(function(results) {
+      self.showAlert(self.model.id + " saved", "success");
       self.afterSave();
       self.markChanged(false);
       self.displayHeader();
@@ -178,40 +179,40 @@ console.log(this.resting)
     });
   };
 
-  module.prototype.afterSave = function() {
+  Document.prototype.afterSave = function() {
     // do nothing by default
   };
 
-  module.prototype.showAlert = function(text, type) {
+  Document.prototype.showAlert = function(text, type) {
     if (type) type = "alert-" + type;
     $("#alerts").append($("<div/>", {class: "alert fade in " + type, text: text}));
     setTimeout(function() { $(".alert").alert('close'); }, 3000);
   };
 
-  module.prototype.markChanged = function(changed) {
+  Document.prototype.markChanged = function(changed) {
     this.isChanged = changed;
     display("#edited", changed);
     flipClass("disabled", $("#revert, #save").parent(), !changed);
   };
 
-  module.prototype.confirmRevert = function() {
-    return !this.isChanged || confirm("All unsaved changes to " + this.doc.id + " will be lost. Are you sure?");
+  Document.prototype.confirmRevert = function() {
+    return !this.isChanged || confirm("All unsaved changes to " + this.model.id + " will be lost. Are you sure?");
   };
 
-  module.prototype.displayHeader = function() {
-    $("#name").text(this.doc.id || "untitled");
-    this.flipClass("disabled", $("#rename").parent(), !this.doc.id);
-    $("#document-header").toggle(!!this.doc.id || !this.doc.isEmpty());
+  Document.prototype.displayHeader = function() {
+    $("#name").text(this.model.id || "untitled");
+    this.flipClass("disabled", $("#rename").parent(), !this.model.id);
+    $("#document-header").toggle(!!this.model.id || !this.model.isEmpty());
   };
 
-  module.prototype.flipClass = function(classString, selector, state) {
+  Document.prototype.flipClass = function(classString, selector, state) {
     var element = $(selector);
     state ? element.addClass(classString) : element.removeClass(classString);
   };
 
-  module.prototype.display = function(selector, show) {
+  Document.prototype.display = function(selector, show) {
     $(selector).css({display: show ? "inline-block" : "none"})
   };
 
-  return module;
+  return Document;
 });
