@@ -1,6 +1,6 @@
-(defproject org.flatland/telegraph-ui "0.4.0-beta1"
-  :description "Telegraph admin tool."
+(defproject org.flatland/telegraph-ui "0.4.0-beta2"
+  :description "Telegraph web interface."
   :url "http://github.com/flatland/telegraph"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.flatland/resting-js "0.1.3"]])
+  :dependencies [[org.flatland/telegraph-js "0.4.0-beta1"]])

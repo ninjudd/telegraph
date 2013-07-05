@@ -5,11 +5,11 @@
 
 require(["common", "telegraph/helpers"], function() {
   require([
-    "telegraph", "resting/document", "underscore", "jquery_ui"
-  ], function(Telegraph, Document, _, $) {
+    "telegraph", "telegraph/dashboard", "resting/document", "underscore", "jquery_ui"
+  ], function(Telegraph, Dashboard, Document, _, $) {
 
     var doc = new Document({
-      type:     Telegraph.Dashboard,
+      type:     Dashboard,
       selector: "#dashboard-container",
       name:     "Dashboard",
     });
