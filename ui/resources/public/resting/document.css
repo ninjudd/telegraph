@@ -1,0 +1,77 @@
+#document-header {
+  display: none;
+  text-align: center;
+}
+
+#document-title {
+  text-align: left;
+  margin-top: 10px;
+  display: inline-block;
+}
+
+#document-name:hover {
+  cursor: pointer;
+}
+
+#document-name:after {
+  content: "\25BE";
+  opacity: 0;
+}
+
+#document-name:hover:after {
+  opacity: 1;
+}
+
+#document-refresh {
+  float: right;
+  margin: 10px;
+}
+
+#document-refresh:hover {
+  cursor: pointer;
+}
+
+#name br {
+  display: none;
+}
+
+#edited {
+  display: none;
+  opacity: 0.3;
+}
+
+.icon {
+  height: 16px;
+}
+
+.icon.faded {
+  vertical-align: top;
+  -webkit-filter: opacity(0.2);
+  margin-top: 2px;
+}
+
+.icon.faded:hover {
+  -webkit-filter: opacity(0.9);
+}
+
+.alert {
+  margin: 0;
+}
+
+#alerts {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+#toolbar {
+  float: left;
+  margin: 10px;
+}
+
+.toolbar:hover {
+  cursor: pointer;
+}
