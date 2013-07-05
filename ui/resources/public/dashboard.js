@@ -5,15 +5,15 @@
 
 require(["common", "telegraph/helpers"], function() {
   require([
-    "telegraph", "resting/document", "underscore", "jquery_ui", "text!telegraph/add-graph.html"
-  ], function(Telegraph, Document, _, $, addGraph) {
+    "telegraph", "resting/document", "underscore", "jquery_ui"
+  ], function(Telegraph, Document, _, $) {
 
     var doc = new Document({
       type:     Telegraph.Dashboard,
       selector: "#dashboard-container",
       name:     "Dashboard",
     });
-    doc.$("#document-toolbar").append(addGraph);
+    doc.addToolbarButton("add-graph", "/telegraph/images/chart-line.svg");
     doc.load(hash());
 
     var graphNames = [];

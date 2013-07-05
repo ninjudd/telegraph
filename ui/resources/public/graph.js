@@ -14,6 +14,43 @@ require(["common", "telegraph/helpers"], function() {
     });
     _.bindAll(targets);
 
+    var doc = new Document({
+      type:     Telegraph,
+      selector: "#graph-container",
+      name:     "Graph",
+    });
+    doc.addToolbarButton("document-edit", "/telegraph/images/cog.svg");
+    doc.load(hash());
+
+    doc.afterDraw = function() {
+      $(".table-options, .chart-options, .multi-options, .line-plus-bar-options").removeClass("visible-options");
+      $(isTable(chart) ? ".table-options" : ".chart-options").addClass("visible-options");
+      if (isMulti(chart))       $(".multi-options").addClass("visible-options");
+      if (isLinePlusBar(chart)) $(".line-plus-bar-options").addClass("visible-options");
+    };
+
+    doc.afterLoad = function() {
+      $("#from"     ).val(doc.model.attrs.from);
+      $("#until"    ).val(doc.model.attrs.until);
+      $("#period"   ).val(doc.model.attrs.period);
+      $("#refresh"  ).val(doc.model.attrs.refresh);
+      $("#chart"    ).val(doc.model.attrs.chart);
+      $("#variables").val(doc.model.attrs.variables);
+      flipClass("active", "#align",    doc.model.attrs.align);
+      flipClass("active", "#invert",   doc.model.attrs.invert);
+      flipClass("active", "#sum-cols", doc.model.attrs.sum_cols);
+      flipClass("active", "#sum-rows", doc.model.attrs.sum_rows);
+
+      targets.replace(doc.model.attrs.targets);
+    };
+
+    doc.afterRename    = function() { pushHistory(doc.model.id) };
+    doc.afterDuplicate = function() { pushHistory(doc.model.id) };
+
+    doc.registerKeyboardShortcuts();
+
+    //======
+
     function targetCells(target) {
       var labelField = $("<span/>", {text: target.label, contenteditable: true})
       blurOnEnter(labelField);
@@ -45,40 +82,6 @@ require(["common", "telegraph/helpers"], function() {
       return cells;
     };
 
-
-
-    var doc = new Document({
-      type:     Telegraph,
-      selector: "#graph-container",
-      name:     "Graph",
-    });
-    doc.load(hash());
-
-    doc.afterDraw = function() {
-      $(".table-options, .chart-options, .multi-options, .line-plus-bar-options").removeClass("visible-options");
-      $(isTable(chart) ? ".table-options" : ".chart-options").addClass("visible-options");
-      if (isMulti(chart))       $(".multi-options").addClass("visible-options");
-      if (isLinePlusBar(chart)) $(".line-plus-bar-options").addClass("visible-options");
-    };
-
-    doc.afterLoad = function() {
-      $("#from"     ).val(doc.attrs.from);
-      $("#until"    ).val(doc.attrs.until);
-      $("#period"   ).val(doc.attrs.period);
-      $("#refresh"  ).val(doc.attrs.refresh);
-      $("#chart"    ).val(doc.attrs.chart);
-      $("#variables").val(doc.attrs.variables);
-      flipClass("active", "#align",    doc.attrs.align);
-      flipClass("active", "#invert",   doc.attrs.invert);
-      flipClass("active", "#sum-cols", doc.attrs.sum_cols);
-      flipClass("active", "#sum-rows", doc.attrs.sum_rows);
-
-      targets.replace(doc.attrs.targets);
-    };
-
-
-    //======
-
     function isTable(chart) {
       return chart == "table";
     };
@@ -105,8 +108,6 @@ require(["common", "telegraph/helpers"], function() {
 
       return false;
     };
-
-
 
     function activeId(selector) {
       return $(selector).find(".active")[0].id;
@@ -139,132 +140,69 @@ require(["common", "telegraph/helpers"], function() {
         });
       });
 
-      $("#refresh-document").click(function() {
-        doc.draw(true);
-      });
-
       $("#from").change(function() {
         doc.model.attrs.from = $(this).val();
         doc.draw();
       });
 
       $("#until").change(function() {
-        doc.attrs.until = $(this).val();
-        redraw();
+        doc.model.attrs.until = $(this).val();
+        doc.draw();
       });
 
       $("#period").change(function() {
-        doc.attrs.period = $(this).val();
-        redraw();
+        doc.model.attrs.period = $(this).val();
+        doc.draw();
       });
 
       $("#refresh").attr({placeholder: Telegraph.defaultRefresh});
 
       $("#refresh").change(function() {
-        doc.attrs.refresh = parseInt($(this).val());
-        redraw();
+        doc.model.attrs.refresh = parseInt($(this).val());
+        doc.draw();
       });
 
       $("#chart").change(function() {
-        doc.attrs.chart = $(this).val();
-        redraw();
-        targets.update();
+        doc.model.attrs.chart = $(this).val();
+        doc.draw();
       });
 
       $("#align").click(function(e) {
-        e.stopPropagation(); // Make sure the button is toggled before we check it.
-        $(this).toggleClass("active");
-        doc.attrs.align = $(this).hasClass("active");
-        redraw();
+        toggleButton(this, e);
+        doc.model.attrs.align = $(this).hasClass("active");
+        doc.draw();
       });
 
       $("#invert").click(function(e) {
-        e.stopPropagation(); // Make sure the button is toggled before we check it.
-        $(this).toggleClass("active");
-        doc.attrs.invert = $(this).hasClass("active");
-        redraw();
+        toggleButton(this, e);
+        doc.model.attrs.invert = $(this).hasClass("active");
+        doc.draw();
       });
 
       $("#sum-cols").click(function(e) {
-        e.stopPropagation(e); // Make sure the button is toggled before we check it.
-        $(this).toggleClass("active");
-        doc.attrs.sum_cols = $(this).hasClass("active");
-        redraw();
+        toggleButton(this, e);
+        doc.model.attrs.sum_cols = $(this).hasClass("active");
+        doc.draw();
       });
 
       $("#sum-rows").click(function(e) {
-        e.stopPropagation(e); // Make sure the button is toggled before we check it.
-        $(this).toggleClass("active");
-        doc.attrs.sum_rows = $(this).hasClass("active");
-        redraw();
+        toggleButton(this, e);
+        doc.model.attrs.sum_rows = $(this).hasClass("active");
+        doc.draw();
       });
 
       $("#variables").change(function() {
-        doc.attrs.variables = $("#variables").val();
-        redraw();
-      });
-
-      var renaming;
-      $("#name").blur(function() {
-        var self = this;
-        var name = $(this).text();
-        if (renaming) {  // rename
-          var from = doc.id;
-          doc.rename(name).done(function() {
-            showAlert("Renamed " + from + " to " + name, "success");
-            pushHistory(name);
-          }).fail(function(response) {
-            showAlert(response.error);
-            $(self).text(doc.id);
-          });
-          renaming = false;
-        } else {  // duplicate
-          doc.id = name;
-          pushHistory(doc.id);
-          doc.attrs.hash = null;
-        }
-        $(this).attr({contenteditable: false});
-      });
-
-      blurOnEnter("#name");
-
-      $(document).bind('keydown', function(e) {
-        if (e.metaKey || e.ctrlKey) {
-          if (e.keyCode == 83) { // Ctrl-s or Command-s
-            save();
-            return false;
-          } else if (e.keyCode == 79) { // Ctrl-o or Command-o
-            loadForm();
-            return false;
-          }
-        }
+        doc.model.attrs.variables = $("#variables").val();
+        doc.draw();
       });
 
       window.onbeforeunload = function() {
-        if (isChanged) return "Unsaved changes will be lost.";
+        if (doc.isChanged) return "Unsaved changes will be lost.";
       };
 
       $("#edit").click(function(e) {
         toggleEdit(!$("#edit-container").is(":visible"));
         if (doc) setTimeout(function() { doc.updateChart() }, 500);
-      });
-
-      $("#load-submit").click(function(e) {
-        loadSubmit();
-      });
-
-      $("#load-name").keydown(function(e) {
-        if (e.keyCode == 13) loadSubmit();
-      }).autocomplete({
-        minLength: 0,
-        source: function(request, response) {
-          var matches = _.filter(graphNames, function(name) { return name.indexOf(request.term) >= 0 });
-          response(matches);
-        }
-      });
-
-      $("#load").click(function(e) {
-        loadForm();
       });
 
       $("#graph-advanced").click(function(e) {

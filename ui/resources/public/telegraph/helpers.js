@@ -36,6 +36,12 @@ function flipClass(classString, selector, state) {
   state ? element.addClass(classString) : element.removeClass(classString);
 };
 
+function toggleButton(button, e) {
+  // Manually toggle bootstrap button.
+  e.stopPropagation();
+  $(button).toggleClass("active");
+};
+
 function blurOnEnter(selector) {
   $(selector).keydown(function(e) {
     if(e.keyCode == 13) $(this).blur();

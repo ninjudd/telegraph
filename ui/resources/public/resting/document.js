@@ -15,14 +15,26 @@ define([
     this.registerEvents();
   };
 
+  Document.prototype.addToolbarButton = function(id, icon) {
+    var button = $("<span/>", {id: id}).append($("<img/>", {class: "toolbar icon faded", src: icon}));
+    this.$("#document-toolbar").append(button);
+  };
+
   Document.prototype.registerClick = function(functionName, selector) {
     selector = selector || "#" + functionName;
     this.$(selector).click(_.bind(this[functionName], this));
   };
 
+  Document.prototype.blurOnEnter = function(selector) {
+    this.$(selector).keydown(function(e) {
+      if (e.keyCode == 13) $(this).blur();
+    });
+  };
+
   Document.prototype.registerEvents = function() {
     var self = this;
 
+    this.registerClick("draw", "#document-refresh");
     this.registerClick("showLoadForm", "#document-load");
     this.registerClick("submitLoadForm", "#load-submit");
     _.each(["save", "rename", "duplicate", "revert", "close", "destroy"], this.registerClick);
@@ -32,6 +44,28 @@ define([
     }).autocomplete({
       minLength: 0,
       source: _.bind(this.autocomplete, this),
+    });
+
+    this.$("#name").blur(function() {
+      self.changeName();
+    });
+
+    this.blurOnEnter("#name");
+  };
+
+  Document.prototype.registerKeyboardShortcuts = function() {
+    var self = this;
+
+    $(document).bind('keydown', function(e) {
+      if (e.metaKey || e.ctrlKey) {
+        if (e.keyCode == 83) { // Ctrl-s or Command-s
+          self.save();
+          return false;
+        } else if (e.keyCode == 79) { // Ctrl-o or Command-o
+          self.showLoadForm();
+          return false;
+        }
+      }
     });
   };
 
@@ -55,6 +89,28 @@ define([
     this.markChanged(true);
     this.selectAll();
     return false;
+  };
+
+  Document.prototype.changeName = function() {
+    var self  = this;
+    var $name = this.$("#name");
+    var name  = $name.text();
+    if (this.renaming) {  // rename
+      var from = self.doc.model.id;
+      this.doc.rename(name).done(function() {
+        self.showAlert("Renamed " + from + " to " + name, "success");
+        if (self.afterRename) self.afterRename();
+      }).fail(function(response) {
+        self.showAlert(response.error);
+        $name.text(self.doc.id);
+      });
+      this.renaming = false;
+    } else {  // duplicate
+      this.doc.id = name;
+      if (this.afterDuplicate) this.afterDuplicate();
+      this.doc.model.attrs.hash = null;
+    }
+    $name.attr({contenteditable: false});
   };
 
   Document.prototype.revert = function() {

@@ -1,5 +1,6 @@
-define(["telegraph/table", "resting", "jquery", "underscore_contrib", "underscore_string"], 
-       function(Table, Resting, $, _) {
+define([
+  "telegraph/table", "resting", "jquery", "underscore_contrib", "underscore_string",
+], function(Table, Resting, $, _) {
 
   var Telegraph = function() {
     this.attrs = {
