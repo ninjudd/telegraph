@@ -1,12 +1,12 @@
-// requirejs(["telegraph"]);
-// requirejs(["telegraph/table"]);
-// requirejs(["telegraph/helpers"]);
-// requirejs(["telegraph/dashboard"]);
-
-require(["common", "telegraph/helpers"], function() {
+require(["common"], function() {
   require([
-    "telegraph", "telegraph/dashboard", "resting/document", "underscore", "jquery_ui"
-  ], function(Telegraph, Dashboard, Document, _, $) {
+    "telegraph", "telegraph/dashboard", "resting/document", "underscore", "jquery_ui", "utils", "config"
+  ], function(Telegraph, Dashboard, Document, _, $, Utils, config) {
+
+    if (config.telegraph) {
+      Telegraph.baseUrls       = config.telegraph.baseUrls;
+      Telegraph.defaultRefresh = config.telegraph.defaultRefresh;
+    }
 
     var doc = new Document({
       type:     Dashboard,
@@ -14,7 +14,7 @@ require(["common", "telegraph/helpers"], function() {
       name:     "Dashboard",
     });
     doc.addToolbarButton("add-graph", "/telegraph/images/chart-line.svg");
-    doc.load(hash());
+    doc.load(Utils.hash());
 
     var graphNames = [];
     function addGraphForm() {

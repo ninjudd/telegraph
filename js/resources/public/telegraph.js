@@ -1,6 +1,6 @@
 define([
-  "telegraph/table", "resting", "jquery", "underscore_contrib", "underscore_string",
-], function(Table, Resting, $, _) {
+  "telegraph/table", "resting", "jquery", "underscore_contrib", "underscore_string", "nvd3", "d3"
+], function(Table, Resting, $, _, nv, d3) {
 
   var Telegraph = function() {
     this.attrs = {

@@ -6,27 +6,11 @@
   <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/nvd3/0.9/nv.d3.css">
   <link rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
   <link rel="stylesheet" type="text/css" href="/graph.css">
+  <link rel="stylesheet" type="text/css" href="/resting/document.css">
   <link rel="stylesheet" type="text/css" href="/telegraph.css">
   <link rel="stylesheet" type="text/css" href="/telegraph/custom.css">
 
-  <script data-main="telegraph/app.js" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.5/require.js"></script>
-
-  <script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
-  <script src="//code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.string/2.3.0/underscore.string.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/underscore-contrib/0.1.4/underscore-contrib.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/d3/2.10.0/d3.v2.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/nvd3/0.9/nv.d3.js"></script>
-
-  <script src="/resting.js"></script>
-  <script src="/telegraph.js"></script>
-  <script src="/telegraph/table.js"></script>
-  <script src="/telegraph/config.js"></script>
-  <script src="/telegraph/helpers.js"></script>
-  <script src="/telegraph/main.js"></script>
+  <script data-main="graph.js" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.5/require.js"></script>
 </head>
 
 <body>
@@ -35,7 +19,7 @@
       <select id="source" tooltip="true"
               title="Data source to use for queries."></select>
       <span id="help" tooltip="true" title="Tooltips disabled.">
-        <img class="icon faded" src="/telegraph/images/help.svg">
+        <img class="resting-icon faded" src="/telegraph/images/help.svg">
       </span>
 
       <textarea id="query" tooltip="true"
@@ -47,13 +31,13 @@
         <div id="type" class="line-plus-bar-options multi-options btn-group" data-toggle="buttons-radio"
              tooltip="true" title="Type of graph to use for drawing the results of this query.">
           <button id="line" type="button" class="btn active">
-            <img class="icon control" src="/telegraph/images/chart-line.svg">
+            <img class="resting-icon control" src="/telegraph/images/chart-line.svg">
           </button>
           <button id="area" type="button" class="btn multi-options">
-            <img class="icon control" src="/telegraph/images/chart-area.svg">
+            <img class="resting-icon control" src="/telegraph/images/chart-area.svg">
           </button>
           <button id="bar" type="button" class="btn">
-            <img class="icon control" src="/telegraph/images/chart-bar.svg">
+            <img class="resting-icon control" src="/telegraph/images/chart-bar.svg">
           </button>
         </div>
 
@@ -99,7 +83,7 @@
         <div class="table-options btn-group" data-toggle="buttons-checkbox">
           <button id="invert" type="button" class="btn" tooltip="true"
                   title="Swap the columns and rows in the results table.">
-            <img class="icon control" src="/telegraph/images/swap.svg">
+            <img class="resting-icon control" src="/telegraph/images/swap.svg">
           </button>
           <button id="sum-cols" type="button" class="btn" tooltip="true"
                   title="Add a summary line to the table that sums all results for a given target.">
@@ -115,70 +99,19 @@
           <button id="align" type="button" class="btn" tooltip="true"
                   title="Align the query timeframe to the period.">
             <span class="control heavy">
-              <img class="toolbar icon faded" src="/telegraph/images/align.svg">
+              <img class="resting-icon faded" src="/telegraph/images/align.svg">
             </span>
           </button>
         </span>
 
         <span id="graph-advanced">
-          <img class="toolbar icon faded" src="/telegraph/images/cog-alt.svg">
+          <img class="resting-icon faded" src="/telegraph/images/cog-alt.svg">
         </span>
       </div>
     </div>
   </div>
 
-  <div id="graph-container">
-    <div id="toolbar">
-      <span id="load">
-        <img class="toolbar icon faded" src="/telegraph/images/list.svg">
-      </span>
-      <span id="edit">
-        <img class="toolbar icon faded" src="/telegraph/images/cog.svg">
-      </span>
-    </div>
-
-    <div id="alerts"></div>
-    <div id="graph-header">
-      <span id="refresh-graph">
-        <img class="icon faded" src="/telegraph/images/refresh.svg">
-      </span>
-      <div id="graph-title" class="dropdown">
-        <span id="graph-name" class="dropdown-toggle" data-toggle="dropdown">
-          <img class="icon" src="/telegraph/images/graph.svg">
-          <span id="name"></span>
-          <span id="edited" tooltip="true"
-                title="This document has unsaved changes. You can save using this dropdown menu, or with Command-s or Control-s.">
-            &mdash; edited
-          </span>
-        </span>
-        <ul id="graph-menu" class="dropdown-menu" role="menu">
-          <li><a id="rename"    href="#">Rename</a></li>
-          <li><a id="duplicate" href="#">Duplicate</a></li>
-          <li><a id="save"      href="#">Save</a></li>
-
-          <li class="divider"></li>
-          <li><a id="revert"    href="#">Revert</a></li>
-          <li><a id="close"     href="#">Close</a></li>
-          <li><a id="delete"    href="#">Delete</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div id="graph" class="chart"></div>
-  </div>
-
-  <div id="load-form" class="modal hide fade" tabindex="-1" role="dialog">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-      <h4>Load saved graph</h4>
-    </div>
-    <div class="modal-body">
-      <input id="load-name" type="text">
-    </div>
-    <div class="modal-footer">
-      <button id="load-submit" class="btn btn-primary">Load</button>
-    </div>
-  </div>
+  <div id="graph-container"></div>
 
   <div id="graph-advanced-form" class="modal hide fade" tabindex="-1" role="dialog">
     <div class="modal-header">

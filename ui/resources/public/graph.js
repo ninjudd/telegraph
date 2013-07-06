@@ -1,7 +1,12 @@
-require(["common", "telegraph/helpers"], function() {
+require(["common"], function() {
   require([
-    "telegraph", "telegraph/table", "resting/document", "underscore", "jquery_ui"
-  ], function(Telegraph, Table, Document, _, $) {
+    "telegraph", "telegraph/table", "resting/document", "underscore", "jquery_ui", "utils", "config"
+  ], function(Telegraph, Table, Document, _, $, Utils, config) {
+
+    if (config.telegraph) {
+      Telegraph.baseUrls       = config.telegraph.baseUrls;
+      Telegraph.defaultRefresh = config.telegraph.defaultRefresh;
+    }
 
     var targets = new Table("#targets", {
       class: "table table-striped",
@@ -20,7 +25,7 @@ require(["common", "telegraph/helpers"], function() {
       name:     "Graph",
     });
     doc.addToolbarButton("document-edit", "/telegraph/images/cog.svg");
-    doc.load(hash());
+    doc.load(Utils.hash());
 
     doc.afterDraw = function() {
       $(".table-options, .chart-options, .multi-options, .line-plus-bar-options").removeClass("visible-options");
@@ -220,7 +225,7 @@ require(["common", "telegraph/helpers"], function() {
       toggleEdit(!window.location.hash);
 
       var $select = $("#source");
-      _.each(telegraphSources, function (source) {
+      _.each(config.sources, function (source) {
         $select.append('<option value=' + source + '>' + source + '</option>');
       });
 
@@ -245,3 +250,5 @@ require(["common", "telegraph/helpers"], function() {
         }
       });
     });
+  });
+});

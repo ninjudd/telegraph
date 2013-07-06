@@ -20,7 +20,6 @@ define([
   };
 
   Dashboard.prototype.isEmpty = function () {
-    console.log(this.attrs.graphs.length)
     return this.attrs.graphs.length == 0;
   }
 
