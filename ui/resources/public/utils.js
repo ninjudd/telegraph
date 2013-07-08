@@ -13,11 +13,5 @@ define(["jquery"], function($) {
       e.stopPropagation();
       $(button).toggleClass("active");
     },
-
-    blurOnEnter: function(selector) {
-      $(selector).keydown(function(e) {
-        if(e.keyCode == 13) $(this).blur();
-      });
-    },
   };
 });

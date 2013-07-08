@@ -1,6 +1,6 @@
 define([
-  "telegraph/table", "resting", "jquery", "underscore_contrib", "underscore_string", "nvd3", "d3"
-], function(Table, Resting, $, _, nv, d3) {
+  "telegraph/table", "resting", "jquery", "nvd3", "d3", "underscore_contrib", "underscore_string",
+], function(Table, Resting, $, nv, d3, _) {
 
   var Telegraph = function() {
     this.attrs = {
@@ -402,7 +402,6 @@ define([
   };
 
   Telegraph.Dashboard.prototype.isEmpty = function () {
-    console.log(this.attrs.graphs.length)
     return this.attrs.graphs.length == 0;
   }
 

@@ -8,17 +8,6 @@ require(["common"], function() {
       Telegraph.defaultRefresh = config.telegraph.defaultRefresh;
     }
 
-    var targets = new Table("#targets", {
-      class: "table table-striped",
-      toCells: Table.deletable(targetCells),
-      sortable: true,
-      change: function() {
-        doc.attrs.targets = this.items;
-        redraw();
-      }
-    });
-    _.bindAll(targets);
-
     var doc = new Document({
       type:     Telegraph,
       selector: "#graph-container",
@@ -29,9 +18,9 @@ require(["common"], function() {
 
     doc.afterDraw = function() {
       $(".table-options, .chart-options, .multi-options, .line-plus-bar-options").removeClass("visible-options");
-      $(isTable(chart) ? ".table-options" : ".chart-options").addClass("visible-options");
-      if (isMulti(chart))       $(".multi-options").addClass("visible-options");
-      if (isLinePlusBar(chart)) $(".line-plus-bar-options").addClass("visible-options");
+      $(isTable(this.chart) ? ".table-options" : ".chart-options").addClass("visible-options");
+      if (isMulti(this.chart))       $(".multi-options").addClass("visible-options");
+      if (isLinePlusBar(this.chart)) $(".line-plus-bar-options").addClass("visible-options");
     };
 
     doc.afterLoad = function() {
@@ -41,10 +30,10 @@ require(["common"], function() {
       $("#refresh"  ).val(doc.model.attrs.refresh);
       $("#chart"    ).val(doc.model.attrs.chart);
       $("#variables").val(doc.model.attrs.variables);
-      flipClass("active", "#align",    doc.model.attrs.align);
-      flipClass("active", "#invert",   doc.model.attrs.invert);
-      flipClass("active", "#sum-cols", doc.model.attrs.sum_cols);
-      flipClass("active", "#sum-rows", doc.model.attrs.sum_rows);
+      Document.flipClass("active", "#align",    doc.model.attrs.align);
+      Document.flipClass("active", "#invert",   doc.model.attrs.invert);
+      Document.flipClass("active", "#sum-cols", doc.model.attrs.sum_cols);
+      Document.flipClass("active", "#sum-rows", doc.model.attrs.sum_rows);
 
       targets.replace(doc.model.attrs.targets);
     };
@@ -54,16 +43,27 @@ require(["common"], function() {
 
     doc.registerKeyboardShortcuts();
 
+    var targets = new Table("#targets", {
+      class: "table table-striped",
+      toCells: Table.deletable(targetCells),
+      sortable: true,
+      change: function() {
+        doc.model.attrs.targets = this.items;
+        doc.draw();
+      }
+    });
+    _.bindAll(targets);
+
     //======
 
     function targetCells(target) {
       var labelField = $("<span/>", {text: target.label, contenteditable: true})
-      blurOnEnter(labelField);
+      Document.blurOnEnter(labelField);
       labelField.blur(function(e) {
         var newLabel = $(this).text();
         if (newLabel != target.label) {
           target.label = newLabel;
-          redraw;
+          doc.draw();
         }
       });
 
@@ -104,12 +104,12 @@ require(["common"], function() {
       $("#source").val(target.source);
       $("#shift").val(target.shift);
 
-      flipClass("active", "#left",  target.axis != "right");
-      flipClass("active", "#right", target.axis == "right");
+      Document.flipClass("active", "#left",  target.axis != "right");
+      Document.flipClass("active", "#right", target.axis == "right");
 
-      flipClass("active", "#line", target.type == "line");
-      flipClass("active", "#bar",  target.type == "bar");
-      flipClass("active", "#area", target.type == "area");
+      Document.flipClass("active", "#line", target.type == "line");
+      Document.flipClass("active", "#bar",  target.type == "bar");
+      Document.flipClass("active", "#area", target.type == "area");
 
       return false;
     };
@@ -219,7 +219,7 @@ require(["common"], function() {
       });
 
       $(window).on("hashchange", function () {
-        load();
+        doc.load(Utils.hash());
       });
 
       toggleEdit(!window.location.hash);
