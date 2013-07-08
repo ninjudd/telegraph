@@ -18,10 +18,11 @@ require(["common"], function() {
     doc.load(Utils.hash());
 
     doc.afterDraw = function() {
+      var chart = this.model.attrs.chart;
       $(".table-options, .chart-options, .multi-options, .line-plus-bar-options").removeClass("visible-options");
-      $(isTable(this.chart) ? ".table-options" : ".chart-options").addClass("visible-options");
-      if (isMulti(this.chart))       $(".multi-options").addClass("visible-options");
-      if (isLinePlusBar(this.chart)) $(".line-plus-bar-options").addClass("visible-options");
+      $(isTable(chart) ? ".table-options" : ".chart-options").addClass("visible-options");
+      if (isMulti(chart))       $(".multi-options").addClass("visible-options");
+      if (isLinePlusBar(chart)) $(".line-plus-bar-options").addClass("visible-options");
     };
 
     doc.afterLoad = function() {
