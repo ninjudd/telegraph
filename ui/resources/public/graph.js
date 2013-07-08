@@ -12,9 +12,9 @@ require(["common"], function() {
       type:     Telegraph,
       selector: "#graph-container",
       name:     "Graph",
-      icon:     "/telegraph/images/graph.svg",
+      icon:     "/images/graph.svg",
     });
-    doc.addToolbarButton("document-edit", "/telegraph/images/cog.svg");
+    doc.addToolbarButton("edit", "/images/cog.svg");
     doc.load(Utils.hash());
 
     doc.afterDraw = function() {
@@ -80,7 +80,7 @@ require(["common"], function() {
       var chart = $("#chart").val() || "";
 
       if (isMulti(chart) || isLinePlusBar(chart)) {
-        cells.push({html: $("<img/>", {class: "icon", src: "/telegraph/images/chart-" + target.type + ".svg"})});
+        cells.push({html: $("<img/>", {class: "icon", src: "/images/chart-" + target.type + ".svg"})});
       }
       if (isMulti(chart)) {
         cells.push({html: (target.axis == "right" ? "&#x21E5;" : "&#x21E4;")});
