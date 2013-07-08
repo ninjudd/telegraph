@@ -12,6 +12,7 @@ require(["common"], function() {
       type:     Telegraph,
       selector: "#graph-container",
       name:     "Graph",
+      icon:     "/telegraph/images/graph.svg",
     });
     doc.addToolbarButton("document-edit", "/telegraph/images/cog.svg");
     doc.load(Utils.hash());
