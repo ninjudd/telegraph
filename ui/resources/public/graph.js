@@ -209,7 +209,7 @@ require(["common"], function() {
 
       $("#edit").click(function(e) {
         toggleEdit(!$("#edit-container").is(":visible"));
-        if (doc) setTimeout(function() { doc.updateChart() }, 500);
+        if (doc) setTimeout(function() { doc.model.updateChart() }, 500);
       });
 
       $("#graph-advanced").click(function(e) {
