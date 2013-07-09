@@ -12,19 +12,27 @@ define([
 
   Telegraph.maxDataPoints = 5000;
 
+  Telegraph.parseJSON = function(json) {
+    if (json) {
+      try {
+        return JSON.parse(json);
+      } catch (e) {
+        return;
+      }
+    } else {
+      return {};
+    }
+  };
+
   Telegraph.prototype.draw = function(selector) {
     var self = this;
 
     return jQuery.Deferred(function (promise) {
-      if (self.attrs.variables) {
-        try {
-          self.vars = JSON.parse(self.attrs.variables);
-        } catch (e) {
-          promise.reject("Error parsing JSON for macro varibles; " + e);
-          return;
-        }
-      } else {
-        self.vars = {};
+      self.vars = Telegraph.parseJSON(self.attrs.variables)
+
+      if (!self.vars) {
+        promise.reject("Error parsing JSON for macro varibles; " + e);
+        return;
       }
       if (!_.isArray(self.vars)) self.vars = [self.vars];
 
