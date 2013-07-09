@@ -15,10 +15,21 @@ require(["common"], function() {
       icon:     "/images/graph.svg",
     });
     doc.addToolbarButton("add-graph", "/images/chart-line.svg");
-    doc.load(Utils.path());
+
+    doc.afterDraw = function() {
+      $(".dashboard-graph").dblclick(function(e) {
+        var index = $(this).data("index");
+        var attrs = doc.model.attrs.graphs[index];
+        graphForm(index, attrs);
+      });
+    };
 
     doc.afterRename    = function() { Utils.pushPath(doc.model.id) };
     doc.afterDuplicate = function() { Utils.pushPath(doc.model.id) };
+
+    doc.registerKeyboardShortcuts();
+
+    doc.load(Utils.path());
 
     var graphNames = [];
     function graphForm(index, attrs) {
@@ -81,12 +92,6 @@ require(["common"], function() {
           doc.model.attrs.graphs[index] = opts;
         }
         doc.draw();
-
-        $(".dashboard-graph").dblclick(function(e) {
-          var index = $(this).data("index");
-          var attrs = doc.model.attrs.graphs[index];
-          graphForm(index, attrs);
-        });
       }
       $("#graph-form").modal("toggle");
     };

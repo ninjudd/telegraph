@@ -15,7 +15,6 @@ require(["common"], function() {
       icon:     "/images/graph.svg",
     });
     doc.addToolbarButton("edit", "/images/cog.svg");
-    doc.load(Utils.hash());
 
     doc.afterDraw = function() {
       var chart = this.model.attrs.chart;
@@ -44,6 +43,8 @@ require(["common"], function() {
     doc.afterDuplicate = function() { Utils.pushHash(doc.model.id) };
 
     doc.registerKeyboardShortcuts();
+
+    doc.load(Utils.hash());
 
     var targets = new Table("#targets", {
       class: "table table-striped",
