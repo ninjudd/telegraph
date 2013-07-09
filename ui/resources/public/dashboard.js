@@ -15,7 +15,10 @@ require(["common"], function() {
       icon:     "/images/graph.svg",
     });
     doc.addToolbarButton("add-graph", "/images/chart-line.svg");
-    doc.load(Utils.hash());
+    doc.load(Utils.path());
+
+    doc.afterRename    = function() { Utils.pushPath(doc.model.id) };
+    doc.afterDuplicate = function() { Utils.pushPath(doc.model.id) };
 
     var graphNames = [];
     function graphForm(index, attrs) {

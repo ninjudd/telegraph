@@ -1,11 +1,21 @@
 define(["jquery"], function($) {
   return {
-    pushHistory: function (name) {
+    hash: function() {
+      return window.location.hash.substr(1);
+    },
+
+    pushHash: function (name) {
       history.pushState(name, "", window.location.pathname + (name ? "#" + name : ""));
     },
 
-    hash: function() {
-      return window.location.hash.substr(1)
+    path: function() {
+      return _.rest(window.location.pathname.split("/"), 2).join("/");
+    },
+
+    pushPath: function (name) {
+      var path = window.location.pathname.split("/")
+      path[2] = name;
+      history.pushState(name, "", path.join("/"));
     },
 
     toggleButton: function (button, e) {
