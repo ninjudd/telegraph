@@ -9,5 +9,5 @@
        (resting "graphs")
        (resting "dashboards")
        (resources "/"))
-      (wrap-rewrites #"^/telegraph$"    "/graph.html"
-                     #"^/telegraph/\w*$" "/dashboard.html")))
+      (wrap-rewrites #"^/telegraph$"          "/graph.html"
+                     #"^/telegraph/[^\.\/]*$" "/dashboard.html")))
