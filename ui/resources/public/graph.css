@@ -13,6 +13,10 @@ body * {
   border-bottom: 1px solid #ddd;
 }
 
+#edit-container .btn {
+  margin-bottom: 10px;
+}
+
 #query-container {
   width: 38%;
   height: 220px;
@@ -197,12 +201,10 @@ select, input[type="text"] {
 
 .btn {
   padding: 0px 8px;
-  margin-bottom: 10px;
 }
 
 .btn-primary {
   padding: 0px 8px;
-  margin-bottom: 10px;
 }
 
 .btn:disabled {

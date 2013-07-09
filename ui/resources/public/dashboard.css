@@ -1,3 +1,9 @@
 #document-edit {
   display: none;
 }
+
+#style {
+  width: 300px;
+  height: 100px;
+  font-family: monospace;
+}

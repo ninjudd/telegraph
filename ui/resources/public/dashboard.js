@@ -12,29 +12,84 @@ require(["common"], function() {
       type:     Dashboard,
       selector: "#dashboard-container",
       name:     "Dashboard",
+      icon:     "/images/graph.svg",
     });
-    doc.addToolbarButton("add-graph", "/telegraph/images/chart-line.svg");
+    doc.addToolbarButton("add-graph", "/images/chart-line.svg");
     doc.load(Utils.hash());
 
     var graphNames = [];
-    function addGraphForm() {
-      $("#add-graph-form").modal('toggle').on('shown', function() {
-        $("#add-graph-name").val("").focus();
+    function graphForm(index, attrs) {
+      // Initialize fields.
+      attrs = attrs || {overrides: {}};
+
+      $("#graph-name").val(attrs.id);
+      $("#style").val(attrs.style);
+
+      _.each(["from", "until", "period", "variables", "chart"], function (key) {
+        $("#" + key).val(attrs.overrides[key]);
       });
+      _.each(["sum_rows", "sum_cols", "invert", "align"], function (key) {
+        Document.flipClass("active", "#" + key, attrs.overrides[key]);
+      });
+
+      // Show form.
+      $("#graph-form").modal('toggle').on('shown', function() {
+        $("#graph-name").focus();
+      })
+
+      if (_.isUndefined(index)) {
+        $("#graph-form").removeData("index");
+      } else {
+        $("#graph-form").data("index", index);
+      }
 
       // Load typeahead asynchronously.
       Telegraph.list().done(function(names) {
-        console.log("ta", names)
         graphNames = names;
       });
     };
 
-    $(document).ready(function() {
-      $("#add-graph").click(function(e) {
-        addGraphForm();
-      });
+    function graphSubmit() {
+      var id = $("#graph-name").val();
 
-      $("#add-graph-name").keydown(function(e) {
+      if (id) {
+        var overrides = {};
+        _.each(["from", "until", "period", "variables", "chart"], function (key) {
+          var val = $("#" + key).val();
+          if (val != "") overrides[key] = val;
+        });
+        if (overrides.chart) {
+          _.each(["sum_rows", "sum_cols", "invert", "align"], function (key) {
+            overrides[key] = $("#" + key).hasClass("active");
+          });
+        }
+
+        var opts = {
+          id: id,
+          overrides: overrides,
+        };
+        var style = $("#style").val();
+        if (style) opts.style = style;
+
+        var index = $("#graph-form").data("index");
+        if (_.isUndefined(index)) {
+          doc.model.attrs.graphs.push(opts);
+        } else {
+          doc.model.attrs.graphs[index] = opts;
+        }
+        doc.draw();
+
+        $(".dashboard-graph").dblclick(function(e) {
+          var index = $(this).data("index");
+          var attrs = doc.model.attrs.graphs[index];
+          graphForm(index, attrs);
+        });
+      }
+      $("#graph-form").modal("toggle");
+    };
+
+    $(document).ready(function() {
+      $("#graph-name").keydown(function(e) {
         if (e.keyCode == 13) {
           $("#variables").focus();
           return false;
@@ -47,28 +102,12 @@ require(["common"], function() {
         }
       });
 
-      $("#add-graph-submit").click(function(e) {
-        var overrides = {};
+      $("#add-graph").click(function(e) {
+        graphForm();
+      });
 
-        _.each(["from", "until", "period", "variables", "chart"], function (key) {
-          var val = $("#" + key).val();
-          if (val != "") overrides[key] = val;
-        });
-        if (overrides.chart) {
-          _.each(["sum_rows", "sum_cols", "invert", "align"], function (key) {
-            overrides[key] = $("#" + key).hasClass("active");
-          });
-        }
-
-        var opts = {
-          id: $("#add-graph-name").val(),
-          overrides: overrides,
-        };
-
-        dashboard.attrs.graphs.push(opts);
-        redraw();
-
-        $("#add-graph-form").modal("toggle");
+      $("#graph-form-submit").click(function(e) {
+        graphSubmit();
       });
     });
 

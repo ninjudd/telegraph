@@ -40,8 +40,8 @@ require(["common"], function() {
       targets.replace(doc.model.attrs.targets);
     };
 
-    doc.afterRename    = function() { pushHistory(doc.model.id) };
-    doc.afterDuplicate = function() { pushHistory(doc.model.id) };
+    doc.afterRename    = function() { Utils.pushHistory(doc.model.id) };
+    doc.afterDuplicate = function() { Utils.pushHistory(doc.model.id) };
 
     doc.registerKeyboardShortcuts();
 
