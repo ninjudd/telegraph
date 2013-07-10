@@ -42,6 +42,8 @@ require(["common"], function() {
     doc.afterRename    = function() { Utils.pushHash(doc.model.id) };
     doc.afterDuplicate = function() { Utils.pushHash(doc.model.id) };
 
+    doc.scrubName = Utils.scrubName;
+
     doc.registerKeyboardShortcuts();
 
     doc.load(Utils.hash());

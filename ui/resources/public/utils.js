@@ -18,6 +18,10 @@ define(["jquery"], function($) {
       history.pushState(name, "", path.join("/"));
     },
 
+    scrubName: function(name) {
+      return name.replace(/\s/g, "-").replace(/[\/\.]/g, ":");
+    },
+
     toggleButton: function (button, e) {
       // Manually toggle bootstrap button.
       e.stopPropagation();

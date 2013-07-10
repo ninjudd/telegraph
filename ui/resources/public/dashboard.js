@@ -27,6 +27,8 @@ require(["common"], function() {
     doc.afterRename    = function() { Utils.pushPath(doc.model.id) };
     doc.afterDuplicate = function() { Utils.pushPath(doc.model.id) };
 
+    doc.scrubName = Utils.scrubName;
+
     doc.registerKeyboardShortcuts();
 
     doc.load(Utils.path());
