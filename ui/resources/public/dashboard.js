@@ -98,6 +98,18 @@ require(["common"], function() {
       $("#graph-form").modal("toggle");
     };
 
+    function graphDelete() {
+      var index = $("#graph-form").data("index");
+      if (!_.isUndefined(index)) {
+        doc.model.attrs.graphs = _.reject(doc.model.attrs.graphs, function(item, i) {
+          return i == index;
+        });
+        console.log(doc.model.attrs.graphs);
+        doc.draw();
+      }
+      $("#graph-form").modal("toggle");
+    };
+
     $(document).ready(function() {
       $("#graph-name").keydown(function(e) {
         if (e.keyCode == 13) {
@@ -118,6 +130,11 @@ require(["common"], function() {
 
       $("#graph-form-submit").click(function(e) {
         graphSubmit();
+      });
+
+      $("#graph-form-delete").click(function(e) {
+console.log("foo")
+        graphDelete();
       });
     });
 
