@@ -24,6 +24,17 @@ require(["common"], function() {
       if (isLinePlusBar(chart)) $(".line-plus-bar-options").addClass("visible-options");
     };
 
+    var targets = new Table("#targets", {
+      class: "table table-striped",
+      toCells: Table.deletable(targetCells),
+      sortable: true,
+      change: function() {
+        doc.model.attrs.targets = this.items;
+        doc.draw();
+      }
+    });
+    _.bindAll(targets);
+
     doc.afterLoad = function() {
       $("#from"     ).val(doc.model.attrs.from);
       $("#until"    ).val(doc.model.attrs.until);
@@ -47,17 +58,6 @@ require(["common"], function() {
     doc.registerKeyboardShortcuts();
 
     doc.load(Utils.hash());
-
-    var targets = new Table("#targets", {
-      class: "table table-striped",
-      toCells: Table.deletable(targetCells),
-      sortable: true,
-      change: function() {
-        doc.model.attrs.targets = this.items;
-        doc.draw();
-      }
-    });
-    _.bindAll(targets);
 
     //======
 
