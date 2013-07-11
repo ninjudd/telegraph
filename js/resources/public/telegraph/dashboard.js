@@ -17,14 +17,18 @@ define([
   };
 
   Dashboard.prototype.draw = function (selector) {
-    $(selector).empty();
+    var self = this;
     var attrs = this.attrs;
+    this.graphs = [];
+
+    $(selector).empty();
     return $.when.apply($, _.map(attrs.graphs, function(graph, i) {
       var id  = "graph-" + i;
       var css = Dashboard.css(attrs.style, graph.style);
       var div = $("<div/>", {id: id, class: "dashboard-graph", css: css});
       $(selector).append(div.data("index", i));
       return Telegraph.load(graph.id, graph.overrides).then(function(telegraph) {
+        self.graphs[i] = telegraph;
         telegraph.draw("#" + id);
       });
     }));
@@ -35,7 +39,9 @@ define([
   }
 
   Dashboard.prototype.clearRefresh = function () {
-    _.each(this.attrs.graphs, Telegraph.prototype.clearRefresh.call);
+    _.each(this.graphs, function(graph) {
+      graph.clearRefresh();
+    });
   };
 
   return Dashboard;
