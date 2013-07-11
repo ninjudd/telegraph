@@ -1,4 +1,4 @@
-define(["underscore", "jquery"], function(_, $) {
+define(["underscore", "jquery_ui"], function(_, $) {
 
   var Table = function (selector, opts) {
     opts = opts || {};
