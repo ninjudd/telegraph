@@ -27,7 +27,6 @@ require(["common"], function() {
       }
     });
 
-
     doc.addToolbarButton("add-graph", "/images/chart-line.svg");
 
     doc.afterDraw = function() {
