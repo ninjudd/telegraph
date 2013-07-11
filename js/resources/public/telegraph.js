@@ -183,8 +183,8 @@ define([
 
   Telegraph.prototype.tableDraw = function(selector, data) {
     var classes = "telegraph-table table table-striped";
-    classes += (this.attrs.invert)  ? " inverted"   : " standard";
-    classes += (this.attrs.sum_cols) ? " sum-cols"   : "";
+    classes += (this.attrs.invert)   ? " inverted" : " standard";
+    classes += (this.attrs.sum_cols) ? " sum-cols" : "";
     classes += (this.attrs.sum_rows) ? " sum-rows" : "";
 
     var items = this.tableItems(data);
