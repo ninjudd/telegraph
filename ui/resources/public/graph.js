@@ -48,6 +48,7 @@ require(["common"], function() {
       Document.flipClass("active", "#sum-rows", doc.model.attrs.sum_rows);
 
       targets.replace(doc.model.attrs.targets);
+      Utils.pushHash(doc.model.id);
     };
 
     doc.afterRename    = function() { Utils.pushHash(doc.model.id) };

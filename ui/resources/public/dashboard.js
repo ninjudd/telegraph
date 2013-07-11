@@ -38,6 +38,10 @@ require(["common"], function() {
       });
     };
 
+    doc.afterLoad = function() {
+      doc.draw();
+      Utils.pushPath(doc.model.id);
+    };
     doc.afterRename    = function() { Utils.pushPath(doc.model.id) };
     doc.afterDuplicate = function() { Utils.pushPath(doc.model.id) };
 
