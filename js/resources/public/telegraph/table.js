@@ -87,7 +87,7 @@ define(["underscore", "jquery_ui"], function(_, $) {
           return ui;
         },
         cancel: '[contenteditable]',
-        update: function( event, ui ) {
+        update: function(e) {
           var order = $(this).sortable('toArray');
           self.replace(_.map(order, function(i) {
             return self.items[i]

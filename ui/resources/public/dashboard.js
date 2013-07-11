@@ -14,6 +14,20 @@ require(["common"], function() {
       name:     "Dashboard",
       icon:     "/images/graph.svg",
     });
+
+    doc.$("#body").sortable({
+      update: function(e) {
+        var order = $(this).sortable('toArray');
+        var attrs = doc.model.attrs;
+        attrs.graphs = _.map(order, function(id) {
+          var i = id.split("-")[1];
+          return attrs.graphs[i]
+        });
+        doc.draw();
+      }
+    });
+
+
     doc.addToolbarButton("add-graph", "/images/chart-line.svg");
 
     doc.afterDraw = function() {

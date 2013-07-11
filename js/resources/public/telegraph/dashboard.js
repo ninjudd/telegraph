@@ -1,5 +1,5 @@
 define([
-  "telegraph", "resting", "jquery", "underscore"
+  "telegraph", "resting", "jquery_ui", "underscore"
 ], function(Telegraph, Resting, $, _) {
 
   var Dashboard = function () {
@@ -18,13 +18,13 @@ define([
 
   Dashboard.prototype.draw = function (selector) {
     var self = this;
-    var attrs = this.attrs;
     this.graphs = [];
 
     $(selector).empty();
-    return $.when.apply($, _.map(attrs.graphs, function(graph, i) {
+
+    return $.when.apply($, _.map(this.attrs.graphs, function(graph, i) {
       var id  = "graph-" + i;
-      var css = Dashboard.css(attrs.style, graph.style);
+      var css = Dashboard.css(self.attrs.style, graph.style);
       var div = $("<div/>", {id: id, class: "dashboard-graph", css: css});
       $(selector).append(div.data("index", i));
       return Telegraph.load(graph.id, graph.overrides).then(function(telegraph) {
