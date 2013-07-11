@@ -19,7 +19,9 @@ define(["jquery"], function($) {
     },
 
     scrubName: function(name) {
-      return name.replace(/\s/g, "-").replace(/[\/\.]/g, ":");
+      if (name) {
+        return name.replace(/\s/g, "-").replace(/[\/\.]/g, ":");
+      }
     },
 
     toggleButton: function (button, e) {
