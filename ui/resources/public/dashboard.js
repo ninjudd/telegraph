@@ -16,6 +16,7 @@ require(["common"], function() {
     });
 
     doc.$("#body").sortable({
+      cancel: '.dropdown',
       update: function(e) {
         var order = $(this).sortable('toArray');
         var attrs = doc.model.attrs;
@@ -57,6 +58,7 @@ require(["common"], function() {
 
       $("#graph-name").val(attrs.id);
       $("#style").val(attrs.style);
+      $("#label").val(attrs.label);
 
       _.each(["from", "until", "period", "variables", "chart"], function (key) {
         $("#" + key).val(attrs.overrides[key]);
@@ -101,8 +103,11 @@ require(["common"], function() {
           id: id,
           overrides: overrides,
         };
-        var style = $("#style").val();
-        if (style) opts.style = style;
+
+        _.each(["style", "label"], function (key) {
+          var val = $("#" + key).val();
+          if (val) opts[key] = val;
+        });
 
         var index = $("#graph-form").data("index");
         if (_.isUndefined(index)) {

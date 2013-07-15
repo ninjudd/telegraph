@@ -197,12 +197,14 @@ define([
     })
     _.bindAll(this.table);
     this.table.update();
-    this.addTableDropdown(data);
+    this.addTableTitle(data);
   };
 
-  Telegraph.prototype.addTableDropdown = function(data) {
+  Telegraph.prototype.addTableTitle = function(data) {
     var self = this;
-    var link = $("<span/>", {class: "dropdown-toggle", "data-toggle": "dropdown", html: "&#x25BE;"});
+    var link = $("<span/>", {class: "dropdown-toggle", "data-toggle": "dropdown"});
+    link.append($("<span/>", {class: "chart-label table-label"}));
+    link.append("&#x25BE;");
     var menu = $("<ul/>", {id: "table-menu", class: "dropdown-menu", role: "menu"});
     _.each(this.vars, function(v, i) {
       var suffix = v._label || (i == 0 ? "" : i + 1);
@@ -237,7 +239,8 @@ define([
     var tickCount  = this.tickCount || Math.floor($container.width() / 100);
     var scale      = this.scale     || Telegraph.timeScale(data);
 
-    $container.append("<svg><svg/>");
+    $container.append($("<div/>", {class: "graph-label"}).append($("<span/>", {class: "chart-label"})));
+    $container.append("<svg></svg>");
     this.svg = d3.select(selector).select("svg");
     this.nvChart = Telegraph.makeChart(this.attrs.chart, scale, tickCount);
 
@@ -307,7 +310,7 @@ define([
       if (self.attrs.chart == 'table') {
         self.table.items = self.tableItems(data);
         self.table.update();
-        self.addTableDropdown(data);
+        self.addTableTitle(data);
       } else {
         self.svg.datum(data);
         self.updateChart();

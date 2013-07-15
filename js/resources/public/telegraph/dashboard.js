@@ -37,7 +37,9 @@ define([
         var css = Dashboard.css([self.attrs.style, graph.style], telegraph.attrs.chart);
         div.css(css);
         self.graphs[i] = telegraph;
-        telegraph.draw("#" + id);
+        telegraph.draw("#" + id).done(function() {
+          if (graph.label) div.find(".chart-label").text(graph.label);
+        });
       });
     }));
   };
