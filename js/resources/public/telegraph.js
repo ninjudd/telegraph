@@ -1,6 +1,6 @@
 define([
   "telegraph/table", "resting", "jquery", "nvd3", "d3", "underscore_contrib", "underscore_string",
-], function(Table, Resting, $, nv, d3, _) {
+], function(Table, Resting, $, nv, d3, _, str) {
 
   var Telegraph = function() {
     this.attrs = {
@@ -117,7 +117,7 @@ define([
     var formatVal  = function(val) {
       return _.map(val, function(v, i) {
         var format = self.vars[i]._format;
-        return format ? _.str.sprintf(format, v) : v;
+        return format ? str.sprintf(format, v) : v;
       });
     };
 

@@ -20,7 +20,7 @@ requirejs.config({
       deps: ['underscore'],
     },
     underscore_string: {
-      exports: '_',
+      exports: '_.str',
       deps: ['underscore'],
     },
     backbone: {
