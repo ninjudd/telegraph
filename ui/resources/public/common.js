@@ -10,6 +10,7 @@ requirejs.config({
     d3:                 "//cdnjs.cloudflare.com/ajax/libs/d3/2.10.0/d3.v2",
     nvd3:               "//cdnjs.cloudflare.com/ajax/libs/nvd3/0.9/nv.d3",
     backbone:           "//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone",
+    chosen:             "//cdnjs.cloudflare.com/ajax/libs/chosen/0.9.15/chosen.jquery.min"
   },
   shim: {
     underscore: {
