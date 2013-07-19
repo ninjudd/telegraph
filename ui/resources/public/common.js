@@ -16,7 +16,7 @@ requirejs.config({
     underscore: {
       exports: '_',
     },
-    underscore_contrib: { 
+    underscore_contrib: {
       exports: '_',
       deps: ['underscore'],
     },
@@ -40,6 +40,9 @@ requirejs.config({
     nvd3: {
       exports: 'nv',
       deps: ['d3', 'backbone'],
+    },
+    chosen: {
+      deps: ['jquery'],
     },
   },
 });

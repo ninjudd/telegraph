@@ -19,3 +19,8 @@
 .table-label {
   padding-right: 10px;
 }
+
+#graph_name_chzn {
+  width: 150px !important;
+  margin-bottom: 10px;
+}

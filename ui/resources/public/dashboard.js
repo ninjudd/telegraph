@@ -1,6 +1,6 @@
 require(["common"], function() {
   require([
-    "telegraph", "telegraph/dashboard", "resting/document", "underscore", "jquery_ui", "utils", "config"
+    "telegraph", "telegraph/dashboard", "resting/document", "underscore", "jquery_ui", "utils", "config", "chosen"
   ], function(Telegraph, Dashboard, Document, _, $, Utils, config) {
 
     if (config.telegraph) {
@@ -56,7 +56,7 @@ require(["common"], function() {
       // Initialize fields.
       attrs = attrs || {overrides: {}};
 
-      $("#graph-name").val(attrs.id);
+      //$("#graph-name").val(attrs.id);
       $("#style").val(attrs.style);
       $("#label").val(attrs.label);
 
@@ -69,7 +69,16 @@ require(["common"], function() {
 
       // Show form.
       $("#graph-form").modal('toggle').on('shown', function() {
-        $("#graph-name").focus();
+        graphNames = graphNames || [];
+        $("#graph-name").empty();
+        $.each(graphNames.sort(), function(k, v) {
+          $("#graph-name").append($("<option>", {value: v}).text(v));
+        });
+        $("#graph-name").trigger("liszt:updated");
+        $('#graph-form .chzn-drop .chzn-search input[type="text"]').focus();
+        if (attrs.id) {
+          $("#graph-name select option[value='" + attrs.id + "']").trigger("liszt.activate");
+        }
       })
 
       if (_.isUndefined(index)) {
@@ -133,18 +142,7 @@ require(["common"], function() {
     };
 
     $(document).ready(function() {
-      $("#graph-name").keydown(function(e) {
-        if (e.keyCode == 13) {
-          $("#variables").focus();
-          return false;
-        }
-      }).autocomplete({
-        minLength: 0,
-        source: function(request, response) {
-          var matches = _.filter(graphNames, function(name) { return name.indexOf(request.term) >= 0 });
-          response(matches);
-        }
-      });
+      $("#graph-name").chosen({width: "150px"});
 
       $("#add-graph").click(function(e) {
         graphForm();
@@ -159,6 +157,5 @@ console.log("foo")
         graphDelete();
       });
     });
-
   });
 });
