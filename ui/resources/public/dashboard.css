@@ -1,3 +1,8 @@
+#new-graph {
+  float: right;
+  font-size: 12px;
+}
+
 #document-edit {
   display: none;
 }
@@ -21,6 +26,10 @@
 }
 
 #graph_name_chzn {
-  width: 150px !important;
+  width: 300px !important;
   margin-bottom: 10px;
+}
+
+#label {
+  width: 300px;
 }
