@@ -179,25 +179,25 @@ require(["common"], function() {
       });
 
       $("#align").click(function(e) {
-        toggleButton(this, e);
+        Utils.toggleButton(this, e);
         doc.model.attrs.align = $(this).hasClass("active");
         doc.draw();
       });
 
       $("#invert").click(function(e) {
-        toggleButton(this, e);
+        Utils.toggleButton(this, e);
         doc.model.attrs.invert = $(this).hasClass("active");
         doc.draw();
       });
 
       $("#sum-cols").click(function(e) {
-        toggleButton(this, e);
+        Utils.toggleButton(this, e);
         doc.model.attrs.sum_cols = $(this).hasClass("active");
         doc.draw();
       });
 
       $("#sum-rows").click(function(e) {
-        toggleButton(this, e);
+        Utils.toggleButton(this, e);
         doc.model.attrs.sum_rows = $(this).hasClass("active");
         doc.draw();
       });
