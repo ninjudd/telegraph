@@ -1,4 +1,4 @@
-(defproject org.flatland/telegraph-ui "0.4.2"
+(defproject org.flatland/telegraph-ui "0.4.3"
   :description "Telegraph web interface."
   :url "http://github.com/flatland/telegraph"
   :license {:name "Eclipse Public License"
