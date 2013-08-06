@@ -74,11 +74,11 @@ require(["common"], function() {
         $.each(graphNames.sort(), function(k, v) {
           $("#graph-name").append($("<option>", {value: v}).text(v));
         });
+        if (attrs.id) {
+          $("#graph-name").val(attrs.id)
+        }
         $("#graph-name").trigger("liszt:updated");
         $('#graph-form .chzn-drop .chzn-search input[type="text"]').focus();
-        if (attrs.id) {
-          $("#graph-name select option[value='" + attrs.id + "']").trigger("liszt.activate");
-        }
       })
 
       if (_.isUndefined(index)) {
