@@ -64,7 +64,7 @@ require(["common"], function() {
         $("#" + key).val(attrs.overrides[key]);
       });
       _.each(["sum_rows", "sum_cols", "invert", "align"], function (key) {
-        Document.flipClass("active", "#" + key, attrs.overrides[key]);
+        Document.flipClass("#" + key, attrs.overrides[key], "active");
       });
 
       // Show form.
@@ -153,7 +153,6 @@ require(["common"], function() {
       });
 
       $("#graph-form-delete").click(function(e) {
-console.log("foo")
         graphDelete();
       });
     });

@@ -42,10 +42,10 @@ require(["common"], function() {
       $("#refresh"  ).val(doc.model.attrs.refresh);
       $("#chart"    ).val(doc.model.attrs.chart);
       $("#variables").val(doc.model.attrs.variables);
-      Document.flipClass("active", "#align",    doc.model.attrs.align);
-      Document.flipClass("active", "#invert",   doc.model.attrs.invert);
-      Document.flipClass("active", "#sum-cols", doc.model.attrs.sum_cols);
-      Document.flipClass("active", "#sum-rows", doc.model.attrs.sum_rows);
+      Document.flipClass("#align",    doc.model.attrs.align,    "active");
+      Document.flipClass("#invert",   doc.model.attrs.invert,   "active");
+      Document.flipClass("#sum-cols", doc.model.attrs.sum_cols, "active");
+      Document.flipClass("#sum-rows", doc.model.attrs.sum_rows, "active");
 
       targets.replace(doc.model.attrs.targets);
       Utils.pushHash(doc.model.id);
@@ -110,12 +110,12 @@ require(["common"], function() {
       $("#source").val(target.source);
       $("#shift").val(target.shift);
 
-      Document.flipClass("active", "#left",  target.axis != "right");
-      Document.flipClass("active", "#right", target.axis == "right");
+      Document.flipClass("#left",  target.axis != "right", "active");
+      Document.flipClass("#right", target.axis == "right", "active");
 
-      Document.flipClass("active", "#line", target.type == "line");
-      Document.flipClass("active", "#bar",  target.type == "bar");
-      Document.flipClass("active", "#area", target.type == "area");
+      Document.flipClass("#line", target.type == "line", "active");
+      Document.flipClass("#bar",  target.type == "bar",  "active");
+      Document.flipClass("#area", target.type == "area", "active");
 
       return false;
     };
