@@ -48,9 +48,9 @@ define([
     return this.attrs.graphs.length == 0;
   }
 
-  Dashboard.prototype.clearRefresh = function () {
+  Dashboard.prototype.clear = function () {
     _.each(this.graphs, function(graph) {
-      graph.clearRefresh();
+      graph.clear();
     });
   };
 

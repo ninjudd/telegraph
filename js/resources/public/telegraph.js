@@ -37,7 +37,7 @@ define([
       if (!_.isArray(self.vars)) self.vars = [self.vars];
 
       $(selector).empty();
-      self.clearRefresh();
+      self.clear();
 
       if (self.attrs.targets && self.attrs.targets.length > 0) {
         self.fetchData().done(function(data) {
@@ -75,7 +75,7 @@ define([
     return _.contains(['table', 'stackedAreaChart', 'multiBarChart'], this.attrs.chart);
   };
 
-  Telegraph.prototype.clearRefresh = function() {
+  Telegraph.prototype.clear = function() {
     if (this.refreshInterval) clearInterval(this.refreshInterval);
   };
 
