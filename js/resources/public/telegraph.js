@@ -309,7 +309,7 @@ define([
   Telegraph.prototype.update = function() {
     var self = this;
 
-    this.fetchData(function(data) {
+    this.fetchData().done(function(data) {
       if (self.attrs.chart == 'table') {
         self.table.items = self.tableItems(data);
         self.table.update();
