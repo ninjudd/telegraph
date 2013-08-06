@@ -377,23 +377,26 @@ define([
       url: url,
       data: opts
     }).done(function(results) {
-      _.each(results, function(val, i) {
-        var datapoints = _.map(val.datapoints, function(d) {
+      var targetsByQuery = _.groupBy(targets, function(t) { return t.query });
+
+      _.each(results, function(result) {
+        var datapoints = _.map(result.datapoints, function(d) {
           return { x: d[1] || 0, y: d[0] || 0 }
         });
-        var target = targets[i];
-        var item = data[target.targetNum] || {
-          bar:     target.base.type == 'bar',
-          type:    target.base.type,
-          yAxis:   target.base.axis == 'right' ? 2 : 1,
-          results: [],
-        };
-        if (target.varNum == 0) {
-          item.key    = target.label;
-          item.values = datapoints;
-        }
-        item.results[target.varNum] = datapoints;
-        data[target.targetNum] = item;
+        _.each(targetsByQuery[result.target], function(target) {
+          var item = data[target.targetNum] || {
+            bar:     target.base.type == 'bar',
+            type:    target.base.type,
+            yAxis:   target.base.axis == 'right' ? 2 : 1,
+            results: [],
+          };
+          if (target.varNum == 0) {
+            item.key    = target.label;
+            item.values = datapoints;
+          }
+          item.results[target.varNum] = datapoints;
+          data[target.targetNum] = item;
+        });
       });
     });
   };
