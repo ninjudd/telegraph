@@ -24,11 +24,31 @@ define([
     }
   };
 
+  Telegraph.prototype.overrideAttrs = function(overrides) {
+    if (overrides) {
+      this.attrs = _.extend(this.attrs, overrides, {variables: this.attrs.variables});
+      this.variableOverrides = overrides.variables;
+    }
+  };
+
+  Telegraph.prototype.parseVariables = function() {
+    var variables = Telegraph.parseJSON(this.attrs.variables);
+    var overrides = Telegraph.parseJSON(this.variableOverrides);
+
+    // Allow overriding specific variables without overriding all of them.
+    if (!_.isArray(variables)) variables = [variables];
+    if (!_.isArray(overrides)) overrides = _.map(variables, function() { return overrides });
+
+    return _.map(variables, function(variable, i) {
+      return _.extend(variable, overrides[i]);
+    });
+  }
+
   Telegraph.prototype.draw = function(selector) {
     var self = this;
 
     return jQuery.Deferred(function (promise) {
-      self.vars = Telegraph.parseJSON(self.attrs.variables)
+      self.vars = self.parseVariables();
 
       if (!self.vars) {
         promise.reject("Error parsing JSON for macro varibles; " + e);
