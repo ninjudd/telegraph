@@ -355,9 +355,9 @@ define([
       return _.mapcat(self.vars, function(vars, varNum) {
         return {
           source:    self.subVariables(target.source, vars),
-          query:     self.subVariables(target.query, vars) + (vars._transform || ""),
-          label:     self.subVariables(target.label, vars),
-          shift:     self.subVariables(target.shift, vars),
+          query:     self.subVariables(target.query,  vars) + (vars._transform || ""),
+          label:     self.subVariables(target.label,  vars),
+          shift:     self.subVariables(target.shift,  vars),
           targetNum: targetNum,
           varNum:    varNum,
           index:     count++,
