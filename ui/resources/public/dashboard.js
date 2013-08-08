@@ -51,12 +51,15 @@ require(["common"], function() {
 
     doc.load(Utils.path());
 
+    function setViewLink(id) {
+      $("#view-graph").attr("href", "/telegraph/graph#" + id);
+    };
+
     var graphNames = [];
     function graphForm(index, attrs) {
       // Initialize fields.
       attrs = attrs || {overrides: {}};
 
-      //$("#graph-name").val(attrs.id);
       $("#style").val(attrs.style);
       $("#label").val(attrs.label);
 
@@ -69,14 +72,14 @@ require(["common"], function() {
 
       // Show form.
       $("#graph-form").modal('toggle').on('shown', function() {
-        graphNames = graphNames || [];
+        graphNames = (graphNames || []).sort();
         $("#graph-name").empty();
-        $.each(graphNames.sort(), function(k, v) {
+        $.each(graphNames, function(k, v) {
           $("#graph-name").append($("<option>", {value: v}).text(v));
         });
-        if (attrs.id) {
-          $("#graph-name").val(attrs.id)
-        }
+        if (attrs.id) $("#graph-name").val(attrs.id);
+        setViewLink(attrs.id || _.first(graphNames));
+
         $("#graph-name").trigger("liszt:updated");
         $('#graph-form .chzn-drop .chzn-search input[type="text"]').focus();
       })
@@ -143,6 +146,10 @@ require(["common"], function() {
 
     $(document).ready(function() {
       $("#graph-name").chosen({width: "150px"});
+
+      $("#graph-name").change(function(e) {
+        setViewLink($(this).val());
+      });
 
       $("#add-graph").click(function(e) {
         graphForm();

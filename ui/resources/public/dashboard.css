@@ -1,6 +1,10 @@
-#new-graph {
+#graph-links {
   float: right;
   font-size: 12px;
+}
+
+#new-graph {
+  padding-left: 5px;
 }
 
 #document-edit {
