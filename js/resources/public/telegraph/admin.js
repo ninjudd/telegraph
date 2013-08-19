@@ -67,8 +67,8 @@ Admin.prototype.addTree = function(selector, type) {
   this.queryData = [queries];
   this.treeSelector = selector;
   this.queryTree = nv.models.indentedTree().tableClass('table table-striped') //for bootstrap styling
-  this.queryTree.iconOpen('/telegraph/images/grey-plus.png')
-  this.queryTree.iconClose('/telegraph/images/grey-minus.png')
+  this.queryTree.iconOpen('/images/grey-plus.png')
+  this.queryTree.iconClose('/images/grey-minus.png')
   this.queryTree.columns([
     { key: 'name',
       type: 'text',
