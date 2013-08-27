@@ -36,7 +36,7 @@ require(["common"], function() {
     _.bindAll(targets);
 
     doc.afterLoad = function() {
-      $("#from"     ).val(doc.model.attrs.from);
+      $("#span"     ).val(doc.model.attrs.span);
       $("#until"    ).val(doc.model.attrs.until);
       $("#period"   ).val(doc.model.attrs.period);
       $("#refresh"  ).val(doc.model.attrs.refresh);
@@ -151,8 +151,8 @@ require(["common"], function() {
         });
       });
 
-      $("#from").change(function() {
-        doc.model.attrs.from = $(this).val();
+      $("#span").change(function() {
+        doc.model.attrs.span = $(this).val();
         doc.draw();
       });
 

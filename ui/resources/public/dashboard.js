@@ -55,6 +55,7 @@ require(["common"], function() {
       $("#view-graph").attr("href", "/telegraph/graph#" + id);
     };
 
+    var graphVars = ["span", "until", "period", "variables", "chart"];
     var graphNames = [];
     function graphForm(index, attrs) {
       // Initialize fields.
@@ -63,7 +64,7 @@ require(["common"], function() {
       $("#style").val(attrs.style);
       $("#label").val(attrs.label);
 
-      _.each(["from", "until", "period", "variables", "chart"], function (key) {
+      _.each(graphVars, function (key) {
         $("#" + key).val(attrs.overrides[key]);
       });
       _.each(["sum_rows", "sum_cols", "invert", "align"], function (key) {
@@ -101,7 +102,7 @@ require(["common"], function() {
 
       if (id) {
         var overrides = {};
-        _.each(["from", "until", "period", "variables", "chart"], function (key) {
+        _.each(graphVars, function (key) {
           var val = $("#" + key).val();
           if (val != "") overrides[key] = val;
         });
