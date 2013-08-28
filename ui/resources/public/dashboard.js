@@ -163,7 +163,6 @@ require(["common"], function() {
         doc.model.attrs.graphs = _.reject(doc.model.attrs.graphs, function(item, i) {
           return i == index;
         });
-        console.log(doc.model.attrs.graphs);
         doc.draw();
       }
       $("#graph-form").modal("toggle");
