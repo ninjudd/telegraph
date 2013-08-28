@@ -24,10 +24,12 @@ define([
   };
 
   Dashboard.prototype.overrides = function (graph) {
-    return _.extend({
-      span:  this.attrs.span,
-      until: this.attrs.until,
-    }, graph.overrides);
+    var self = this;
+    var overrides = _.object(_.keep(["span", "until"], function(key) {
+      var val = self.attrs[key];
+      if (val) return [key, val];
+    }));
+    return _.extend(overrides, graph.overrides);
   };
 
   Dashboard.prototype.draw = function (selector) {
