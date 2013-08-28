@@ -2,7 +2,7 @@
   text-align: right;
 }
 
-.telegraph-table tr:first-child td {
+.telegraph-table tr:first-child th {
   font-weight: bold;
   text-align: center;
   border-bottom: double 3px #ccc;

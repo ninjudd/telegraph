@@ -32,7 +32,7 @@ define(["underscore", "jquery_ui"], function(_, $) {
   Table.makeRow = function(cells, i) {
     var tr = $("<tr/>", {id: i});
     _.each(cells, function(cell) {
-      tr.append($("<td/>", cell));
+      tr.append($(i == 0 ? "<th/>" : "<td/>", cell));
     });
     return tr;
   };
@@ -79,7 +79,7 @@ define(["underscore", "jquery_ui"], function(_, $) {
     table.append.apply(table, _.mapcat(this.items, this.toRows));
 
     if (this.sortable) {
-      table.find("tbody").sortable({
+      table.sortable({
         // Keep table cells from collapsing when reordering.
         // http://www.foliotek.com/devblog/make-table-rows-sortable-using-jquery-ui-sortable
         helper: function(e, ui) {
