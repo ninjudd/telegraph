@@ -30,12 +30,34 @@ require(["common"], function() {
 
     doc.addToolbarButton("add-graph", "/images/chart-line.svg");
 
+    function syncColumnWidths(selector) {
+      var widths = []
+      var tables = $(selector);
+
+      tables.width("auto");
+
+      tables.each(function(i, table) {
+        $(table).find("tr").first().find("th").each(function(j, cell) {
+          widths[j] = Math.max(widths[j] || 0, $(cell).outerWidth());
+        });
+      });
+
+      tables.each(function(i, table) {
+        $(table).find("tr").first().find("th").each(function(j, cell) {
+          var w = widths[j];
+          $(cell).css({minWidth: w, maxWidth: w});
+        });
+      });
+    };
+
     doc.afterDraw = function() {
       $(".dashboard-graph").dblclick(function(e) {
         var index = $(this).data("index");
         var attrs = doc.model.attrs.graphs[index];
         graphForm(index, attrs);
       });
+
+      syncColumnWidths(".telegraph-table");
     };
 
     doc.afterLoad = function() {
