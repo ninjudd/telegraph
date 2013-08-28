@@ -7,6 +7,7 @@ define([
       chart:   "lineChart",
       targets: []
     };
+    this.revision = 0;
   };
   Resting(Telegraph, {baseUrl: "/graphs"});
 
@@ -328,15 +329,18 @@ define([
 
   Telegraph.prototype.update = function() {
     var self = this;
+    var revision = this.revision++;
 
     this.fetchData().done(function(data) {
-      if (self.attrs.chart == 'table') {
-        self.table.items = self.tableItems(data);
-        self.table.update();
-        self.addTableTitle(data);
-      } else {
-        self.svg.datum(data);
-        self.updateChart();
+      if (revision == self.revision) {
+        if (self.attrs.chart == 'table') {
+          self.table.items = self.tableItems(data);
+          self.table.update();
+          self.addTableTitle(data);
+        } else {
+          self.svg.datum(data);
+          self.updateChart();
+        }
       }
     });
   };
