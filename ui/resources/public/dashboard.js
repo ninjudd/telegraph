@@ -39,6 +39,8 @@ require(["common"], function() {
     };
 
     doc.afterLoad = function() {
+      $("#span" ).val(doc.model.attrs.span);
+      $("#until").val(doc.model.attrs.until);
       doc.draw();
       Utils.pushPath(doc.model.id);
     };
@@ -55,7 +57,7 @@ require(["common"], function() {
       $("#view-graph").attr("href", "/telegraph/graph#" + id);
     };
 
-    var graphVars = ["span", "until", "period", "variables", "chart"];
+    var graphVars = ["period", "variables", "chart"];
     var graphNames = [];
     function graphForm(index, attrs) {
       // Initialize fields.
@@ -150,6 +152,13 @@ require(["common"], function() {
 
       $("#graph-name").change(function(e) {
         setViewLink($(this).val());
+      });
+
+      _.each(["span", "until"], function(key) {
+        $("#" + key).change(function(e) {
+          doc.model.attrs[key] = $(this).val();
+          doc.draw();
+        });
       });
 
       $("#add-graph").click(function(e) {

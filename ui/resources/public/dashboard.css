@@ -37,3 +37,10 @@
 #label {
   width: 300px;
 }
+
+#date-controls {
+  position: absolute;
+  top: 10px;
+  left: 75px;
+  z-index: 10;
+}

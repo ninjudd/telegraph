@@ -16,6 +16,13 @@
 
 <body>
   <div id="dashboard-container"></div>
+  
+  <div id="date-controls">
+    <input type="text" id="until" class="interval" placeholder="0h" tooltip="true"
+           title="Interval from now to use as the end of the graph time span. Also accepts a date as YYYY-MM-DD.">
+    <input type="text" id="span" class="interval" placeholder="24h" tooltip="true"
+           title="Interval to use for the graph time span.">
+  </div>
 
   <div id="graph-form" class="modal hide fade" tabindex="-1" role="dialog">
     <div class="modal-header">
@@ -34,10 +41,6 @@
         <input id="label" type="text" placeholder="graph label">
       </div>
       <div>
-        <input type="text" id="until" class="interval" placeholder="0h" tooltip="true"
-               title="Interval from now to use as the end of the graph time span. Also accepts a date as YYYY-MM-DD.">
-        <input type="text" id="span" class="interval" placeholder="24h" tooltip="true"
-               title="Interval to use for the graph time span.">
         <input type="text" id="period" class="interval" placeholder="15m" tooltip="true"
                title="Period interval to use for all periodic query operators.">
         <select id="chart" tooltip="true" title="Chart type to use for graphing the query results.">

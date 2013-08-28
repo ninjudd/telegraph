@@ -23,6 +23,13 @@ define([
     }, Dashboard.cssDefault[chart] || Dashboard.cssDefault['default']);
   };
 
+  Dashboard.prototype.overrides = function (graph) {
+    return _.extend({
+      span:  this.attrs.span,
+      until: this.attrs.until,
+    }, graph.overrides);
+  };
+
   Dashboard.prototype.draw = function (selector) {
     var self = this;
     this.graphs = [];
@@ -33,7 +40,8 @@ define([
       var id  = "graph-" + i;
       var div = $("<div/>", {id: id, class: "dashboard-graph"});
       $(selector).append(div.data("index", i));
-      return Telegraph.load(graph.id, graph.overrides).then(function(telegraph) {
+
+      return Telegraph.load(graph.id, self.overrides(graph)).then(function(telegraph) {
         var css = Dashboard.css([self.attrs.style, graph.style], telegraph.attrs.chart);
         div.css(css);
         self.graphs[i] = telegraph;
