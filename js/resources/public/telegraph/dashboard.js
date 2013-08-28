@@ -43,12 +43,15 @@ define([
       var div = $("<div/>", {id: id, class: "dashboard-graph"});
       $(selector).append(div.data("index", i));
 
-      return Telegraph.load(graph.id, self.overrides(graph)).then(function(telegraph) {
-        var css = Dashboard.css([self.attrs.style, graph.style], telegraph.attrs.chart);
-        div.css(css);
-        self.graphs[i] = telegraph;
-        telegraph.draw("#" + id).done(function() {
-          if (graph.label) div.find(".chart-label").text(graph.label);
+      return jQuery.Deferred(function (promise) {
+        Telegraph.load(graph.id, self.overrides(graph)).then(function(telegraph) {
+          var css = Dashboard.css([self.attrs.style, graph.style], telegraph.attrs.chart);
+          div.css(css);
+          self.graphs[i] = telegraph;
+          telegraph.draw("#" + id).done(function() {
+            if (graph.label) div.find(".chart-label").text(graph.label);
+            promise.resolve();
+          });
         });
       });
     }));
