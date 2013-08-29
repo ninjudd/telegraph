@@ -58,11 +58,25 @@ require(["common"], function() {
       });
 
       syncColumnWidths(".telegraph-table");
+
+      if ($("#dashboard-container #right-toolbar #date-controls").length == 0) {
+        var controls = $("<span/>", {id: "date-controls"});
+        _.each(timeVars, function(key) {
+          var input = $("<input/>", {type: "text", id: key, class: "interval", placeholder: key});
+          input.change(function(e) {
+            doc.model.attrs[key] = $(this).val();
+            doc.draw();
+          });
+          controls.append(input);
+        });
+        $("#dashboard-container #right-toolbar").prepend(controls);
+      }
     };
 
     doc.afterLoad = function() {
-      $("#span" ).val(doc.model.attrs.span);
-      $("#until").val(doc.model.attrs.until);
+      _.each(timeVars, function(key) {
+        $("#" + key).val(doc.model.attrs[key]);
+      });
       doc.draw();
       Utils.pushPath(doc.model.id);
     };
@@ -79,7 +93,8 @@ require(["common"], function() {
       $("#view-graph").attr("href", "/telegraph/graph#" + id);
     };
 
-    var graphVars = ["period", "variables", "chart"];
+    var timeVars = ["span", "until", "period"];
+    var graphVars = ["variables", "chart"];
     var graphNames = [];
     function graphForm(index, attrs) {
       // Initialize fields.
@@ -173,13 +188,6 @@ require(["common"], function() {
 
       $("#graph-name").change(function(e) {
         setViewLink($(this).val());
-      });
-
-      _.each(["span", "until"], function(key) {
-        $("#" + key).change(function(e) {
-          doc.model.attrs[key] = $(this).val();
-          doc.draw();
-        });
       });
 
       $("#add-graph").click(function(e) {
