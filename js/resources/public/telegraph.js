@@ -381,12 +381,24 @@ define([
   Telegraph.baseUrls = {};
   Telegraph.defaultPeriod = "15m";
 
+  Telegraph.prototype.normalizeDate = function(date) {
+    var match = date && date.match(/(\d+)\/(\d+)(?:\/(\d+))?/);
+    if (match) {
+      var year  = match[3] || (new Date()).getFullYear();
+      var month = match[1];
+      var day   = match[2];
+      return year + '-' + month + '-' + day;
+    } else {
+      return date;
+    }
+  };
+
   Telegraph.prototype.getData = function(data, targets) {
     if (targets.length == 0) return;
 
     var opts = {
-      from:     this.attrs.from,
-      until:    this.attrs.until,
+      from:     this.normalizeDate(this.attrs.from),
+      until:    this.normalizeDate(this.attrs.until),
       period:   this.attrs.period || Telegraph.defaultPeriod,
       align:    this.attrs.chart == 'table' ? 'start' : this.attrs.align,
       shift:    targets[0].shift,
