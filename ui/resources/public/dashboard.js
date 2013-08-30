@@ -1,7 +1,7 @@
 require(["common"], function() {
   require([
-    "telegraph", "telegraph/dashboard", "resting/document", "underscore", "jquery_ui", "utils", "config", "chosen"
-  ], function(Telegraph, Dashboard, Document, _, $, Utils, config) {
+    "telegraph", "telegraph/dashboard", "resting/document", "underscore", "jquery_ui", "utils", "config", "strings", "chosen"
+  ], function(Telegraph, Dashboard, Document, _, $, Utils, config, strings) {
 
     if (config.telegraph) {
       Telegraph.baseUrls       = config.telegraph.baseUrls;
@@ -62,7 +62,7 @@ require(["common"], function() {
       if ($("#dashboard-container #right-toolbar #date-controls").length == 0) {
         var controls = $("<span/>", {id: "date-controls"});
         _.each(timeVars, function(key) {
-          var input = $("<input/>", {type: "text", id: key, class: "interval", placeholder: key});
+          var input = $("<input/>", {type: "text", id: key, class: "interval", placeholder: key, title: strings[key]});
           input.change(function(e) {
             doc.model.attrs[key] = $(this).val();
             doc.draw();

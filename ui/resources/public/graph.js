@@ -1,7 +1,7 @@
 require(["common"], function() {
   require([
-    "telegraph", "telegraph/table", "resting/document", "underscore", "jquery_ui", "utils", "config"
-  ], function(Telegraph, Table, Document, _, $, Utils, config) {
+    "telegraph", "telegraph/table", "resting/document", "underscore", "jquery_ui", "utils", "config", "strings"
+  ], function(Telegraph, Table, Document, _, $, Utils, config, strings) {
 
     if (config.telegraph) {
       Telegraph.baseUrls       = config.telegraph.baseUrls;
@@ -242,6 +242,10 @@ require(["common"], function() {
         trigger: "hover",
         container: "body"
       }).tooltip("disable");
+
+      _.each(["from", "until", "period"], function(key) {
+        $("#" + key).attr("title", strings[key]);
+      });
 
       var tooltipsEnabled = false;
       $("#help").click(function() {
