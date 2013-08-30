@@ -25,7 +25,7 @@ define([
 
   Dashboard.prototype.overrides = function (graph) {
     var self = this;
-    var overrides = _.object(_.keep(["span", "until"], function(key) {
+    var overrides = _.object(_.keep(["from", "until", "period"], function(key) {
       var val = self.attrs[key];
       if (val) return [key, val];
     }));

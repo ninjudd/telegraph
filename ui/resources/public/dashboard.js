@@ -93,7 +93,7 @@ require(["common"], function() {
       $("#view-graph").attr("href", "/telegraph/graph#" + id);
     };
 
-    var timeVars = ["span", "until", "period"];
+    var timeVars = ["from", "until", "period"];
     var graphVars = ["variables", "chart"];
     var graphNames = [];
     function graphForm(index, attrs) {

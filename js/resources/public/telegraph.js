@@ -385,7 +385,7 @@ define([
     if (targets.length == 0) return;
 
     var opts = {
-      span:     this.attrs.span,
+      from:     this.attrs.from,
       until:    this.attrs.until,
       period:   this.attrs.period || Telegraph.defaultPeriod,
       align:    this.attrs.chart == 'table' ? 'start' : this.attrs.align,
