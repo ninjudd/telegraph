@@ -17,20 +17,15 @@
 <body>
   <div id="edit-container" class="clearfix">
     <div id="query-container">
-      <select id="source" tooltip="true"
-              title="Data source to use for queries."></select>
-      <span id="help" tooltip="true" title="Tooltips disabled.">
-        <img class="resting-icon faded" src="/images/help.svg">
-      </span>
+      <select id="source" title="Data source to use for queries."></select>
 
-      <textarea id="query" tooltip="true"
-                title="Lamina query to add to graph."></textarea>
+      <textarea id="query" title="Lamina query to add to graph."></textarea>
       <div id="query-options">
-        <input type="text" id="shift" placeholder="timeshift" tooltip="true"
+        <input type="text" id="shift" placeholder="timeshift"
                title="Shift results for this target by the given interval.">
 
         <div id="type" class="line-plus-bar-options multi-options btn-group" data-toggle="buttons-radio"
-             tooltip="true" title="Type of graph to use for drawing the results of this query.">
+             title="Type of graph to use for drawing the results of this query.">
           <button id="line" type="button" class="btn active">
             <img class="resting-icon control" src="/images/chart-line.svg">
           </button>
@@ -43,7 +38,7 @@
         </div>
 
         <div id="axis" class="multi-options btn-group" data-toggle="buttons-radio"
-             tooltip="true" title="Axis to use for drawing the results of this query.">
+             title="Axis to use for drawing the results of this query.">
           <button id="left"  type="button" class="btn active">
             <span class="control heavy">&#x21E4;</span>
           </button>
@@ -53,7 +48,7 @@
         </div>
 
         <div class="buttons">
-          <button id="add" class="btn" tooltip="true" title="Add this query to the graph.">
+          <button id="add" class="btn" title="Add this query to the graph.">
             <span class="control heavy">+</span>
           </button>
         </div>
@@ -63,10 +58,10 @@
     <div id="list-container">
       <div id="targets"></div>
       <div id="graph-options">
-        <input type="text" id="from" class="interval" placeholder="24h" tooltip="true">
-        <input type="text" id="until" class="interval" placeholder="0h" tooltip="true">
-        <input type="text" id="period" class="interval" placeholder="15m" tooltip="true">
-        <select id="chart" tooltip="true" title="Chart type to use for graphing the query results.">
+        <input type="text" id="from" class="interval" placeholder="24h">
+        <input type="text" id="until" class="interval" placeholder="0h">
+        <input type="text" id="period" class="interval" placeholder="15m">
+        <select id="chart" title="Chart type to use for graphing the query results.">
           <option value="lineChart">line</option>
           <option value="stackedAreaChart">stacked area</option>
           <option value="multiBarChart">multi bar</option>
@@ -79,22 +74,22 @@
         </select>
 
         <div class="table-options btn-group" data-toggle="buttons-checkbox">
-          <button id="invert" type="button" class="btn" tooltip="true"
+          <button id="invert" type="button" class="btn"
                   title="Swap the columns and rows in the results table.">
             <img class="resting-icon control" src="/images/swap.svg">
           </button>
-          <button id="sum-cols" type="button" class="btn" tooltip="true"
+          <button id="sum-cols" type="button" class="btn"
                   title="Add a summary line to the table that sums all results for a given target.">
             <span class="control">&Sigma;&darr;</span>
           </button>
-          <button id="sum-rows" type="button" class="btn" tooltip="true"
+          <button id="sum-rows" type="button" class="btn"
                   title="Add a summary line to the table that sums all results for a given timepoint.">
             <span class="control">&Sigma;&rarr;</span>
           </button>
         </div>
 
         <span class="chart-options visible-options">
-          <button id="align" type="button" class="btn" tooltip="true"
+          <button id="align" type="button" class="btn"
                   title="Align the query timeframe to the period.">
             <span class="control heavy">
               <img class="resting-icon faded" src="/images/align.svg">
@@ -119,7 +114,7 @@
     <div class="modal-body">
       <div>
         <label for="variables">Auto-refresh interval:</label>
-        <input type="text" id="refresh" tooltip="true">
+        <input type="text" id="refresh">
       </div>
       <div id="macro-variables">
         <label for="variables">Macro variables:</label>

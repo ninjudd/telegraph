@@ -235,29 +235,8 @@ require(["common"], function() {
         $select.append('<option value=' + source + '>' + source + '</option>');
       });
 
-      var elements = $("[tooltip=true]")
-      elements.tooltip({
-        delay: {show: 500},
-        placement: "bottom",
-        trigger: "hover",
-        container: "body"
-      }).tooltip("disable");
-
       _.each(["from", "until", "period"], function(key) {
         $("#" + key).attr("title", strings[key]);
-      });
-
-      var tooltipsEnabled = false;
-      $("#help").click(function() {
-        if (tooltipsEnabled) {
-          tooltipsEnabled = false;
-          elements.tooltip("disable");
-          $(this).tooltip("hide");
-        } else {
-          tooltipsEnabled = true;
-          elements.tooltip("enable");
-          $(this).tooltip("show");
-        }
       });
     });
   });

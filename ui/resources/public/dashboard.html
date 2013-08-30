@@ -35,7 +35,7 @@
         <input id="label" type="text" placeholder="graph label">
       </div>
       <div>
-        <select id="chart" tooltip="true" title="Chart type to use for graphing the query results.">
+        <select id="chart" title="Chart type to use for graphing the query results.">
           <option value="">default</option>
           <option value="lineChart">line</option>
           <option value="stackedAreaChart">stacked area</option>
@@ -49,22 +49,22 @@
         </select>
 
         <div class="table-options btn-group" data-toggle="buttons-checkbox">
-          <button id="invert" type="button" class="btn" tooltip="true"
+          <button id="invert" type="button" class="btn"
                   title="Swap the columns and rows in the results table.">
             <img class="resting-icon control" src="/images/swap.svg">
           </button>
-          <button id="sum_cols" type="button" class="btn" tooltip="true"
+          <button id="sum_cols" type="button" class="btn"
                   title="Add a summary line to the table that sums all results for a given target.">
             <span class="control">&Sigma;&darr;</span>
           </button>
-          <button id="sum_rows" type="button" class="btn" tooltip="true"
+          <button id="sum_rows" type="button" class="btn"
                   title="Add a summary line to the table that sums all results for a given timepoint.">
             <span class="control">&Sigma;&rarr;</span>
           </button>
         </div>
 
         <span class="chart-options">
-          <button id="align" type="button" class="btn" tooltip="true"
+          <button id="align" type="button" class="btn"
                   title="Align the query timeframe to the period.">
             <span class="control heavy">
               <img class="resting-icon faded" src="/images/align.svg">
@@ -82,7 +82,7 @@
       </div>
     </div>
     <div class="modal-footer">
-      <span id="graph-help" tooltip="true" title="Tooltips disabled.">
+      <span id="graph-help" title="Tooltips disabled.">
         <img class="resting-icon faded" src="/images/help.svg">
       </span>
       <button id="graph-form-delete" class="btn">Delete</button>
