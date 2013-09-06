@@ -79,7 +79,7 @@ define(["underscore", "jquery_ui"], function(_, $) {
     table.append.apply(table, _.mapcat(this.items, this.toRows));
 
     if (this.sortable) {
-      table.sortable({
+      table.find("tbody").sortable({
         // Keep table cells from collapsing when reordering.
         // http://www.foliotek.com/devblog/make-table-rows-sortable-using-jquery-ui-sortable
         helper: function(e, ui) {
