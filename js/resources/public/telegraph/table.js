@@ -4,7 +4,8 @@ define(["underscore", "jquery_ui"], function(_, $) {
     opts = opts || {};
 
     this.selector  = selector
-    this.toRows    = opts.toRows || Table.rowBuilder(opts.toCells || Table.defaultCells);
+    this.header    = opts.header;
+    this.toRows    = opts.toRows || Table.rowBuilder(opts.toCells || Table.defaultCells, this.header);
     this.change    = opts.change;
     this.sortable  = opts.sortable;
     this.class     = opts.class;
@@ -29,17 +30,18 @@ define(["underscore", "jquery_ui"], function(_, $) {
     })
   };
 
-  Table.makeRow = function(cells, i) {
+  Table.makeRow = function(cells, i, enableHeader) {
+console.log(enableHeader)
     var tr = $("<tr/>", {id: i});
     _.each(cells, function(cell) {
-      tr.append($(i == 0 ? "<th/>" : "<td/>", cell));
+      tr.append($(i == 0  && enableHeader ? "<th/>" : "<td/>", cell));
     });
     return tr;
   };
 
-  Table.rowBuilder = function(toCells) {
+  Table.rowBuilder = function(toCells, enableHeader) {
     return function(item, i) {
-      return [Table.makeRow(toCells.call(this, item, i), i)];
+      return [Table.makeRow(toCells.call(this, item, i), i, enableHeader)];
     };
   };
 

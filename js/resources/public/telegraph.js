@@ -216,8 +216,9 @@ define([
 
     this.table = new Table(selector, {
       toCells: _.bind(this.tableCells, this),
-      class:  classes,
-      items:  items,
+      class:   classes,
+      items:   items,
+      header:  true,
     })
     _.bindAll(this.table);
     this.table.update();
