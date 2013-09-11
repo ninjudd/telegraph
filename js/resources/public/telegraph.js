@@ -125,9 +125,11 @@ define([
   };
 
   _.pointwise = function(colls, f, context) {
-    return _.map(_.zip.apply(_, colls), function(a) {
-      return _.reduce(_.rest(a), f, _.first(a));
-    });
+    if (!_.isEmpty(colls)) {
+      return _.map(_.zip.apply(_, colls), function(a) {
+        return _.reduce(_.rest(a), f, _.first(a));
+      });
+    }
   };
 
   Telegraph.prototype.tableItems = function(data) {
@@ -168,6 +170,7 @@ define([
       var totals = _.pointwise(rows, function (a, b) {
         return _.pointwise([a, b], _.add);
       });
+
       var grandTotal = _.pointwise(totals, _.add);
       items.push(["total"].concat(_.map(totals, formatVal)));
       if (this.attrs.sum_rows) _.last(items).push(formatVal(grandTotal));
