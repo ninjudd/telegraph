@@ -31,7 +31,6 @@ define(["underscore", "jquery_ui"], function(_, $) {
   };
 
   Table.makeRow = function(cells, i, enableHeader) {
-console.log(enableHeader)
     var tr = $("<tr/>", {id: i});
     _.each(cells, function(cell) {
       tr.append($(i == 0  && enableHeader ? "<th/>" : "<td/>", cell));
