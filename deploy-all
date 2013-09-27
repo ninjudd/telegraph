@@ -1,0 +1,4 @@
+#!/bin/bash
+(cd js && lein deploy clojars)
+(cd ui && lein deploy clojars)
+lein deploy clojars
