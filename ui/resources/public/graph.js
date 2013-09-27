@@ -151,7 +151,7 @@ require(["common"], function() {
         });
       });
 
-      $("#span").change(function() {
+      $("#from").change(function() {
         doc.model.attrs.span = $(this).val();
         doc.draw();
       });
