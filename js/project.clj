@@ -1,4 +1,4 @@
-(defproject org.flatland/telegraph-js "0.4.14"
+(defproject org.flatland/telegraph-js "0.4.15"
   :description "Telegraph javascript libraries."
   :url "http://github.com/flatland/telegraph"
   :license {:name "Eclipse Public License"
