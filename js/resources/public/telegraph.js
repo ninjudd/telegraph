@@ -323,10 +323,18 @@ define([
       if (axis) axis.showMaxMin(false).tickValues(ticks).tickFormat(format);
     });
     _.each([nvChart.yAxis, nvChart.yAxis1, nvChart.yAxis2, nvChart.y2Axis], function (axis) {
-      if (axis) axis.tickFormat(d3.format('d'));
+      if (axis) {
+        axis.showMaxMin(false);
+        axis.tickFormat(function (n) {
+          if (n % 1) { // This will be zero if n is an integer.
+            return str.sprintf('%.3f', n);
+          } else {
+            return str.sprintf('%d', n);
+          }
+        });
+      }
     });
-    nvChart.margin({left: 40, right: 30, bottom: 20, top: 20});
-
+    nvChart.margin({left: 60, right: 30, bottom: 40, top: 20});
     _.bindAll(nvChart);
     return nvChart;
   };
