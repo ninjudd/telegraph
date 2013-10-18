@@ -333,7 +333,7 @@ define([
 
   Telegraph.prototype.update = function() {
     var self = this;
-    var revision = this.revision++;
+    var revision = ++this.revision;
 
     this.fetchData().done(function(data) {
       if (revision == self.revision) {
