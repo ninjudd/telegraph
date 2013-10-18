@@ -241,7 +241,7 @@ define([
       menu.append($("<li/>").append(self.csvLink(name, data, i)));
     });
 
-    var cell = $(this.table.selector).find("table tr:first-child td:first-child")
+    var cell = $(this.table.selector).find("table tr:first-child th:first-child")
     cell.append($("<div/>", {class: "dropdown"}).append(menu, link));
   };
 
