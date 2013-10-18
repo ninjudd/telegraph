@@ -32,7 +32,7 @@ requirejs.config({
       deps: ['jquery'],
     },
     bootstrap: {
-      deps: ['jquery'],
+      deps: ['jquery', 'jquery_ui'],
     },
     d3: {
       exports: 'd3',
