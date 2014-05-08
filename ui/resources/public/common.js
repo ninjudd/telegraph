@@ -6,7 +6,7 @@ requirejs.config({
     bootstrap:          "//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/js/bootstrap",
     underscore:         "//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore",
     underscore_contrib: "//cdnjs.cloudflare.com/ajax/libs/underscore-contrib/0.1.4/underscore-contrib",
-    underscore_string:  "//raw.github.com/epeli/underscore.string/2.3.3/dist/underscore.string.min",
+    underscore_string:  "//cdn.rawgit.com/epeli/underscore.string/2.3.3/dist/underscore.string.min",
     d3:                 "//cdnjs.cloudflare.com/ajax/libs/d3/3.3.3/d3",
     nvd3:               "//cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.13-beta/nv.d3",
     backbone:           "//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone",
